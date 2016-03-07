@@ -118,7 +118,7 @@
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
-  <p class="site-subtitle">个人技术博客</p>
+  <p class="site-subtitle">心向往之</p>
 </div>
 
 <div class="site-nav-toggle">
@@ -231,8 +231,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/02/18/使用hexo搭建的博客站点/" itemprop="url">
-                  使用hexo搭建博客记录
+                <a class="post-title-link" href="/2016/03/07/关于iOS的深浅拷贝以及对象的强弱类型/" itemprop="url">
+                  关于iOS的深浅拷贝以及对象的强弱类型
                 </a>
               
             
@@ -245,8 +245,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-02-18T21:05:00+08:00" content="2016-02-18">
-              2016-02-18
+            <time itemprop="dateCreated" datetime="2016-03-07T20:14:23+08:00" content="2016-03-07">
+              2016-03-07
             </time>
           </span>
 
@@ -259,8 +259,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/记录/" itemprop="url" rel="index">
-                    <span itemprop="name">记录</span>
+                  <a href="/categories/iOS开发/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS开发</span>
                   </a>
                 </span>
 
@@ -291,9 +291,10 @@
 
       
         
-          <p>通过各种寻找资料，总算搭建好了自己的技术博客，在此记录一下几个关键点<br>
+          <p> 首先是相关的苹果官方文档<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Collections/Articles/Copying.html" title="Copying Collections">Copying Collections</a>，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span>* string = @”a”;</span><br><span class="line"><span class="built_in">NSString</span>* stringCopy = [string <span class="keyword">copy</span>];<span class="comment">// stringCopy与string地址相同，retainCount+ 1，属于浅拷贝</span></span><br></pre></td></tr></table></figure>
           <div class="post-more-link text-center">
-            <a class="btn" href="/2016/02/18/使用hexo搭建的博客站点/#more" rel="contents">
+            <a class="btn" href="/2016/03/07/关于iOS的深浅拷贝以及对象的强弱类型/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -357,7 +358,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">2</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -365,7 +366,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -374,7 +375,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
