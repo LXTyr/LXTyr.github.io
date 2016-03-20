@@ -57,19 +57,16 @@
 
 
 
-<meta name="description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如
-12NSString* string = @”a”;NSString* stringCopy = [string copy];// stri">
+<meta name="description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如12NSString* string = @”a”;NSString* stringCopy = [string copy];// strin">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于iOS的深浅拷贝以及对象的强弱类型">
 <meta property="og:url" content="http://darrenwang.top/2016/03/07/关于iOS的深浅拷贝以及对象的强弱类型/index.html">
 <meta property="og:site_name" content="DarrenWang">
-<meta property="og:description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如
-12NSString* string = @”a”;NSString* stringCopy = [string copy];// stri">
-<meta property="og:updated_time" content="2016-03-07T12:47:21.000Z">
+<meta property="og:description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如12NSString* string = @”a”;NSString* stringCopy = [string copy];// strin">
+<meta property="og:updated_time" content="2016-03-07T17:11:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于iOS的深浅拷贝以及对象的强弱类型">
-<meta name="twitter:description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如
-12NSString* string = @”a”;NSString* stringCopy = [string copy];// stri">
+<meta name="twitter:description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如12NSString* string = @”a”;NSString* stringCopy = [string copy];// strin">
 
 
 
@@ -274,8 +271,7 @@
       
 
       
-        <p> 首先是相关的苹果官方文档<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Collections/Articles/Copying.html" title="Copying Collections" target="_blank" rel="external">Copying Collections</a>，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span>* string = @”a”;</span><br><span class="line"><span class="built_in">NSString</span>* stringCopy = [string <span class="keyword">copy</span>];<span class="comment">// stringCopy与string地址相同，retainCount+ 1，属于浅拷贝</span></span><br></pre></td></tr></table></figure>
+        <h6 id="首先是相关的苹果官方文档Copying-Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如"><a href="#首先是相关的苹果官方文档Copying-Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如" class="headerlink" title="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如"></a>首先是相关的苹果官方文档<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Collections/Articles/Copying.html" title="Copying Collections" target="_blank" rel="external">Copying Collections</a>，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如</h6><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span>* string = @”a”;</span><br><span class="line"><span class="built_in">NSString</span>* stringCopy = [string <span class="keyword">copy</span>];<span class="comment">// stringCopy与string地址相同，retainCount+ 1，属于浅拷贝</span></span><br></pre></td></tr></table></figure>
 <a id="more"></a>
 <p>而深拷贝则是对象的复制，例如</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSMutableString</span>* stringMCopy = [string mutablecopy];<span class="comment">// stringMCopy与string地址不同,为深拷贝</span></span><br></pre></td></tr></table></figure>
@@ -297,7 +293,7 @@
 </li>
 </ol>
 <hr>
-<p>然后是关于对象的强弱引用：<br>在Objective-C的ARC模式中，</p>
+<h6 id="然后是关于对象的强弱引用："><a href="#然后是关于对象的强弱引用：" class="headerlink" title="然后是关于对象的强弱引用："></a>然后是关于对象的强弱引用：</h6><p>在Objective-C的ARC模式中，</p>
 <p>id obj1 = [[NSObject alloc] init];<br>这里虽然没有显示的声明为__strong，但是Objective-C默认声明的一个对象就为__strong，即：</p>
 <p>id obj1 = [[NSObject alloc] init];<br>和</p>
 <p>id __ strong obj1 = [[NSObject alloc] init];<br>是等价的<br>在强引用中，有时会出现循环引用的情况，这时就需要弱引用来帮忙（ __ weak）。</p>
@@ -463,7 +459,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-6"><a class="nav-link" href="#首先是相关的苹果官方文档Copying-Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如"><span class="nav-number">1.</span> <span class="nav-text">首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#然后是关于对象的强弱引用："><span class="nav-number">2.</span> <span class="nav-text">然后是关于对象的强弱引用：</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator">
