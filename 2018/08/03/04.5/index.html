@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="4.5 处理文件上传你想处理一个由用户上传的文件，比如你正在建设一个类似Instagram的网站，你需要存储用户拍摄的照片。这种需求该如何实现呢？要使表单能够上传文件，首先第一步就是要添加form的enctype属性，enctype属性有如下三种情况:123application/x-www-form-urlencoded   表示在发送前编码所有字符（默认）multipart/form-data">
+<meta property="og:type" content="article">
+<meta property="og:title" content="处理文件上传">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/04.5/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="4.5 处理文件上传你想处理一个由用户上传的文件，比如你正在建设一个类似Instagram的网站，你需要存储用户拍摄的照片。这种需求该如何实现呢？要使表单能够上传文件，首先第一步就是要添加form的enctype属性，enctype属性有如下三种情况:123application/x-www-form-urlencoded   表示在发送前编码所有字符（默认）multipart/form-data">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/04.5/images/4.5.upload2.png">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.619Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="处理文件上传">
+<meta name="twitter:description" content="4.5 处理文件上传你想处理一个由用户上传的文件，比如你正在建设一个类似Instagram的网站，你需要存储用户拍摄的照片。这种需求该如何实现呢？要使表单能够上传文件，首先第一步就是要添加form的enctype属性，enctype属性有如下三种情况:123application/x-www-form-urlencoded   表示在发送前编码所有字符（默认）multipart/form-data">
+<meta name="twitter:image" content="http://darrenwonder.github.io/2018/08/03/04.5/images/4.5.upload2.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/04.5/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>处理文件上传 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/04.5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">处理文件上传
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="4-5-处理文件上传"><a href="#4-5-处理文件上传" class="headerlink" title="4.5 处理文件上传"></a>4.5 处理文件上传</h1><p>你想处理一个由用户上传的文件，比如你正在建设一个类似Instagram的网站，你需要存储用户拍摄的照片。这种需求该如何实现呢？<br>要使表单能够上传文件，首先第一步就是要添加form的<code>enctype</code>属性，<code>enctype</code>属性有如下三种情况:<br><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">application</span>/x-www-form-urlencoded   表示在发送前编码所有字符（默认）</span><br><span class="line">multipart/form-data	  不对字符编码。在使用包含文件上传控件的表单时，必须使用该值。</span><br><span class="line"><span class="built_in">text</span>/plain	  空格转换为 <span class="string">"+"</span> 加号，但不对特殊字符编码。</span><br></pre></td></tr></table></figure></p>
+<p>所以，创建新的表单html文件, 命名为upload.gtpl, html代码应该类似于:<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- more --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">title</span>&gt;</span>上传文件<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">enctype</span>=<span class="string">"multipart/form-data"</span> <span class="attr">action</span>=<span class="string">"/upload"</span> <span class="attr">method</span>=<span class="string">"post"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"file"</span> <span class="attr">name</span>=<span class="string">"uploadfile"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"token"</span> <span class="attr">value</span>=<span class="string">"&#123;&#123;.&#125;&#125;"</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">value</span>=<span class="string">"upload"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>在服务器端，我们增加一个handlerFunc:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">http.HandleFunc(<span class="string">"/upload"</span>, upload)</span><br><span class="line"><span class="comment">// 处理/upload 逻辑</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">upload</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"method:"</span>, r.Method) <span class="comment">//获取请求的方法</span></span><br><span class="line">	<span class="keyword">if</span> r.Method == <span class="string">"GET"</span> &#123;</span><br><span class="line">		crutime := time.Now().Unix()</span><br><span class="line">		h := md5.New()</span><br><span class="line">		io.WriteString(h, strconv.FormatInt(crutime, <span class="number">10</span>))</span><br><span class="line">		token := fmt.Sprintf(<span class="string">"%x"</span>, h.Sum(<span class="literal">nil</span>))</span><br><span class="line">		t, _ := template.ParseFiles(<span class="string">"upload.gtpl"</span>)</span><br><span class="line">		t.Execute(w, token)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		r.ParseMultipartForm(<span class="number">32</span> &lt;&lt; <span class="number">20</span>)</span><br><span class="line">		file, handler, err := r.FormFile(<span class="string">"uploadfile"</span>)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Println(err)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">defer</span> file.Close()</span><br><span class="line">		fmt.Fprintf(w, <span class="string">"%v"</span>, handler.Header)</span><br><span class="line">		f, err := os.OpenFile(<span class="string">"./test/"</span>+handler.Filename, os.O_WRONLY|os.O_CREATE, <span class="number">0666</span>)  <span class="comment">// 此处假设当前目录下已存在test目录</span></span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Println(err)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">defer</span> f.Close()</span><br><span class="line">		io.Copy(f, file)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过上面的代码可以看到，处理文件上传我们需要调用<code>r.ParseMultipartForm</code>，里面的参数表示<code>maxMemory</code>，调用<code>ParseMultipartForm</code>之后，上传的文件存储在<code>maxMemory</code>大小的内存里面，如果文件大小超过了<code>maxMemory</code>，那么剩下的部分将存储在系统的临时文件中。我们可以通过<code>r.FormFile</code>获取上面的文件句柄，然后实例中使用了<code>io.Copy</code>来存储文件。</p>
+<blockquote>
+<p>获取其他非文件字段信息的时候就不需要调用<code>r.ParseForm</code>，因为在需要的时候Go自动会去调用。而且<code>ParseMultipartForm</code>调用一次之后，后面再次调用不会再有效果。<br>通过上面的实例我们可以看到我们上传文件主要三步处理：</p>
+<ol>
+<li>表单中增加enctype=”multipart/form-data”</li>
+<li>服务端调用<code>r.ParseMultipartForm</code>,把上传的文件存储在内存和临时文件中</li>
+<li>使用<code>r.FormFile</code>获取文件句柄，然后对文件进行存储等处理。<br>文件handler是multipart.FileHeader,里面存储了如下结构信息<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> FileHeader <span class="keyword">struct</span> &#123;</span><br><span class="line">	Filename <span class="keyword">string</span></span><br><span class="line">	Header   textproto.MIMEHeader</span><br><span class="line">	<span class="comment">// contains filtered or unexported fields</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</blockquote>
+<p>我们通过上面的实例代码打印出来上传文件的信息如下<br><img src="/2018/08/03/04.5/images/4.5.upload2.png"><br>图4.5 打印文件上传后服务器端接受的信息</p>
+<h2 id="客户端上传文件"><a href="#客户端上传文件" class="headerlink" title="客户端上传文件"></a>客户端上传文件</h2><p>我们上面的例子演示了如何通过表单上传文件，然后在服务器端处理文件，其实Go支持模拟客户端表单功能支持文件上传，详细用法请看如下示例：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"bytes"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"io"</span></span><br><span class="line">	<span class="string">"io/ioutil"</span></span><br><span class="line">	<span class="string">"mime/multipart"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">postFile</span><span class="params">(filename <span class="keyword">string</span>, targetUrl <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	bodyBuf := &amp;bytes.Buffer&#123;&#125;</span><br><span class="line">	bodyWriter := multipart.NewWriter(bodyBuf)</span><br><span class="line">	<span class="comment">//关键的一步操作</span></span><br><span class="line">	fileWriter, err := bodyWriter.CreateFormFile(<span class="string">"uploadfile"</span>, filename)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"error writing to buffer"</span>)</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//打开文件句柄操作</span></span><br><span class="line">	fh, err := os.Open(filename)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"error opening file"</span>)</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> fh.Close()</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//iocopy</span></span><br><span class="line">	_, err = io.Copy(fileWriter, fh)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line">	contentType := bodyWriter.FormDataContentType()</span><br><span class="line">	bodyWriter.Close()</span><br><span class="line">	resp, err := http.Post(targetUrl, contentType, bodyBuf)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line">	resp_body, err := ioutil.ReadAll(resp.Body)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(resp.Status)</span><br><span class="line">	fmt.Println(<span class="keyword">string</span>(resp_body))</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// sample usage</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	target_url := <span class="string">"http://localhost:9090/upload"</span></span><br><span class="line">	filename := <span class="string">"./astaxie.pdf"</span></span><br><span class="line">	postFile(filename, target_url)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的例子详细展示了客户端如何向服务器上传一个文件的例子，客户端通过multipart.Write把文件的文本流写入一个缓存中，然后调用http的Post方法把缓存传到服务器。</p>
+<blockquote>
+<p>如果你还有其他普通字段例如username之类的需要同时写入，那么可以调用multipart的WriteField方法写很多其他类似的字段。</p>
+</blockquote>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/04.4/" title="防止多次递交表单">防止多次递交表单</a></li>
+<li>下一节: <a href="/2018/08/03/04.6/" title="小结">小结</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/04.6/" rel="next" title="小结">
+                <i class="fa fa-chevron-left"></i> 小结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/04.4/" rel="prev" title="防止多次递交表单">
+                防止多次递交表单 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#4-5-处理文件上传"><span class="nav-number">1.</span> <span class="nav-text">4.5 处理文件上传</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端上传文件"><span class="nav-number">1.1.</span> <span class="nav-text">客户端上传文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.2.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

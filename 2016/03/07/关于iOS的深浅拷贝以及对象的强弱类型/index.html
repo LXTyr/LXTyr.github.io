@@ -1,15 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
 
 
 
   
 
 
-<html class="theme-next pisces use-motion" lang="zh-Hans">
+<html class="theme-next pisces use-motion" lang="zh-CN">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
 
 
 
@@ -30,36 +49,7 @@
 
 
 
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
 
 
 
@@ -68,35 +58,25 @@
 
 <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="iOS," />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
 
 
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
 
 
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
 
 
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
-
-
-
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
 
 
 
-<meta name="description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如12NSString* string = @”a”;NSString* stringCopy = [string copy];// strin">
-<meta property="og:type" content="article">
-<meta property="og:title" content="关于iOS的深浅拷贝以及对象的强弱类型">
-<meta property="og:url" content="http://darrenwonder.github.io/2016/03/07/关于iOS的深浅拷贝以及对象的强弱类型/index.html">
-<meta property="og:site_name" content="DarrenWang">
-<meta property="og:description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如12NSString* string = @”a”;NSString* stringCopy = [string copy];// strin">
-<meta property="og:updated_time" content="2016-03-07T17:11:07.000Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于iOS的深浅拷贝以及对象的强弱类型">
-<meta name="twitter:description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如12NSString* string = @”a”;NSString* stringCopy = [string copy];// strin">
+
+
+
 
 
 
@@ -105,13 +85,13 @@
   var CONFIG = {
     root: '/',
     scheme: 'Pisces',
-    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
-    fancybox: true,
-    motion: true,
-    duoshuo: {
-      userId: '0',
-      author: '博主'
-    },
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     algolia: {
       applicationID: '',
       apiKey: '',
@@ -123,18 +103,40 @@
 </script>
 
 
+  
+
+
+
+
+  <meta name="description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如12NSString* string = @”a”;NSString* stringCopy = [string copy];// strin">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于iOS的深浅拷贝以及对象的强弱类型">
+<meta property="og:url" content="http://darrenwonder.github.io/2016/03/07/关于iOS的深浅拷贝以及对象的强弱类型/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如12NSString* string = @”a”;NSString* stringCopy = [string copy];// strin">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2016-03-07T17:11:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于iOS的深浅拷贝以及对象的强弱类型">
+<meta name="twitter:description" content="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如12NSString* string = @”a”;NSString* stringCopy = [string copy];// strin">
+
+
+
+
+
 
   <link rel="canonical" href="http://darrenwonder.github.io/2016/03/07/关于iOS的深浅拷贝以及对象的强弱类型/"/>
 
 
 
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
 
-
-  <title> 关于iOS的深浅拷贝以及对象的强弱类型 | DarrenWang </title>
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
+  <title>关于iOS的深浅拷贝以及对象的强弱类型 | DarrenWang</title>
   
 
 
@@ -145,17 +147,43 @@
 
 
 
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
 
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
 
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
 
+</head>
 
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
   
   
     
   
 
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -164,19 +192,21 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">DarrenWang</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+    
       
         <p class="site-subtitle">心向往之</p>
       
+    
   </div>
 
   <div class="site-nav-toggle">
-    <button>
+    <button aria-label="切换导航栏">
       <span class="btn-bar"></span>
       <span class="btn-bar"></span>
       <span class="btn-bar"></span>
@@ -184,55 +214,34 @@
   </div>
 </div>
 
-<nav class="site-nav">
-  
 
+
+<nav class="site-nav">
   
     <ul id="menu" class="menu">
       
         
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            首页
-          </a>
-        </li>
-      
         
-        <li class="menu-item menu-item-categories">
-          <a href="/categories" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            分类
-          </a>
-        </li>
-      
         
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
         
-        <li class="menu-item menu-item-tags">
-          <a href="/tags" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
-            
-            标签
-          </a>
-        </li>
-      
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
 
       
+      
     </ul>
+  
+
   
 
   
@@ -240,12 +249,23 @@
 
 
 
- </div>
+  
+
+
+
+</div>
     </header>
+
+    
+
 
     <main id="main" class="main">
       <div class="main-inner">
         <div class="content-wrap">
+          
+            
+
+          
           <div id="content" class="content">
             
 
@@ -258,13 +278,19 @@
   
   
 
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2016/03/07/关于iOS的深浅拷贝以及对象的强弱类型/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="王梦涛">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/12163867?v=3&s=40">
+      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -276,11 +302,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                关于iOS的深浅拷贝以及对象的强弱类型
+          <h1 class="post-title" itemprop="name headline">关于iOS的深浅拷贝以及对象的强弱类型
               
             
           </h1>
@@ -288,6 +310,11 @@
 
         <div class="post-meta">
           <span class="post-time">
+
+            
+            
+            
+
             
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
@@ -295,13 +322,30 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-07T20:14:23+08:00">
-                2016-03-07
-              </time>
+
+              
+                
+              
+
+              <time title="创建时间：2016-03-07 20:14:23" itemprop="dateCreated datePublished" datetime="2016-03-07T20:14:23+08:00">2016-03-07</time>
             
 
             
+              
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2016-03-08 01:11:07" itemprop="dateModified" datetime="2016-03-08T01:11:07+08:00">2016-03-08</time>
+              
             
           </span>
 
@@ -317,11 +361,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS开发/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS开发</span>
-                  </a>
-                </span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/iOS开发/" itemprop="url" rel="index"><span itemprop="name">iOS开发</span></a></span>
 
                 
                 
@@ -337,6 +377,14 @@
           
 
           
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
 
           
 
@@ -346,14 +394,16 @@
       </header>
     
 
-
+    
+    
+    
     <div class="post-body" itemprop="articleBody">
 
       
       
 
       
-        <h6 id="首先是相关的苹果官方文档Copying-Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如"><a href="#首先是相关的苹果官方文档Copying-Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如" class="headerlink" title="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如"></a>首先是相关的苹果官方文档<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Collections/Articles/Copying.html" title="Copying Collections" target="_blank" rel="external">Copying Collections</a>，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如</h6><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span>* string = @”a”;</span><br><span class="line"><span class="built_in">NSString</span>* stringCopy = [string <span class="keyword">copy</span>];<span class="comment">// stringCopy与string地址相同，retainCount+ 1，属于浅拷贝</span></span><br></pre></td></tr></table></figure>
+        <h6 id="首先是相关的苹果官方文档Copying-Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如"><a href="#首先是相关的苹果官方文档Copying-Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如" class="headerlink" title="首先是相关的苹果官方文档Copying Collections，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如"></a>首先是相关的苹果官方文档<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Collections/Articles/Copying.html" title="Copying Collections" target="_blank" rel="noopener">Copying Collections</a>，在官方文档的介绍中说明了：有两种对象拷贝方式，一种是浅拷贝，是一般的拷贝方式，另外一种是深拷贝。两者的不同之处在于，浅拷贝只是拷贝了一个对象的引用，指针所指向的地址是一样的，相当于指针复制，例如</h6><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span>* string = @”a”;</span><br><span class="line"><span class="built_in">NSString</span>* stringCopy = [string <span class="keyword">copy</span>];<span class="comment">// stringCopy与string地址相同，retainCount+ 1，属于浅拷贝</span></span><br></pre></td></tr></table></figure>
 <a id="more"></a>
 <p>而深拷贝则是对象的复制，例如</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSMutableString</span>* stringMCopy = [string mutablecopy];<span class="comment">// stringMCopy与string地址不同,为深拷贝</span></span><br></pre></td></tr></table></figure>
@@ -371,7 +421,7 @@
  <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSArray</span> *array = [<span class="built_in">NSArray</span> arrayWithObjects:[<span class="built_in">NSMutableString</span> stringWithString:<span class="string">@"first"</span>],[<span class="built_in">NSStringstringWithString</span>:<span class="string">@"b"</span>],<span class="string">@"c"</span>,<span class="literal">nil</span>];</span><br><span class="line"><span class="built_in">NSArray</span> *deepCopyArray=[[<span class="built_in">NSArray</span> alloc] initWithArray: array copyItems: <span class="literal">YES</span>];</span><br><span class="line"><span class="built_in">NSArray</span>* trueDeepCopyArray = [<span class="built_in">NSKeyedUnarchiver</span> unarchiveObjectWithData:</span><br><span class="line">[<span class="built_in">NSKeyedArchiver</span> archivedDataWithRootObject: array]];</span><br></pre></td></tr></table></figure>
 <p> trueDeepCopyArray是完全意义上的深拷贝，而deepCopyArray则不是，对于deepCopyArray内的不可变元素其还是指针复制。或者我们自己实现深拷贝的方法。因为如果容器的某一元素是不可变的，那你复制完后该对象仍旧是不能改变的，因此只需要指针复制即可。除非你对容器内的元素重新赋值，否则指针复制即已足够。举个例子，[[array objectAtIndex:0]appendstring:@”sd”]后其他的容器内对象并不会受影响。[[array objectAtIndex:1]和[[deepCopyArray objectAtIndex:0]尽管是指向同一块内存，但是我们没有办法对其进行修改——因为它是不可改变的。所以指针复制已经足够。所以这并不是完全意义上的深拷贝，但是apple的官方文档将其列为deep copy了，并添加了copy和mutablity的关系说明，故在此做一说明（这边还有点疑惑，有了解的赐教啊）。<br>或者我们自己实现深拷贝的方法（略）。</p>
 </li>
-<li>自定义对象<br> 如果是我们定义的对象，那么我们自己要实现NSCopying,NSMutableCopying这样就能调用copy和mutablecopy了。举个例子： <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyObj</span> : <span class="title">NSObject</span>&lt;<span class="title">NSCopying</span>,<span class="title">NSMutableCopying</span>&gt;</span></span><br><span class="line">&#123;</span><br><span class="line">         <span class="built_in">NSMutableString</span> *name;</span><br><span class="line">         <span class="built_in">NSString</span> *imutableStr;</span><br><span class="line">         <span class="keyword">int</span> age;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, retain) <span class="built_in">NSMutableString</span> *name;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, retain) <span class="built_in">NSString</span> *imutableStr;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="keyword">int</span> age;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyObj</span></span></span><br><span class="line"><span class="keyword">@synthesize</span> name;</span><br><span class="line"><span class="keyword">@synthesize</span> age;</span><br><span class="line"><span class="keyword">@synthesize</span> imutableStr;</span><br><span class="line">- (<span class="keyword">id</span>)init</span><br><span class="line">&#123;</span><br><span class="line">         <span class="keyword">if</span> (<span class="keyword">self</span> = [<span class="keyword">super</span> init])</span><br><span class="line">         &#123;</span><br><span class="line">                   <span class="keyword">self</span><span class="variable">.name</span> = [[<span class="built_in">NSMutableString</span> alloc]init];</span><br><span class="line">                   <span class="keyword">self</span><span class="variable">.imutableStr</span> = [[<span class="built_in">NSString</span> alloc]init];</span><br><span class="line">                   age = -<span class="number">1</span>;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">- (<span class="keyword">void</span>)dealloc</span><br><span class="line">&#123;</span><br><span class="line">         [name release];</span><br><span class="line">         [imutableStr release];</span><br><span class="line">         [<span class="keyword">super</span> dealloc];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="keyword">id</span>)copyWithZone:(<span class="built_in">NSZone</span> *)zone</span><br><span class="line">&#123;</span><br><span class="line">         MyObj *<span class="keyword">copy</span> = [[[<span class="keyword">self</span> class] allocWithZone:zone] init];</span><br><span class="line">         <span class="keyword">copy</span>-&gt;name = [name <span class="keyword">copy</span>];</span><br><span class="line">         <span class="keyword">copy</span>-&gt;imutableStr = [imutableStr <span class="keyword">copy</span>];</span><br><span class="line"><span class="comment">//       copy-&gt;name = [name copyWithZone:zone];;</span></span><br><span class="line"><span class="comment">//       copy-&gt;imutableStr = [name copyWithZone:zone];//</span></span><br><span class="line">         <span class="keyword">copy</span>-&gt;age = age;</span><br><span class="line"> </span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">copy</span>;</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="keyword">id</span>)mutableCopyWithZone:(<span class="built_in">NSZone</span> *)zone</span><br><span class="line">&#123;</span><br><span class="line">         MyObj *<span class="keyword">copy</span> = <span class="built_in">NSCopyObject</span>(<span class="keyword">self</span>, <span class="number">0</span>, zone);</span><br><span class="line">         <span class="keyword">copy</span>-&gt;name = [<span class="keyword">self</span><span class="variable">.name</span> mutableCopy];</span><br><span class="line">         <span class="keyword">copy</span>-&gt;age = age;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">copy</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<li>自定义对象<br> 如果是我们定义的对象，那么我们自己要实现NSCopying,NSMutableCopying这样就能调用copy和mutablecopy了。举个例子： <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyObj</span> : <span class="title">NSObject</span>&lt;<span class="title">NSCopying</span>,<span class="title">NSMutableCopying</span>&gt;</span></span><br><span class="line">&#123;</span><br><span class="line">         <span class="built_in">NSMutableString</span> *name;</span><br><span class="line">         <span class="built_in">NSString</span> *imutableStr;</span><br><span class="line">         <span class="keyword">int</span> age;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">retain</span>) <span class="built_in">NSMutableString</span> *name;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">retain</span>) <span class="built_in">NSString</span> *imutableStr;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="keyword">int</span> age;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyObj</span></span></span><br><span class="line"><span class="keyword">@synthesize</span> name;</span><br><span class="line"><span class="keyword">@synthesize</span> age;</span><br><span class="line"><span class="keyword">@synthesize</span> imutableStr;</span><br><span class="line">- (<span class="keyword">id</span>)init</span><br><span class="line">&#123;</span><br><span class="line">         <span class="keyword">if</span> (<span class="keyword">self</span> = [<span class="keyword">super</span> init])</span><br><span class="line">         &#123;</span><br><span class="line">                   <span class="keyword">self</span>.name = [[<span class="built_in">NSMutableString</span> alloc]init];</span><br><span class="line">                   <span class="keyword">self</span>.imutableStr = [[<span class="built_in">NSString</span> alloc]init];</span><br><span class="line">                   age = <span class="number">-1</span>;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">- (<span class="keyword">void</span>)dealloc</span><br><span class="line">&#123;</span><br><span class="line">         [name release];</span><br><span class="line">         [imutableStr release];</span><br><span class="line">         [<span class="keyword">super</span> dealloc];</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="keyword">id</span>)copyWithZone:(<span class="built_in">NSZone</span> *)zone</span><br><span class="line">&#123;</span><br><span class="line">         MyObj *<span class="keyword">copy</span> = [[[<span class="keyword">self</span> <span class="keyword">class</span>] allocWithZone:zone] init];</span><br><span class="line">         <span class="keyword">copy</span>-&gt;name = [name <span class="keyword">copy</span>];</span><br><span class="line">         <span class="keyword">copy</span>-&gt;imutableStr = [imutableStr <span class="keyword">copy</span>];</span><br><span class="line"><span class="comment">//       copy-&gt;name = [name copyWithZone:zone];;</span></span><br><span class="line"><span class="comment">//       copy-&gt;imutableStr = [name copyWithZone:zone];//</span></span><br><span class="line">         <span class="keyword">copy</span>-&gt;age = age;</span><br><span class="line"> </span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">copy</span>;</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="keyword">id</span>)mutableCopyWithZone:(<span class="built_in">NSZone</span> *)zone</span><br><span class="line">&#123;</span><br><span class="line">         MyObj *<span class="keyword">copy</span> = <span class="built_in">NSCopyObject</span>(<span class="keyword">self</span>, <span class="number">0</span>, zone);</span><br><span class="line">         <span class="keyword">copy</span>-&gt;name = [<span class="keyword">self</span>.name mutableCopy];</span><br><span class="line">         <span class="keyword">copy</span>-&gt;age = age;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">copy</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <hr>
@@ -381,25 +431,22 @@
 <p>id __ strong obj1 = [[NSObject alloc] init];<br>是等价的<br>在强引用中，有时会出现循环引用的情况，这时就需要弱引用来帮忙（ __ weak）。</p>
 <p>强引用持有对象，弱引用不持有对象。</p>
 <p>强引用可以释放对象，但弱引用不可以，因为弱引用不持有对象，当弱引用指向一个强引用所持有的对象时，当强引用将对象释放掉后，弱引用会自动的被赋值为nil，即弱引用会自动的指向nil。</p>
-<p>下面用代码来说明：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  main.m</span></span><br><span class="line"><span class="comment">//  ARC中的强引用和弱引用</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by on 15/3/31.</span></span><br><span class="line"><span class="comment">//  Copyright (c) 2015年 apple. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"> </span><br><span class="line"><span class="preprocessor">#import <span class="title">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[]) &#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        <span class="keyword">id</span> __<span class="keyword">weak</span> obj0 = <span class="literal">nil</span>;</span><br><span class="line">        <span class="keyword">if</span> (<span class="literal">YES</span>) &#123;</span><br><span class="line">            <span class="keyword">id</span> obj1 = [[<span class="built_in">NSObject</span> alloc] init];</span><br><span class="line">            obj0 = obj1;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"obj0: %@"</span>, obj0);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"obj0: %@"</span>, obj0);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/*</span><br><span class="line"> *  输出结果</span><br><span class="line"> *  obj0: &lt;NSObject: 0x1003066c0&gt;</span><br><span class="line"> *  obj0: (null)</span><br><span class="line"> *</span><br><span class="line"> *  因为obj1生成的默认的为强引用(__strong)，在超出if的作用域之后，obj1所持有的对象被释放，</span><br><span class="line"> *  obj0为弱引用，所以obj0不持有对象，在obj1对象释放后，obj0自动的被赋值为nil</span><br><span class="line"> *  弱引用的特性是，不持有对象，即便是写成id __weak obj1 = [[NSObject alloc] init];</span><br><span class="line"> *  此代码系统会给与警告，因为这里obj1被声明成弱引用，那么在赋值之后，alloc出来的对象会被立即释放。</span><br><span class="line"> */</span></span><br></pre></td></tr></table></figure></p>
+<p>下面用代码来说明：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  main.m</span></span><br><span class="line"><span class="comment">//  ARC中的强引用和弱引用</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by on 15/3/31.</span></span><br><span class="line"><span class="comment">//  Copyright (c) 2015年 apple. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"> </span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[]) &#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        <span class="keyword">id</span> __<span class="keyword">weak</span> obj0 = <span class="literal">nil</span>;</span><br><span class="line">        <span class="keyword">if</span> (<span class="literal">YES</span>) &#123;</span><br><span class="line">            <span class="keyword">id</span> obj1 = [[<span class="built_in">NSObject</span> alloc] init];</span><br><span class="line">            obj0 = obj1;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"obj0: %@"</span>, obj0);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"obj0: %@"</span>, obj0);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *  输出结果</span></span><br><span class="line"><span class="comment"> *  obj0: &lt;NSObject: 0x1003066c0&gt;</span></span><br><span class="line"><span class="comment"> *  obj0: (null)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  因为obj1生成的默认的为强引用(__strong)，在超出if的作用域之后，obj1所持有的对象被释放，</span></span><br><span class="line"><span class="comment"> *  obj0为弱引用，所以obj0不持有对象，在obj1对象释放后，obj0自动的被赋值为nil</span></span><br><span class="line"><span class="comment"> *  弱引用的特性是，不持有对象，即便是写成id __weak obj1 = [[NSObject alloc] init];</span></span><br><span class="line"><span class="comment"> *  此代码系统会给与警告，因为这里obj1被声明成弱引用，那么在赋值之后，alloc出来的对象会被立即释放。</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure></p>
 
       
     </div>
 
-    <div>
-      
-        
+    
 
-      
-    </div>
+    
+    
+    
 
-    <div>
-      
-        
+    
 
-      
-    </div>
+    
 
+    
 
     <footer class="post-footer">
       
@@ -411,7 +458,7 @@
       
 
       
-        
+      
       
 
       
@@ -439,24 +486,21 @@
       
       
     </footer>
+  </div>
+  
+  
+  
   </article>
 
 
-
-    <div class="post-spread">
-      
-    </div>
   </div>
 
-          
+
           </div>
           
 
+  
 
-          
-  <div class="comments" id="comments">
-    
-  </div>
 
 
         </div>
@@ -472,101 +516,117 @@
   </div>
 
   <aside id="sidebar" class="sidebar">
+    
     <div class="sidebar-inner">
 
       
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             文章目录
           </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
             站点概览
           </li>
         </ul>
       
 
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="https://avatars2.githubusercontent.com/u/12163867?v=3&s=40"
-               alt="王梦涛" />
-          <p class="site-author-name" itemprop="name">王梦涛</p>
-           
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
               <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
           
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
         </div>
-        <nav class="site-state motion-element">
-
-          
-            <div class="site-state-item site-state-posts">
-              <a href="/archives">
-                <span class="site-state-item-count">3</span>
-                <span class="site-state-item-name">日志</span>
-              </a>
-            </div>
-          
-
-          
-            
-            
-            <div class="site-state-item site-state-categories">
-              <a href="/categories/index.html">
-                <span class="site-state-item-count">3</span>
-                <span class="site-state-item-name">分类</span>
-              </a>
-            </div>
-          
-
-          
-            
-            
-            <div class="site-state-item site-state-tags">
-              <a href="/tags/index.html">
-                <span class="site-state-item-count">4</span>
-                <span class="site-state-item-name">标签</span>
-              </a>
-            </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
-            
-              <span class="links-of-author-item">
-                <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub">
-                  
-                    <i class="fa fa-fw fa-github"></i>
-                  
-                  GitHub
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                  Weibo
-                </a>
-              </span>
-            
-          
-        </div>
-
-        
-        
-
-        
-        
-
-        
-
-
       </section>
 
       
@@ -599,30 +659,59 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
-  
-  &copy;  2016 - 
-  <span itemprop="copyrightYear">2017</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
 </div>
 
 
-<div class="powered-by">
-  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
-</div>
 
-<div class="theme-info">
-  主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT.Pisces
-  </a>
-</div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
 
         
       </div>
@@ -634,6 +723,11 @@
         
       </div>
     
+
+    
+	
+    
+
     
   </div>
 
@@ -653,86 +747,68 @@
 
 
 
-  
 
 
 
 
-  
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
-
-
-
-  
-
-
-
-  
 
 
 
 
-	
+
+
+
+
 
 
 
 
 
   
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
 
 
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
 
 
 
   
 
 
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
 
 
 
@@ -741,7 +817,21 @@
 
 
   
+
+
+
+
+
+
+
+
+
+
   
+
+
+
+
 
   
 
@@ -751,6 +841,16 @@
 
   
 
+  
+  
+
+  
+
+  
+
+  
+
+  
 
   
 

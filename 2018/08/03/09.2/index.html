@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="9.2 确保输入过滤过滤用户数据是Web应用安全的基础。它是验证数据合法性的过程。通过对所有的输入数据进行过滤，可以避免恶意数据在程序中被误信或误用。大多数Web应用的漏洞都是因为没有对用户输入的数据进行恰当过滤所引起的。我们介绍的过滤数据分成三个步骤：  1、识别数据，搞清楚需要过滤的数据来自于哪里 2、过滤数据，弄明白我们需要什么样的数据 3、区分已过滤及被污染数据，如果存在攻击数据那么保证过">
+<meta property="og:type" content="article">
+<meta property="og:title" content="确保输入过滤">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/09.2/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="9.2 确保输入过滤过滤用户数据是Web应用安全的基础。它是验证数据合法性的过程。通过对所有的输入数据进行过滤，可以避免恶意数据在程序中被误信或误用。大多数Web应用的漏洞都是因为没有对用户输入的数据进行恰当过滤所引起的。我们介绍的过滤数据分成三个步骤：  1、识别数据，搞清楚需要过滤的数据来自于哪里 2、过滤数据，弄明白我们需要什么样的数据 3、区分已过滤及被污染数据，如果存在攻击数据那么保证过">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.667Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="确保输入过滤">
+<meta name="twitter:description" content="9.2 确保输入过滤过滤用户数据是Web应用安全的基础。它是验证数据合法性的过程。通过对所有的输入数据进行过滤，可以避免恶意数据在程序中被误信或误用。大多数Web应用的漏洞都是因为没有对用户输入的数据进行恰当过滤所引起的。我们介绍的过滤数据分成三个步骤：  1、识别数据，搞清楚需要过滤的数据来自于哪里 2、过滤数据，弄明白我们需要什么样的数据 3、区分已过滤及被污染数据，如果存在攻击数据那么保证过">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/09.2/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>确保输入过滤 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/09.2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">确保输入过滤
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="9-2-确保输入过滤"><a href="#9-2-确保输入过滤" class="headerlink" title="9.2 确保输入过滤"></a>9.2 确保输入过滤</h1><p>过滤用户数据是Web应用安全的基础。它是验证数据合法性的过程。通过对所有的输入数据进行过滤，可以避免恶意数据在程序中被误信或误用。大多数Web应用的漏洞都是因为没有对用户输入的数据进行恰当过滤所引起的。<br>我们介绍的过滤数据分成三个步骤：</p>
+<ul>
+<li>1、识别数据，搞清楚需要过滤的数据来自于哪里</li>
+<li>2、过滤数据，弄明白我们需要什么样的数据</li>
+<li>3、区分已过滤及被污染数据，如果存在攻击数据那么保证过滤之后可以让我们使用更安全的数据<a id="more"></a>
+<h2 id="识别数据"><a href="#识别数据" class="headerlink" title="识别数据"></a>识别数据</h2>“识别数据”作为第一步是因为在你不知道“数据是什么，它来自于哪里”的前提下，你也就不能正确地过滤它。这里的数据是指所有源自非代码内部提供的数据。例如:所有来自客户端的数据，但客户端并不是唯一的外部数据源，数据库和第三方提供的接口数据等也可以是外部数据源。<br>由用户输入的数据我们通过Go非常容易识别，Go通过<code>r.ParseForm</code>之后，把用户POST和GET的数据全部放在了<code>r.Form</code>里面。其它的输入要难识别得多，例如，<code>r.Header</code>中的很多元素是由客户端所操纵的。常常很难确认其中的哪些元素组成了输入，所以，最好的方法是把里面所有的数据都看成是用户输入。(例如<code>r.Header.Get(&quot;Accept-Charset&quot;)</code>这样的也看做是用户输入,虽然这些大多数是浏览器操纵的)<h2 id="过滤数据"><a href="#过滤数据" class="headerlink" title="过滤数据"></a>过滤数据</h2>在知道数据来源之后，就可以过滤它了。过滤是一个有点正式的术语，它在平时表述中有很多同义词，如验证、清洁及净化。尽管这些术语表面意义不同，但它们都是指的同一个处理：防止非法数据进入你的应用。<br>过滤数据有很多种方法，其中有一些安全性较差。最好的方法是把过滤看成是一个检查的过程，在你使用数据之前都检查一下看它们是否是符合合法数据的要求。而且不要试图好心地去纠正非法数据，而要让用户按你制定的规则去输入数据。历史证明了试图纠正非法数据往往会导致安全漏洞。这里举个例子：“最近建设银行系统升级之后，如果密码后面两位是0，只要输入前面四位就能登录系统”，这是一个非常严重的漏洞。<br>过滤数据主要采用如下一些库来操作：</li>
+<li>strconv包下面的字符串转化相关函数，因为从Request中的<code>r.Form</code>返回的是字符串，而有些时候我们需要将之转化成整/浮点数，<code>Atoi</code>、<code>ParseBool</code>、<code>ParseFloat</code>、<code>ParseInt</code>等函数就可以派上用场了。</li>
+<li>string包下面的一些过滤函数<code>Trim</code>、<code>ToLower</code>、<code>ToTitle</code>等函数，能够帮助我们按照指定的格式获取信息。</li>
+<li>regexp包用来处理一些复杂的需求，例如判定输入是否是Email、生日之类。<br>过滤数据除了检查验证之外，在特殊时候，还可以采用白名单。即假定你正在检查的数据都是非法的，除非能证明它是合法的。使用这个方法，如果出现错误，只会导致把合法的数据当成是非法的，而不会是相反，尽管我们不想犯任何错误，但这样总比把非法数据当成合法数据要安全得多。<h2 id="区分过滤数据"><a href="#区分过滤数据" class="headerlink" title="区分过滤数据"></a>区分过滤数据</h2>如果完成了上面的两步，数据过滤的工作就基本完成了，但是在编写Web应用的时候我们还需要区分已过滤和被污染数据，因为这样可以保证过滤数据的完整性，而不影响输入的数据。我们约定把所有经过过滤的数据放入一个叫全局的Map变量中(CleanMap)。这时需要用两个重要的步骤来防止被污染数据的注入：</li>
+<li>每个请求都要初始化CleanMap为一个空Map。</li>
+<li>加入检查及阻止来自外部数据源的变量命名为CleanMap。<br>接下来，让我们通过一个例子来巩固这些概念，请看下面这个表单<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"/whoami"</span> <span class="attr">method</span>=<span class="string">"POST"</span>&gt;</span></span><br><span class="line">	我是谁:</span><br><span class="line">	<span class="tag">&lt;<span class="name">select</span> <span class="attr">name</span>=<span class="string">"name"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"astaxie"</span>&gt;</span>astaxie<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"herry"</span>&gt;</span>herry<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"marry"</span>&gt;</span>marry<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>在处理这个表单的编程逻辑中，非常容易犯的错误是认为只能提交三个选择中的一个。其实攻击者可以模拟POST操作，递交<code>name=attack</code>这样的数据，所以在此时我们需要做类似白名单的处理<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">r.ParseForm()</span><br><span class="line">name := r.Form.Get(<span class="string">"name"</span>)</span><br><span class="line">CleanMap := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;, <span class="number">0</span>)</span><br><span class="line"><span class="keyword">if</span> name == <span class="string">"astaxie"</span> || name == <span class="string">"herry"</span> || name == <span class="string">"marry"</span> &#123;</span><br><span class="line">	CleanMap[<span class="string">"name"</span>] = name</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面代码中我们初始化了一个CleanMap的变量，当判断获取的name是<code>astaxie</code>、<code>herry</code>、<code>marry</code>三个中的一个之后<br>，我们把数据存储到了CleanMap之中，这样就可以确保CleanMap[“name”]中的数据是合法的，从而在代码的其它部分使用它。当然我们还可以在else部分增加非法数据的处理，一种可能是再次显示表单并提示错误。但是不要试图为了友好而输出被污染的数据。<br>上面的方法对于过滤一组已知的合法值的数据很有效，但是对于过滤有一组已知合法字符组成的数据时就没有什么帮助。例如，你可能需要一个用户名只能由字母及数字组成：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">r.ParseForm()</span><br><span class="line">username := r.Form.Get(<span class="string">"username"</span>)</span><br><span class="line">CleanMap := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;, <span class="number">0</span>)</span><br><span class="line"><span class="keyword">if</span> ok, _ := regexp.MatchString(<span class="string">"^[a-zA-Z0-9]+$"</span>, username); ok &#123;</span><br><span class="line">	CleanMap[<span class="string">"username"</span>] = username</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>数据过滤在Web安全中起到一个基石的作用，大多数的安全问题都是由于没有过滤数据和验证数据引起的，例如前面小节的CSRF攻击，以及接下来将要介绍的XSS攻击、SQL注入等都是没有认真地过滤数据引起的，因此我们需要特别重视这部分的内容。</p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/09.1/" title="预防CSRF攻击">预防CSRF攻击</a></li>
+<li>下一节: <a href="/2018/08/03/09.3/" title="避免XSS攻击">避免XSS攻击</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/09.3/" rel="next" title="避免XSS攻击">
+                <i class="fa fa-chevron-left"></i> 避免XSS攻击
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/09.1/" rel="prev" title="预防CSRF攻击">
+                预防CSRF攻击 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#9-2-确保输入过滤"><span class="nav-number">1.</span> <span class="nav-text">9.2 确保输入过滤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#识别数据"><span class="nav-number">1.1.</span> <span class="nav-text">识别数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过滤数据"><span class="nav-number">1.2.</span> <span class="nav-text">过滤数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#区分过滤数据"><span class="nav-number">1.3.</span> <span class="nav-text">区分过滤数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.5.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

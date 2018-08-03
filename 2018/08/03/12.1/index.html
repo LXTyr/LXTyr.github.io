@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="12.1 应用日志我们期望开发的Web应用程序能够把整个程序运行过程中出现的各种事件一一记录下来，Go语言中提供了一个简易的log包，我们使用该包可以方便的实现日志记录的功能，这些日志都是基于fmt包的打印再结合panic之类的函数来进行一般的打印、抛出错误处理。Go目前标准包只是包含了简单的功能，如果我们想把我们的应用日志保存到文件，然后又能够结合日志实现很多复杂的功能（编写过Java或者C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="应用日志">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/12.1/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="12.1 应用日志我们期望开发的Web应用程序能够把整个程序运行过程中出现的各种事件一一记录下来，Go语言中提供了一个简易的log包，我们使用该包可以方便的实现日志记录的功能，这些日志都是基于fmt包的打印再结合panic之类的函数来进行一般的打印、抛出错误处理。Go目前标准包只是包含了简单的功能，如果我们想把我们的应用日志保存到文件，然后又能够结合日志实现很多复杂的功能（编写过Java或者C++">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.694Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="应用日志">
+<meta name="twitter:description" content="12.1 应用日志我们期望开发的Web应用程序能够把整个程序运行过程中出现的各种事件一一记录下来，Go语言中提供了一个简易的log包，我们使用该包可以方便的实现日志记录的功能，这些日志都是基于fmt包的打印再结合panic之类的函数来进行一般的打印、抛出错误处理。Go目前标准包只是包含了简单的功能，如果我们想把我们的应用日志保存到文件，然后又能够结合日志实现很多复杂的功能（编写过Java或者C++">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/12.1/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>应用日志 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/12.1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">应用日志
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="12-1-应用日志"><a href="#12-1-应用日志" class="headerlink" title="12.1 应用日志"></a>12.1 应用日志</h1><p>我们期望开发的Web应用程序能够把整个程序运行过程中出现的各种事件一一记录下来，Go语言中提供了一个简易的log包，我们使用该包可以方便的实现日志记录的功能，这些日志都是基于fmt包的打印再结合panic之类的函数来进行一般的打印、抛出错误处理。Go目前标准包只是包含了简单的功能，如果我们想把我们的应用日志保存到文件，然后又能够结合日志实现很多复杂的功能（编写过Java或者C++的读者应该都使用过log4j和log4cpp之类的日志工具），可以使用第三方开发的日志系统:<a href="https://github.com/sirupsen/logrus" target="_blank" rel="noopener">logrus</a>和<a href="https://github.com/cihub/seelog" target="_blank" rel="noopener">seelog</a>，它们实现了很强大的日志功能，可以结合自己项目选择。接下来我们介绍如何通过该日志系统来实现我们应用的日志功能。</p>
+<a id="more"></a>
+<h2 id="logrus介绍"><a href="#logrus介绍" class="headerlink" title="logrus介绍"></a>logrus介绍</h2><p>logrus是用Go语言实现的一个日志系统，与标准库log完全兼容并且核心API很稳定,是Go语言目前最活跃的日志库</p>
+<p>首先安装logrus<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">go</span> get -u github.com/sirupsen/logrus</span><br><span class="line"></span><br><span class="line"><span class="string">``</span><span class="string">`	</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">简单例子:</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>Go</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	log <span class="string">"github.com/Sirupsen/logrus"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">log.WithFields(log.Fields&#123;</span><br><span class="line">	<span class="string">"animal"</span>: <span class="string">"walrus"</span>,</span><br><span class="line">&#125;).Info(<span class="string">"A walrus appears"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="基于logrus的自定义日志处理"><a href="#基于logrus的自定义日志处理" class="headerlink" title="基于logrus的自定义日志处理"></a>基于logrus的自定义日志处理</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line"></span><br><span class="line">	log <span class="string">"github.com/Sirupsen/logrus"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 日志格式化为JSON而不是默认的ASCII</span></span><br><span class="line">	log.SetFormatter(&amp;log.JSONFormatter&#123;&#125;)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 输出stdout而不是默认的stderr，也可以是一个文件</span></span><br><span class="line">	log.SetOutput(os.Stdout)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 只记录严重或以上警告</span></span><br><span class="line">	log.SetLevel(log.WarnLevel)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	log.WithFields(log.Fields&#123;</span><br><span class="line">		<span class="string">"animal"</span>: <span class="string">"walrus"</span>,</span><br><span class="line">		<span class="string">"size"</span>:   <span class="number">10</span>,</span><br><span class="line">	&#125;).Info(<span class="string">"A group of walrus emerges from the ocean"</span>)</span><br><span class="line"></span><br><span class="line">	log.WithFields(log.Fields&#123;</span><br><span class="line">		<span class="string">"omg"</span>:    <span class="literal">true</span>,</span><br><span class="line">		<span class="string">"number"</span>: <span class="number">122</span>,</span><br><span class="line">	&#125;).Warn(<span class="string">"The group's number increased tremendously!"</span>)</span><br><span class="line"></span><br><span class="line">	log.WithFields(log.Fields&#123;</span><br><span class="line">		<span class="string">"omg"</span>:    <span class="literal">true</span>,</span><br><span class="line">		<span class="string">"number"</span>: <span class="number">100</span>,</span><br><span class="line">	&#125;).Fatal(<span class="string">"The ice breaks!"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 通过日志语句重用字段</span></span><br><span class="line">	<span class="comment">// logrus.Entry返回自WithFields()</span></span><br><span class="line">	contextLogger := log.WithFields(log.Fields&#123;</span><br><span class="line">		<span class="string">"common"</span>: <span class="string">"this is a common field"</span>,</span><br><span class="line">		<span class="string">"other"</span>:  <span class="string">"I also should be logged always"</span>,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	contextLogger.Info(<span class="string">"I'll be logged with common and other field"</span>)</span><br><span class="line">	contextLogger.Info(<span class="string">"Me too"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="seelog介绍"><a href="#seelog介绍" class="headerlink" title="seelog介绍"></a>seelog介绍</h2><p>seelog是用Go语言实现的一个日志系统，它提供了一些简单的函数来实现复杂的日志分配、过滤和格式化。主要有如下特性：</p>
+<ul>
+<li>XML的动态配置，可以不用重新编译程序而动态的加载配置信息</li>
+<li>支持热更新，能够动态改变配置而不需要重启应用</li>
+<li>支持多输出流，能够同时把日志输出到多种流中、例如文件流、网络流等</li>
+<li><p>支持不同的日志输出</p>
+<ul>
+<li>命令行输出</li>
+<li>文件输出</li>
+<li>缓存输出</li>
+<li>支持log rotate</li>
+<li>SMTP邮件</li>
+</ul>
+</li>
+</ul>
+<p>上面只列举了部分特性，seelog是一个特别强大的日志处理系统，详细的内容请参看官方wiki。接下来我将简要介绍一下如何在项目中使用它：</p>
+<p>首先安装seelog<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">go</span> get -u github.com/cihub/seelog</span><br><span class="line"></span><br><span class="line"><span class="string">``</span><span class="string">`	</span></span><br><span class="line"><span class="string">然后我们来看一个简单的例子：</span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>Go</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> log <span class="string">"github.com/cihub/seelog"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> log.Flush()</span><br><span class="line">    log.Info(<span class="string">"Hello from Seelog!"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>编译后运行如果出现了<code>Hello from seelog</code>，说明seelog日志系统已经成功安装并且可以正常运行了。</p>
+<h3 id="基于seelog的自定义日志处理"><a href="#基于seelog的自定义日志处理" class="headerlink" title="基于seelog的自定义日志处理"></a>基于seelog的自定义日志处理</h3><p>seelog支持自定义日志处理，下面是我基于它自定义的日志处理包的部分内容：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> logs</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="comment">// "errors"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="comment">// "io"</span></span><br><span class="line"></span><br><span class="line">	seelog <span class="string">"github.com/cihub/seelog"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Logger seelog.LoggerInterface</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">loadAppConfig</span><span class="params">()</span></span> &#123;</span><br><span class="line">	appConfig := <span class="string">`</span></span><br><span class="line"><span class="string">&lt;seelog minlevel="warn"&gt;</span></span><br><span class="line"><span class="string">    &lt;outputs formatid="common"&gt;</span></span><br><span class="line"><span class="string">        &lt;rollingfile type="size" filename="/data/logs/roll.log" maxsize="100000" maxrolls="5"/&gt;</span></span><br><span class="line"><span class="string">		&lt;filter levels="critical"&gt;</span></span><br><span class="line"><span class="string">            &lt;file path="/data/logs/critical.log" formatid="critical"/&gt;</span></span><br><span class="line"><span class="string">            &lt;smtp formatid="criticalemail" senderaddress="astaxie@gmail.com" sendername="ShortUrl API" hostname="smtp.gmail.com" hostport="587" username="mailusername" password="mailpassword"&gt;</span></span><br><span class="line"><span class="string">                &lt;recipient address="xiemengjun@gmail.com"/&gt;</span></span><br><span class="line"><span class="string">            &lt;/smtp&gt;</span></span><br><span class="line"><span class="string">        &lt;/filter&gt;</span></span><br><span class="line"><span class="string">    &lt;/outputs&gt;</span></span><br><span class="line"><span class="string">    &lt;formats&gt;</span></span><br><span class="line"><span class="string">        &lt;format id="common" format="%Date/%Time [%LEV] %Msg%n" /&gt;</span></span><br><span class="line"><span class="string">	    &lt;format id="critical" format="%File %FullPath %Func %Msg%n" /&gt;</span></span><br><span class="line"><span class="string">	    &lt;format id="criticalemail" format="Critical error on our server!\n    %Time %Date %RelFile %Func %Msg \nSent by Seelog"/&gt;</span></span><br><span class="line"><span class="string">    &lt;/formats&gt;</span></span><br><span class="line"><span class="string">&lt;/seelog&gt;</span></span><br><span class="line"><span class="string">`</span></span><br><span class="line">	logger, err := seelog.LoggerFromConfigAsBytes([]<span class="keyword">byte</span>(appConfig))</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	UseLogger(logger)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	DisableLog()</span><br><span class="line">	loadAppConfig()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DisableLog disables all library log output</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DisableLog</span><span class="params">()</span></span> &#123;</span><br><span class="line">	Logger = seelog.Disabled</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// UseLogger uses a specified seelog.LoggerInterface to output library log.</span></span><br><span class="line"><span class="comment">// Use this func if you are using Seelog logging system in your app.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">UseLogger</span><span class="params">(newLogger seelog.LoggerInterface)</span></span> &#123;</span><br><span class="line">	Logger = newLogger</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面主要实现了三个函数，</p>
+<ul>
+<li><p><code>DisableLog</code></p>
+<p>  初始化全局变量Logger为seelog的禁用状态，主要为了防止Logger被多次初始化</p>
+</li>
+<li><p><code>loadAppConfig</code></p>
+<p>  根据配置文件初始化seelog的配置信息，这里我们把配置文件通过字符串读取设置好了，当然也可以通过读取XML文件。里面的配置说明如下：</p>
+<ul>
+<li><p>seelog </p>
+<p>  minlevel参数可选，如果被配置,高于或等于此级别的日志会被记录，同理maxlevel。</p>
+</li>
+<li><p>outputs</p>
+<p>  输出信息的目的地，这里分成了两份数据，一份记录到log rotate文件里面。另一份设置了filter，如果这个错误级别是critical，那么将发送报警邮件。</p>
+</li>
+<li><p>formats</p>
+<p>  定义了各种日志的格式</p>
+</li>
+</ul>
+</li>
+<li><p><code>UseLogger</code></p>
+<p>  设置当前的日志器为相应的日志处理</p>
+</li>
+</ul>
+<p>上面我们定义了一个自定义的日志处理包，下面就是使用示例：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">	<span class="string">"project/logs"</span></span><br><span class="line">	<span class="string">"project/configs"</span></span><br><span class="line">	<span class="string">"project/routes"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	addr, _ := configs.MainConfig.String(<span class="string">"server"</span>, <span class="string">"addr"</span>)</span><br><span class="line">	logs.Logger.Info(<span class="string">"Start server at:%v"</span>, addr)</span><br><span class="line">	err := http.ListenAndServe(addr, routes.NewMux())</span><br><span class="line">	logs.Logger.Critical(<span class="string">"Server err:%v"</span>, err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="发生错误发送邮件"><a href="#发生错误发送邮件" class="headerlink" title="发生错误发送邮件"></a>发生错误发送邮件</h2><p>上面的例子解释了如何设置发送邮件，我们通过如下的smtp配置用来发送邮件：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">smtp</span> <span class="attr">formatid</span>=<span class="string">"criticalemail"</span> <span class="attr">senderaddress</span>=<span class="string">"astaxie@gmail.com"</span> <span class="attr">sendername</span>=<span class="string">"ShortUrl API"</span> <span class="attr">hostname</span>=<span class="string">"smtp.gmail.com"</span> <span class="attr">hostport</span>=<span class="string">"587"</span> <span class="attr">username</span>=<span class="string">"mailusername"</span> <span class="attr">password</span>=<span class="string">"mailpassword"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">recipient</span> <span class="attr">address</span>=<span class="string">"xiemengjun@gmail.com"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">smtp</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>邮件的格式通过criticalemail配置，然后通过其他的配置发送邮件服务器的配置，通过recipient配置接收邮件的用户，如果有多个用户可以再添加一行。</p>
+<p>要测试这个代码是否正常工作，可以在代码中增加类似下面的一个假消息。不过记住过后要把它删除，否则上线之后就会收到很多垃圾邮件。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">logs.Logger.Critical(<span class="string">"test Critical message"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>现在，只要我们的应用在线上记录一个Critical的信息，你的邮箱就会收到一个Email，这样一旦线上的系统出现问题，你就能立马通过邮件获知，就能及时的进行处理。            </p>
+<h2 id="使用应用日志"><a href="#使用应用日志" class="headerlink" title="使用应用日志"></a>使用应用日志</h2><p>对于应用日志，每个人的应用场景可能会各不相同，有些人利用应用日志来做数据分析，有些人利用应用日志来做性能分析，有些人来做用户行为分析，还有些就是纯粹的记录，以方便应用出现问题的时候辅助查找问题。</p>
+<p>举一个例子，我们需要跟踪用户尝试登陆系统的操作。这里会把成功与不成功的尝试都记录下来。记录成功的使用”Info”日志级别，而不成功的使用”warn”级别。如果想查找所有不成功的登陆，我们可以利用linux的grep之类的命令工具，如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># cat /data/logs/roll.log | grep <span class="string">"failed login"</span></span><br><span class="line"><span class="number">2012</span><span class="number">-12</span><span class="number">-11</span> <span class="number">11</span>:<span class="number">12</span>:<span class="number">00</span> WARN : failed login attempt from <span class="number">11.22</span><span class="number">.33</span><span class="number">.44</span> username password</span><br></pre></td></tr></table></figure></p>
+<p>通过这种方式我们就可以很方便的查找相应的信息，这样有利于我们针对应用日志做一些统计和分析。另外我们还需要考虑日志的大小，对于一个高流量的Web应用来说，日志的增长是相当可怕的，所以我们在seelog的配置文件里面设置了logrotate，这样就能保证日志文件不会因为不断变大而导致我们的磁盘空间不够引起问题。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>通过上面对seelog系统及如何基于它进行自定义日志系统的学习，现在我们可以很轻松的随需构建一个合适的功能强大的日志处理系统了。日志处理系统为数据分析提供了可靠的数据源，比如通过对日志的分析，我们可以进一步优化系统，或者应用出现问题时方便查找定位问题，另外seelog也提供了日志分级功能，通过对minlevel的配置，我们可以很方便的设置测试或发布版本的输出消息级别。</p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一章: <a href="/2018/08/03/12.0/" title="部署与维护">部署与维护</a></li>
+<li>下一节: <a href="/2018/08/03/12.2/" title="网站错误处理">网站错误处理</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/12.2/" rel="next" title="网站错误处理">
+                <i class="fa fa-chevron-left"></i> 网站错误处理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/12.0/" rel="prev" title="部署与维护">
+                部署与维护 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#12-1-应用日志"><span class="nav-number">1.</span> <span class="nav-text">12.1 应用日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#logrus介绍"><span class="nav-number">1.1.</span> <span class="nav-text">logrus介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基于logrus的自定义日志处理"><span class="nav-number">1.1.1.</span> <span class="nav-text">基于logrus的自定义日志处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#seelog介绍"><span class="nav-number">1.2.</span> <span class="nav-text">seelog介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基于seelog的自定义日志处理"><span class="nav-number">1.2.1.</span> <span class="nav-text">基于seelog的自定义日志处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发生错误发送邮件"><span class="nav-number">1.3.</span> <span class="nav-text">发生错误发送邮件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用应用日志"><span class="nav-number">1.4.</span> <span class="nav-text">使用应用日志</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">1.5.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.6.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

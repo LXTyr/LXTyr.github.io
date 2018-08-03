@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="2.7 并发有人把Go比作21世纪的C语言，第一是因为Go语言设计简单，第二，21世纪最重要的就是并行程序设计，而Go从语言层面就支持了并行。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/02.7/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="2.7 并发有人把Go比作21世纪的C语言，第一是因为Go语言设计简单，第二，21世纪最重要的就是并行程序设计，而Go从语言层面就支持了并行。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.590Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="并发">
+<meta name="twitter:description" content="2.7 并发有人把Go比作21世纪的C语言，第一是因为Go语言设计简单，第二，21世纪最重要的就是并行程序设计，而Go从语言层面就支持了并行。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/02.7/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>并发 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/02.7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">并发
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="2-7-并发"><a href="#2-7-并发" class="headerlink" title="2.7 并发"></a>2.7 并发</h1><p>有人把Go比作21世纪的C语言，第一是因为Go语言设计简单，第二，21世纪最重要的就是并行程序设计，而Go从语言层面就支持了并行。<br><a id="more"></a></p>
+<h2 id="goroutine"><a href="#goroutine" class="headerlink" title="goroutine"></a>goroutine</h2><p>goroutine是Go并行设计的核心。goroutine说到底其实就是协程，但是它比线程更小，十几个goroutine可能体现在底层就是五六个线程，Go语言内部帮你实现了这些goroutine之间的内存共享。执行goroutine只需极少的栈内存(大概是4~5KB)，当然会根据相应的数据伸缩。也正因为如此，可同时运行成千上万个并发任务。goroutine比thread更易用、更高效、更轻便。</p>
+<p>goroutine是通过Go的runtime管理的一个线程管理器。goroutine通过<code>go</code>关键字实现了，其实就是一个普通的函数。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">go</span> hello(a, b, c)</span><br></pre></td></tr></table></figure></p>
+<p>通过关键字go就启动了一个goroutine。我们来看一个例子<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"runtime"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">say</span><span class="params">(s <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">		runtime.Gosched()</span><br><span class="line">		fmt.Println(s)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> say(<span class="string">"world"</span>) <span class="comment">//开一个新的Goroutines执行</span></span><br><span class="line">	say(<span class="string">"hello"</span>) <span class="comment">//当前Goroutines执行</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 以上程序执行后将输出：</span></span><br><span class="line"><span class="comment">// hello</span></span><br><span class="line"><span class="comment">// world</span></span><br><span class="line"><span class="comment">// hello</span></span><br><span class="line"><span class="comment">// world</span></span><br><span class="line"><span class="comment">// hello</span></span><br><span class="line"><span class="comment">// world</span></span><br><span class="line"><span class="comment">// hello</span></span><br><span class="line"><span class="comment">// world</span></span><br><span class="line"><span class="comment">// hello</span></span><br></pre></td></tr></table></figure></p>
+<p>我们可以看到go关键字很方便的就实现了并发编程。<br>上面的多个goroutine运行在同一个进程里面，共享内存数据，不过设计上我们要遵循：不要通过共享来通信，而要通过通信来共享。</p>
+<blockquote>
+<p>runtime.Gosched()表示让CPU把时间片让给别人,下次某个时候继续恢复执行该goroutine。</p>
+</blockquote>
+<blockquote>
+<p>默认情况下，在Go 1.5将标识并发系统线程个数的runtime.GOMAXPROCS的初始值由1改为了运行环境的CPU核数。</p>
+</blockquote>
+<p>但在Go 1.5以前调度器仅使用单线程，也就是说只实现了并发。想要发挥多核处理器的并行，需要在我们的程序中显式调用 runtime.GOMAXPROCS(n) 告诉调度器同时使用多个线程。GOMAXPROCS 设置了同时运行逻辑代码的系统线程的最大数量，并返回之前的设置。如果n &lt; 1，不会改变当前设置。</p>
+<h2 id="channels"><a href="#channels" class="headerlink" title="channels"></a>channels</h2><p>goroutine运行在相同的地址空间，因此访问共享内存必须做好同步。那么goroutine之间如何进行数据的通信呢，Go提供了一个很好的通信机制channel。channel可以与Unix shell 中的双向管道做类比：可以通过它发送或者接收值。这些值只能是特定的类型：channel类型。定义一个channel时，也需要定义发送到channel的值的类型。注意，必须使用make 创建channel：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">ci := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">cs := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>)</span><br><span class="line">cf := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">interface</span>&#123;&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>channel通过操作符<code>&lt;-</code>来接收和发送数据<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">ch &lt;- v    <span class="comment">// 发送v到channel ch.</span></span><br><span class="line">v := &lt;-ch  <span class="comment">// 从ch中接收数据，并赋值给v</span></span><br></pre></td></tr></table></figure></p>
+<p>我们把这些应用到我们的例子中来：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sum</span><span class="params">(a []<span class="keyword">int</span>, c <span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	total := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> a &#123;</span><br><span class="line">		total += v</span><br><span class="line">	&#125;</span><br><span class="line">	c &lt;- total  <span class="comment">// send total to c</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	a := []<span class="keyword">int</span>&#123;<span class="number">7</span>, <span class="number">2</span>, <span class="number">8</span>, <span class="number">-9</span>, <span class="number">4</span>, <span class="number">0</span>&#125;</span><br><span class="line"></span><br><span class="line">	c := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">go</span> sum(a[:<span class="built_in">len</span>(a)/<span class="number">2</span>], c)</span><br><span class="line">	<span class="keyword">go</span> sum(a[<span class="built_in">len</span>(a)/<span class="number">2</span>:], c)</span><br><span class="line">	x, y := &lt;-c, &lt;-c  <span class="comment">// receive from c</span></span><br><span class="line"></span><br><span class="line">	fmt.Println(x, y, x + y)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>默认情况下，channel接收和发送数据都是阻塞的，除非另一端已经准备好，这样就使得Goroutines同步变的更加的简单，而不需要显式的lock。所谓阻塞，也就是如果读取（value := &lt;-ch）它将会被阻塞，直到有数据接收。其次，任何发送（ch&lt;-5）将会被阻塞，直到数据被读出。无缓冲channel是在多个goroutine之间同步很棒的工具。</p>
+<h2 id="Buffered-Channels"><a href="#Buffered-Channels" class="headerlink" title="Buffered Channels"></a>Buffered Channels</h2><p>上面我们介绍了默认的非缓存类型的channel，不过Go也允许指定channel的缓冲大小，很简单，就是channel可以存储多少元素。ch:= make(chan bool, 4)，创建了可以存储4个元素的bool 型channel。在这个channel 中，前4个元素可以无阻塞的写入。当写入第5个元素时，代码将会阻塞，直到其他goroutine从channel 中读取一些元素，腾出空间。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">type</span>, value)</span><br></pre></td></tr></table></figure></p>
+<p>当 value = 0 时，channel 是无缓冲阻塞读写的，当value &gt; 0 时，channel 有缓冲、是非阻塞的，直到写满 value 个元素才阻塞写入。</p>
+<p>我们看一下下面这个例子，你可以在自己本机测试一下，修改相应的value值<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	c := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">2</span>)<span class="comment">//修改2为1就报错，修改2为3可以正常运行</span></span><br><span class="line">	c &lt;- <span class="number">1</span></span><br><span class="line">	c &lt;- <span class="number">2</span></span><br><span class="line">	fmt.Println(&lt;-c)</span><br><span class="line">	fmt.Println(&lt;-c)</span><br><span class="line">&#125;</span><br><span class="line">        <span class="comment">//修改为1报如下的错误:</span></span><br><span class="line">        <span class="comment">//fatal error: all goroutines are asleep - deadlock!</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="Range和Close"><a href="#Range和Close" class="headerlink" title="Range和Close"></a>Range和Close</h2><p>上面这个例子中，我们需要读取两次c，这样不是很方便，Go考虑到了这一点，所以也可以通过range，像操作slice或者map一样操作缓存类型的channel，请看下面的例子<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fibonacci</span><span class="params">(n <span class="keyword">int</span>, c <span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	x, y := <span class="number">1</span>, <span class="number">1</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; n; i++ &#123;</span><br><span class="line">		c &lt;- x</span><br><span class="line">		x, y = y, x + y</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">close</span>(c)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	c := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">10</span>)</span><br><span class="line">	<span class="keyword">go</span> fibonacci(<span class="built_in">cap</span>(c), c)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="keyword">range</span> c &#123;</span><br><span class="line">		fmt.Println(i)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>for i := range c</code>能够不断的读取channel里面的数据，直到该channel被显式的关闭。上面代码我们看到可以显式的关闭channel，生产者通过内置函数<code>close</code>关闭channel。关闭channel之后就无法再发送任何数据了，在消费方可以通过语法<code>v, ok := &lt;-ch</code>测试channel是否被关闭。如果ok返回false，那么说明channel已经没有任何数据并且已经被关闭。</p>
+<blockquote>
+<p>记住应该在生产者的地方关闭channel，而不是消费的地方去关闭它，这样容易引起panic</p>
+</blockquote>
+<blockquote>
+<p>另外记住一点的就是channel不像文件之类的，不需要经常去关闭，只有当你确实没有任何发送数据了，或者你想显式的结束range循环之类的</p>
+</blockquote>
+<h2 id="Select"><a href="#Select" class="headerlink" title="Select"></a>Select</h2><p>我们上面介绍的都是只有一个channel的情况，那么如果存在多个channel的时候，我们该如何操作呢，Go里面提供了一个关键字<code>select</code>，通过<code>select</code>可以监听channel上的数据流动。</p>
+<p><code>select</code>默认是阻塞的，只有当监听的channel中有发送或接收可以进行时才会运行，当多个channel都准备好的时候，select是随机的选择一个执行的。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fibonacci</span><span class="params">(c, quit <span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	x, y := <span class="number">1</span>, <span class="number">1</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> c &lt;- x:</span><br><span class="line">			x, y = y, x + y</span><br><span class="line">		<span class="keyword">case</span> &lt;-quit:</span><br><span class="line">			fmt.Println(<span class="string">"quit"</span>)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	c := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	quit := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">			fmt.Println(&lt;-c)</span><br><span class="line">		&#125;</span><br><span class="line">		quit &lt;- <span class="number">0</span></span><br><span class="line">	&#125;()</span><br><span class="line">	fibonacci(c, quit)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在<code>select</code>里面还有default语法，<code>select</code>其实就是类似switch的功能，default就是当监听的channel都没有准备好的时候，默认执行的（select不再阻塞等待channel）。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">select</span> &#123;</span><br><span class="line"><span class="keyword">case</span> i := &lt;-c:</span><br><span class="line">	<span class="comment">// use i</span></span><br><span class="line"><span class="keyword">default</span>:</span><br><span class="line">	<span class="comment">// 当c阻塞的时候执行这里</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="超时"><a href="#超时" class="headerlink" title="超时"></a>超时</h2><p>有时候会出现goroutine阻塞的情况，那么我们如何避免整个程序进入阻塞的情况呢？我们可以利用select来设置超时，通过如下的方式实现：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	c := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	o := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">bool</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">				<span class="keyword">case</span> v := &lt;- c:</span><br><span class="line">					<span class="built_in">println</span>(v)</span><br><span class="line">				<span class="keyword">case</span> &lt;- time.After(<span class="number">5</span> * time.Second):</span><br><span class="line">					<span class="built_in">println</span>(<span class="string">"timeout"</span>)</span><br><span class="line">					o &lt;- <span class="literal">true</span></span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	&lt;- o</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="runtime-goroutine"><a href="#runtime-goroutine" class="headerlink" title="runtime goroutine"></a>runtime goroutine</h2><p>runtime包中有几个处理goroutine的函数：</p>
+<ul>
+<li><p>Goexit</p>
+<p>  退出当前执行的goroutine，但是defer函数还会继续调用</p>
+</li>
+<li><p>Gosched</p>
+<p>  让出当前goroutine的执行权限，调度器安排其他等待的任务运行，并在下次某个时候从该位置恢复执行。</p>
+</li>
+<li><p>NumCPU</p>
+<p>  返回 CPU 核数量</p>
+</li>
+<li><p>NumGoroutine</p>
+<p>  返回正在执行和排队的任务总数</p>
+</li>
+<li><p>GOMAXPROCS</p>
+<p>  用来设置可以并行计算的CPU核数的最大值，并返回之前的值。</p>
+</li>
+</ul>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一章: <a href="/2018/08/03/02.6/" title="interface">interface</a></li>
+<li>下一节: <a href="/2018/08/03/02.8/" title="总结">总结</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/02.6/" rel="next" title="interface">
+                <i class="fa fa-chevron-left"></i> interface
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/02.5/" rel="prev" title="面向对象">
+                面向对象 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#2-7-并发"><span class="nav-number">1.</span> <span class="nav-text">2.7 并发</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#goroutine"><span class="nav-number">1.1.</span> <span class="nav-text">goroutine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#channels"><span class="nav-number">1.2.</span> <span class="nav-text">channels</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffered-Channels"><span class="nav-number">1.3.</span> <span class="nav-text">Buffered Channels</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Range和Close"><span class="nav-number">1.4.</span> <span class="nav-text">Range和Close</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Select"><span class="nav-number">1.5.</span> <span class="nav-text">Select</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#超时"><span class="nav-number">1.6.</span> <span class="nav-text">超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#runtime-goroutine"><span class="nav-number">1.7.</span> <span class="nav-text">runtime goroutine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.8.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

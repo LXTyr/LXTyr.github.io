@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="3.4 Go的http包详解前面小节介绍了Go怎么样实现了Web工作模式的一个流程，这一小节，我们将详细地解剖一下http包，看它到底是怎样实现整个过程的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go的http包详解">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/03.4/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="3.4 Go的http包详解前面小节介绍了Go怎么样实现了Web工作模式的一个流程，这一小节，我们将详细地解剖一下http包，看它到底是怎样实现整个过程的。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.610Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go的http包详解">
+<meta name="twitter:description" content="3.4 Go的http包详解前面小节介绍了Go怎么样实现了Web工作模式的一个流程，这一小节，我们将详细地解剖一下http包，看它到底是怎样实现整个过程的。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/03.4/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Go的http包详解 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/03.4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go的http包详解
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="3-4-Go的http包详解"><a href="#3-4-Go的http包详解" class="headerlink" title="3.4 Go的http包详解"></a>3.4 Go的http包详解</h1><p>前面小节介绍了Go怎么样实现了Web工作模式的一个流程，这一小节，我们将详细地解剖一下http包，看它到底是怎样实现整个过程的。</p>
+<a id="more"></a>
+<p>Go的http有两个核心功能：Conn、ServeMux</p>
+<h2 id="Conn的goroutine"><a href="#Conn的goroutine" class="headerlink" title="Conn的goroutine"></a>Conn的goroutine</h2><p>与我们一般编写的http服务器不同, Go为了实现高并发和高性能, 使用了goroutines来处理Conn的读写事件, 这样每个请求都能保持独立，相互不会阻塞，可以高效的响应网络事件。这是Go高效的保证。</p>
+<p>Go在等待客户端请求里面是这样写的：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">c, err := srv.newConn(rw)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">	<span class="keyword">continue</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">go</span> c.serve()</span><br></pre></td></tr></table></figure></p>
+<p>这里我们可以看到客户端的每次请求都会创建一个Conn，这个Conn里面保存了该次请求的信息，然后再传递到对应的handler，该handler中便可以读取到相应的header信息，这样保证了每个请求的独立性。</p>
+<h2 id="ServeMux的自定义"><a href="#ServeMux的自定义" class="headerlink" title="ServeMux的自定义"></a>ServeMux的自定义</h2><p>我们前面小节讲述conn.server的时候，其实内部是调用了http包默认的路由器，通过路由器把本次请求的信息传递到了后端的处理函数。那么这个路由器是怎么实现的呢？</p>
+<p>它的结构如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> ServeMux <span class="keyword">struct</span> &#123;</span><br><span class="line">	mu sync.RWMutex   <span class="comment">//锁，由于请求涉及到并发处理，因此这里需要一个锁机制</span></span><br><span class="line">	m  <span class="keyword">map</span>[<span class="keyword">string</span>]muxEntry  <span class="comment">// 路由规则，一个string对应一个mux实体，这里的string就是注册的路由表达式</span></span><br><span class="line">	hosts <span class="keyword">bool</span> <span class="comment">// 是否在任意的规则中带有host信息</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面看一下muxEntry<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> muxEntry <span class="keyword">struct</span> &#123;</span><br><span class="line">	explicit <span class="keyword">bool</span>   <span class="comment">// 是否精确匹配</span></span><br><span class="line">	h        Handler <span class="comment">// 这个路由表达式对应哪个handler</span></span><br><span class="line">	pattern  <span class="keyword">string</span>  <span class="comment">//匹配字符串</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接着看一下Handler的定义<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> Handler <span class="keyword">interface</span> &#123;</span><br><span class="line">	ServeHTTP(ResponseWriter, *Request)  <span class="comment">// 路由实现器</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Handler是一个接口，但是前一小节中的<code>sayhelloName</code>函数并没有实现ServeHTTP这个接口，为什么能添加呢？原来在http包里面还定义了一个类型<code>HandlerFunc</code>,我们定义的函数<code>sayhelloName</code>就是这个HandlerFunc调用之后的结果，这个类型默认就实现了ServeHTTP这个接口，即我们调用了HandlerFunc(f),强制类型转换f成为HandlerFunc类型，这样f就拥有了ServeHTTP方法。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> HandlerFunc <span class="function"><span class="keyword">func</span><span class="params">(ResponseWriter, *Request)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">// <span class="title">ServeHTTP</span> <span class="title">calls</span> <span class="title">f</span><span class="params">(w, r)</span>.</span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(f HandlerFunc)</span> <span class="title">ServeHTTP</span><span class="params">(w ResponseWriter, r *Request)</span></span> &#123;</span><br><span class="line">	f(w, r)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>路由器里面存储好了相应的路由规则之后，那么具体的请求又是怎么分发的呢？请看下面的代码，默认的路由器实现了<code>ServeHTTP</code>：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(mux *ServeMux)</span> <span class="title">ServeHTTP</span><span class="params">(w ResponseWriter, r *Request)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> r.RequestURI == <span class="string">"*"</span> &#123;</span><br><span class="line">		w.Header().Set(<span class="string">"Connection"</span>, <span class="string">"close"</span>)</span><br><span class="line">		w.WriteHeader(StatusBadRequest)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	h, _ := mux.Handler(r)</span><br><span class="line">	h.ServeHTTP(w, r)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如上所示路由器接收到请求之后，如果是<code>*</code>那么关闭链接，不然调用<code>mux.Handler(r)</code>返回对应设置路由的处理Handler，然后执行<code>h.ServeHTTP(w, r)</code></p>
+<p>也就是调用对应路由的handler的ServerHTTP接口，那么mux.Handler(r)怎么处理的呢？<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(mux *ServeMux)</span> <span class="title">Handler</span><span class="params">(r *Request)</span> <span class="params">(h Handler, pattern <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> r.Method != <span class="string">"CONNECT"</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> p := cleanPath(r.URL.Path); p != r.URL.Path &#123;</span><br><span class="line">			_, pattern = mux.handler(r.Host, p)</span><br><span class="line">			<span class="keyword">return</span> RedirectHandler(p, StatusMovedPermanently), pattern</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;	</span><br><span class="line">	<span class="keyword">return</span> mux.handler(r.Host, r.URL.Path)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(mux *ServeMux)</span> <span class="title">handler</span><span class="params">(host, path <span class="keyword">string</span>)</span> <span class="params">(h Handler, pattern <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	mux.mu.RLock()</span><br><span class="line">	<span class="keyword">defer</span> mux.mu.RUnlock()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Host-specific pattern takes precedence over generic ones</span></span><br><span class="line">	<span class="keyword">if</span> mux.hosts &#123;</span><br><span class="line">		h, pattern = mux.match(host + path)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> h == <span class="literal">nil</span> &#123;</span><br><span class="line">		h, pattern = mux.match(path)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> h == <span class="literal">nil</span> &#123;</span><br><span class="line">		h, pattern = NotFoundHandler(), <span class="string">""</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>原来他是根据用户请求的URL和路由器里面存储的map去匹配的，当匹配到之后返回存储的handler，调用这个handler的ServeHTTP接口就可以执行到相应的函数了。</p>
+<p>通过上面这个介绍，我们了解了整个路由过程，Go其实支持外部实现的路由器 <code>ListenAndServe</code>的第二个参数就是用以配置外部路由器的，它是一个Handler接口，即外部路由器只要实现了Handler接口就可以,我们可以在自己实现的路由器的ServeHTTP里面实现自定义路由功能。</p>
+<p>如下代码所示，我们自己实现了一个简易的路由器<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MyMux <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *MyMux)</span> <span class="title">ServeHTTP</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> r.URL.Path == <span class="string">"/"</span> &#123;</span><br><span class="line">		sayhelloName(w, r)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	http.NotFound(w, r)</span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sayhelloName</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">	fmt.Fprintf(w, <span class="string">"Hello myroute!"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	mux := &amp;MyMux&#123;&#125;</span><br><span class="line">	http.ListenAndServe(<span class="string">":9090"</span>, mux)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Go代码的执行流程"><a href="#Go代码的执行流程" class="headerlink" title="Go代码的执行流程"></a>Go代码的执行流程</h2><p>通过对http包的分析之后，现在让我们来梳理一下整个的代码执行过程。</p>
+<ul>
+<li><p>首先调用Http.HandleFunc</p>
+<p>  按顺序做了几件事：</p>
+<p>  1 调用了DefaultServeMux的HandleFunc</p>
+<p>  2 调用了DefaultServeMux的Handle</p>
+<p>  3 往DefaultServeMux的map[string]muxEntry中增加对应的handler和路由规则</p>
+</li>
+<li><p>其次调用http.ListenAndServe(“:9090”, nil)</p>
+<p>  按顺序做了几件事情：</p>
+<p>  1 实例化Server</p>
+<p>  2 调用Server的ListenAndServe()</p>
+<p>  3 调用net.Listen(“tcp”, addr)监听端口</p>
+<p>  4 启动一个for循环，在循环体中Accept请求</p>
+<p>  5 对每个请求实例化一个Conn，并且开启一个goroutine为这个请求进行服务go c.serve()</p>
+<p>  6 读取每个请求的内容w, err := c.readRequest()</p>
+<p>  7 判断handler是否为空，如果没有设置handler（这个例子就没有设置handler），handler就设置为DefaultServeMux</p>
+<p>  8 调用handler的ServeHttp</p>
+<p>  9 在这个例子中，下面就进入到DefaultServeMux.ServeHttp</p>
+<p>  10 根据request选择handler，并且进入到这个handler的ServeHTTP</p>
+<pre><code>mux.handler(r).ServeHTTP(w, r)
+</code></pre><p>  11 选择handler：</p>
+<p>  A 判断是否有路由能满足这个request（循环遍历ServeMux的muxEntry）</p>
+<p>  B 如果有路由满足，调用这个路由handler的ServeHTTP</p>
+<p>  C 如果没有路由满足，调用NotFoundHandler的ServeHTTP</p>
+</li>
+</ul>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/03.3/" title="Go如何使得web工作">Go如何使得web工作</a></li>
+<li>下一节: <a href="/2018/08/03/03.5/" title="小结">小结</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/04.0/" rel="next" title="表单">
+                <i class="fa fa-chevron-left"></i> 表单
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/03.5/" rel="prev" title="小结">
+                小结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#3-4-Go的http包详解"><span class="nav-number">1.</span> <span class="nav-text">3.4 Go的http包详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Conn的goroutine"><span class="nav-number">1.1.</span> <span class="nav-text">Conn的goroutine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ServeMux的自定义"><span class="nav-number">1.2.</span> <span class="nav-text">ServeMux的自定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go代码的执行流程"><span class="nav-number">1.3.</span> <span class="nav-text">Go代码的执行流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.4.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="# 14.3 表单及验证支持 在Web开发中对于这样的一个流程可能很眼熟：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="表单支持">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/14.3/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="# 14.3 表单及验证支持 在Web开发中对于这样的一个流程可能很眼熟：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.713Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="表单支持">
+<meta name="twitter:description" content="# 14.3 表单及验证支持 在Web开发中对于这样的一个流程可能很眼熟：">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/14.3/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>表单支持 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/14.3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">表单支持
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <!--  -->
+# 14.3 表单及验证支持
+在Web开发中对于这样的一个流程可能很眼熟：
+<a id="more"></a>
+
+- 打开一个网页显示出表单。
+- 用户填写并提交了表单。
+- 如果用户提交了一些无效的信息，或者可能漏掉了一个必填项，表单将会连同用户的数据和错误问题的描述信息返回。
+- 用户再次填写，继续上一步过程，直到提交了一个有效的表单。
+
+在接收端，脚本必须：
+
+- 检查用户递交的表单数据。
+- 验证数据是否为正确的类型，合适的标准。例如，如果一个用户名被提交，它必须被验证是否只包含了允许的字符。它必须有一个最小长度，不能超过最大长度。用户名不能与已存在的他人用户名重复，甚至是一个保留字等。
+- 过滤数据并清理不安全字符，保证逻辑处理中接收的数据是安全的。
+- 如果需要，预格式化数据（数据需要清除空白或者经过HTML编码等等。）
+- 准备好数据，插入数据库。
+
+尽管上面的过程并不是很复杂，但是通常情况下需要编写很多代码，而且为了显示错误信息，在网页中经常要使用多种不同的控制结构。创建表单验证虽简单，实施起来实在枯燥无味。
+
+## 表单和验证
+对于开发者来说，一般开发过程都是相当复杂，而且大多是在重复一样的工作。假设一个场景项目中忽然需要增加一个表单数据，那么局部代码的整个流程都需要修改。我们知道Go里面struct是常用的一个数据结构，因此beego的form采用了struct来处理表单信息。
+
+首先定义一个开发Web应用时相对应的struct，一个字段对应一个form元素，通过struct的tag来定义相应的元素信息和验证信息，如下所示：
+undefined
+
+定义好struct之后接下来在controller中这样操作
+undefined
+
+在模板中这样显示表单
+undefined
+
+上面我们定义好了整个的第一步，从struct到显示表单的过程，接下来就是用户填写信息，服务器端接收数据然后验证，最后插入数据库。
+undefined
+
+## 表单类型
+以下列表列出来了对应的form元素信息：
+<table cellpadding="0" cellspacing="1" border="0" style="width:100%" class="tableborder">
+<tbody><tr>
+<th>名称</th>
+<th>参数</th>
+<th>功能描述</th>
+</tr>
+
+<tr>
+<td class="td"><strong>text</strong></td>
+<td class="td">No</td>
+<td class="td">textbox输入框</td>
+</tr>
+
+<tr>
+<td class="td"><strong>button</strong></td>
+<td class="td">No</td>
+<td class="td">按钮</td>
+</tr>
+
+<tr>
+<td class="td"><strong>checkbox</strong></td>
+<td class="td">No</td>
+<td class="td">多选择框</td>
+</tr>
+
+<tr>
+<td class="td"><strong>dropdown</strong></td>
+<td class="td">No</td>
+<td class="td">下拉选择框</td>
+</tr>
+
+<tr>
+<td class="td"><strong>file</strong></td>
+<td class="td">No</td>
+<td class="td">文件上传</td>
+</tr>
+
+<tr>
+<td class="td"><strong>hidden</strong></td>
+<td class="td">No</td>
+<td class="td">隐藏元素</td>
+</tr>
+
+<tr>
+<td class="td"><strong>password</strong></td>
+<td class="td">No</td>
+<td class="td">密码输入框</td>
+</tr>
+
+<tr>
+<td class="td"><strong>radio</strong></td>
+<td class="td">No</td>
+<td class="td">单选框</td>
+</tr>
+
+<tr>
+<td class="td"><strong>textarea</strong></td>
+<td class="td">No</td>
+<td class="td">文本输入框</td>
+</tr>
+
+</tbody></table>
+
+
+## 表单验证		
+以下列表将列出可被使用的原生规则
+<table cellpadding="0" cellspacing="1" border="0" style="width:100%" class="tableborder">
+<tbody><tr>
+<th>规则</th>
+<th>参数</th>
+<th>描述</th>
+<th>举例</th>
+</tr>
+
+<tr>
+<td class="td"><strong>required</strong></td>
+<td class="td">No</td>
+<td class="td">如果元素为空，则返回FALSE</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="td"><strong>matches</strong></td>
+<td class="td">Yes</td>
+<td class="td">如果表单元素的值与参数中对应的表单字段的值不相等，则返回FALSE</td>
+<td class="td">matches[form_item]</td>
+</tr>
+
+  <tr>
+    <td class="td"><strong>is_unique</strong></td>
+    <td class="td">Yes</td>
+    <td class="td">如果表单元素的值与指定数据表栏位有重复，则返回False（译者注：比如is_unique[User.Email]，那么验证类会去查找User表中Email栏位有没有与表单元素一样的值，如存重复，则返回false，这样开发者就不必另写Callback验证代码。）</td>
+    <td class="td">is_unique[table.field]</td>
+  </tr>
+
+<tr>
+<td class="td"><strong>min_length</strong></td>
+<td class="td">Yes</td>
+<td class="td">如果表单元素值的字符长度少于参数中定义的数字，则返回FALSE</td>
+<td class="td">min_length[6]</td>
+</tr>
+
+<tr>
+<td class="td"><strong>max_length</strong></td>
+<td class="td">Yes</td>
+<td class="td">如果表单元素值的字符长度大于参数中定义的数字，则返回FALSE</td>
+<td class="td">max_length[12]</td>
+</tr>
+
+<tr>
+<td class="td"><strong>exact_length</strong></td>
+<td class="td">Yes</td>
+<td class="td">如果表单元素值的字符长度与参数中定义的数字不符，则返回FALSE</td>
+<td class="td">exact_length[8]</td>
+</tr>
+
+  <tr>
+    <td class="td"><strong>greater_than</strong></td>
+    <td class="td">Yes</td>
+    <td class="td">如果表单元素值是非数字类型，或小于参数定义的值，则返回FALSE</td>
+    <td class="td">greater_than[8]</td>
+  </tr>
+
+  <tr>
+    <td class="td"><strong>less_than</strong></td>
+    <td class="td">Yes</td>
+    <td class="td">如果表单元素值是非数字类型，或大于参数定义的值，则返回FALSE</td>
+    <td class="td">less_than[8]</td>
+  </tr>
+
+<tr>
+<td class="td"><strong>alpha</strong></td>
+<td class="td">No</td>
+<td class="td">如果表单元素值中包含除字母以外的其他字符，则返回FALSE</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="td"><strong>alpha_numeric</strong></td>
+<td class="td">No</td>
+<td class="td">如果表单元素值中包含除字母和数字以外的其他字符，则返回FALSE</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="td"><strong>alpha_dash</strong></td>
+<td class="td">No</td>
+<td class="td">如果表单元素值中包含除字母/数字/下划线/破折号以外的其他字符，则返回FALSE</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="td"><strong>numeric</strong></td>
+<td class="td">No</td>
+<td class="td">如果表单元素值中包含除数字以外的字符，则返回 FALSE</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="td"><strong>integer</strong></td>
+<td class="td">No</td>
+<td class="td">如果表单元素中包含除整数以外的字符，则返回FALSE</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+  <tr>
+    <td class="td"><strong>decimal</strong></td>
+    <td class="td">Yes</td>
+    <td class="td">如果表单元素中输入（非小数）不完整的值，则返回FALSE</td>
+    <td class="td">&nbsp;</td>
+  </tr>
+
+<tr>
+<td class="td"><strong>is_natural</strong></td>
+<td class="td">No</td>
+<td class="td">如果表单元素值中包含了非自然数的其他数值 （其他数值不包括零），则返回FALSE。自然数形如：0,1,2,3....等等。</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="td"><strong>is_natural_no_zero</strong></td>
+<td class="td">No</td>
+<td class="td">如果表单元素值包含了非自然数的其他数值 （其他数值包括零），则返回FALSE。非零的自然数：1,2,3.....等等。</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="td"><strong>valid_email</strong></td>
+<td class="td">No</td>
+<td class="td">如果表单元素值包含不合法的email地址，则返回FALSE</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="td"><strong>valid_emails</strong></td>
+<td class="td">No</td>
+<td class="td">如果表单元素值中任何一个值包含不合法的email地址（地址之间用英文逗号分割），则返回FALSE。</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="td"><strong>valid_ip</strong></td>
+<td class="td">No</td>
+<td class="td">如果表单元素的值不是一个合法的IP地址，则返回FALSE。</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="td"><strong>valid_base64</strong></td>
+<td class="td">No</td>
+<td class="td">如果表单元素的值包含除了base64 编码字符之外的其他字符，则返回FALSE。</td>
+<td class="td">&nbsp;</td>
+</tr>
+
+</tbody></table>
+
+
+## links
+   * {% post_link preface 目录 %}
+   * 上一节: {% post_link 14.2 Session支持 %}
+   * 下一节: {% post_link 14.4 用户认证 %}
+<!--  –&gt;
+-->
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/14.4/" rel="next" title="用户认证">
+                <i class="fa fa-chevron-left"></i> 用户认证
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/14.5/" rel="prev" title="多语言支持">
+                多语言支持 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

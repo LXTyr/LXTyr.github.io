@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="14.4 用户认证在开发Web应用过程中，用户认证是开发者经常遇到的问题，用户登录、注册、登出等操作，而一般认证也分为三个方面的认证">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用户认证">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/14.4/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="14.4 用户认证在开发Web应用过程中，用户认证是开发者经常遇到的问题，用户登录、注册、登出等操作，而一般认证也分为三个方面的认证">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/14.4/images/14.4.github.png">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/14.4/images/14.4.github2.png">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/14.4/images/14.4.github3.png">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.717Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用户认证">
+<meta name="twitter:description" content="14.4 用户认证在开发Web应用过程中，用户认证是开发者经常遇到的问题，用户登录、注册、登出等操作，而一般认证也分为三个方面的认证">
+<meta name="twitter:image" content="http://darrenwonder.github.io/2018/08/03/14.4/images/14.4.github.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/14.4/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>用户认证 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/14.4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">用户认证
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="14-4-用户认证"><a href="#14-4-用户认证" class="headerlink" title="14.4 用户认证"></a>14.4 用户认证</h1><p>在开发Web应用过程中，用户认证是开发者经常遇到的问题，用户登录、注册、登出等操作，而一般认证也分为三个方面的认证</p>
+<a id="more"></a>
+<ul>
+<li>HTTP Basic和 HTTP Digest认证</li>
+<li>第三方集成认证：QQ、微博、豆瓣、OPENID、google、github、facebook和twitter等</li>
+<li>自定义的用户登录、注册、登出，一般都是基于session、cookie认证</li>
+</ul>
+<p>beego目前没有针对这三种方式进行任何形式的集成，但是可以充分的利用第三方开源库来实现上面的三种方式的用户认证，不过后续beego会对前面两种认证逐步集成。</p>
+<h2 id="HTTP-Basic和-HTTP-Digest认证"><a href="#HTTP-Basic和-HTTP-Digest认证" class="headerlink" title="HTTP Basic和 HTTP Digest认证"></a>HTTP Basic和 HTTP Digest认证</h2><p>这两个认证是一些应用采用的比较简单的认证，目前已经有开源的第三方库支持这两个认证：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">github.com/abbot/<span class="keyword">go</span>-http-auth</span><br></pre></td></tr></table></figure></p>
+<p>下面代码演示了如何把这个库引入beego中从而实现认证：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> controllers</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/abbot/go-http-auth"</span></span><br><span class="line">	<span class="string">"github.com/astaxie/beego"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Secret</span><span class="params">(user, realm <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> user == <span class="string">"john"</span> &#123;</span><br><span class="line">		<span class="comment">// password is "hello"</span></span><br><span class="line">		<span class="keyword">return</span> <span class="string">"$1$dlPL2MqE$oQmn16q49SqdmhenQuNgs1"</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MainController <span class="keyword">struct</span> &#123;</span><br><span class="line">	beego.Controller</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *MainController)</span> <span class="title">Prepare</span><span class="params">()</span></span> &#123;</span><br><span class="line">	a := auth.NewBasicAuthenticator(<span class="string">"example.com"</span>, Secret)</span><br><span class="line">	<span class="keyword">if</span> username := a.CheckAuth(this.Ctx.Request); username == <span class="string">""</span> &#123;</span><br><span class="line">		a.RequireAuth(this.Ctx.ResponseWriter, this.Ctx.Request)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *MainController)</span> <span class="title">Get</span><span class="params">()</span></span> &#123;</span><br><span class="line">	this.Data[<span class="string">"Username"</span>] = <span class="string">"astaxie"</span></span><br><span class="line">	this.Data[<span class="string">"Email"</span>] = <span class="string">"astaxie@gmail.com"</span></span><br><span class="line">	this.TplNames = <span class="string">"index.tpl"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面代码利用了beego的prepare函数，在执行正常逻辑之前调用了认证函数，这样就非常简单的实现了http auth，digest的认证也是同样的原理。</p>
+<h2 id="oauth和oauth2的认证"><a href="#oauth和oauth2的认证" class="headerlink" title="oauth和oauth2的认证"></a>oauth和oauth2的认证</h2><p>oauth和oauth2是目前比较流行的两种认证方式，还好第三方有一个库实现了这个认证，但是是国外实现的，并没有QQ、微博之类的国内应用认证集成：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">github.com/bradrydzewski/<span class="keyword">go</span>.auth</span><br></pre></td></tr></table></figure></p>
+<p>下面代码演示了如何把该库引入beego中从而实现oauth的认证，这里以github为例演示：</p>
+<ol>
+<li><p>添加两条路由</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">beego.RegisterController(<span class="string">"/auth/login"</span>, &amp;controllers.GithubController&#123;&#125;)</span><br><span class="line">beego.RegisterController(<span class="string">"/mainpage"</span>, &amp;controllers.PageController&#123;&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后我们处理GithubController登陆的页面：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> controllers</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/astaxie/beego"</span></span><br><span class="line">	<span class="string">"github.com/bradrydzewski/go.auth"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	githubClientKey = <span class="string">"a0864ea791ce7e7bd0df"</span></span><br><span class="line">	githubSecretKey = <span class="string">"a0ec09a647a688a64a28f6190b5a0d2705df56ca"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> GithubController <span class="keyword">struct</span> &#123;</span><br><span class="line">	beego.Controller</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *GithubController)</span> <span class="title">Get</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// set the auth parameters</span></span><br><span class="line">	auth.Config.CookieSecret = []<span class="keyword">byte</span>(<span class="string">"7H9xiimk2QdTdYI7rDddfJeV"</span>)</span><br><span class="line">	auth.Config.LoginSuccessRedirect = <span class="string">"/mainpage"</span></span><br><span class="line">	auth.Config.CookieSecure = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">	githubHandler := auth.Github(githubClientKey, githubSecretKey)</span><br><span class="line"></span><br><span class="line">	githubHandler.ServeHTTP(this.Ctx.ResponseWriter, this.Ctx.Request)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>处理登陆成功之后的页面</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> controllers</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/astaxie/beego"</span></span><br><span class="line">	<span class="string">"github.com/bradrydzewski/go.auth"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">	<span class="string">"net/url"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> PageController <span class="keyword">struct</span> &#123;</span><br><span class="line">	beego.Controller</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *PageController)</span> <span class="title">Get</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// set the auth parameters</span></span><br><span class="line">	auth.Config.CookieSecret = []<span class="keyword">byte</span>(<span class="string">"7H9xiimk2QdTdYI7rDddfJeV"</span>)</span><br><span class="line">	auth.Config.LoginSuccessRedirect = <span class="string">"/mainpage"</span></span><br><span class="line">	auth.Config.CookieSecure = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">	user, err := auth.GetUserCookie(this.Ctx.Request)</span><br><span class="line"></span><br><span class="line">	<span class="comment">//if no active user session then authorize user</span></span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> || user.Id() == <span class="string">""</span> &#123;</span><br><span class="line">		http.Redirect(this.Ctx.ResponseWriter, this.Ctx.Request, auth.Config.LoginRedirect, http.StatusSeeOther)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//else, add the user to the URL and continue</span></span><br><span class="line">	this.Ctx.Request.URL.User = url.User(user.Id())</span><br><span class="line">	this.Data[<span class="string">"pic"</span>] = user.Picture()</span><br><span class="line">	this.Data[<span class="string">"id"</span>] = user.Id()</span><br><span class="line">	this.Data[<span class="string">"name"</span>] = user.Name()</span><br><span class="line">	this.TplNames = <span class="string">"home.tpl"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>整个的流程如下，首先打开浏览器输入地址：</p>
+<img src="/2018/08/03/14.4/images/14.4.github.png">
+<p>图14.4 显示带有登录按钮的首页</p>
+<p>然后点击链接出现如下界面：</p>
+<img src="/2018/08/03/14.4/images/14.4.github2.png">
+<p>图14.5 点击登录按钮后显示github的授权页</p>
+<p>然后点击Authorize app就出现如下界面：</p>
+<img src="/2018/08/03/14.4/images/14.4.github3.png">
+<p>图14.6 授权登录之后显示的获取到的github信息页</p>
+<h2 id="自定义认证"><a href="#自定义认证" class="headerlink" title="自定义认证"></a>自定义认证</h2><p>自定义的认证一般都是和session结合验证的，如下代码来源于一个基于beego的开源博客：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//登陆处理</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *LoginController)</span> <span class="title">Post</span><span class="params">()</span></span> &#123;</span><br><span class="line">	this.TplNames = <span class="string">"login.tpl"</span></span><br><span class="line">	this.Ctx.Request.ParseForm()</span><br><span class="line">	username := this.Ctx.Request.Form.Get(<span class="string">"username"</span>)</span><br><span class="line">	password := this.Ctx.Request.Form.Get(<span class="string">"password"</span>)</span><br><span class="line">	md5Password := md5.New()</span><br><span class="line">	io.WriteString(md5Password, password)</span><br><span class="line">	buffer := bytes.NewBuffer(<span class="literal">nil</span>)</span><br><span class="line">	fmt.Fprintf(buffer, <span class="string">"%x"</span>, md5Password.Sum(<span class="literal">nil</span>))</span><br><span class="line">	newPass := buffer.String()</span><br><span class="line"></span><br><span class="line">	now := time.Now().Format(<span class="string">"2006-01-02 15:04:05"</span>)</span><br><span class="line"></span><br><span class="line">	userInfo := models.GetUserInfo(username)</span><br><span class="line">	<span class="keyword">if</span> userInfo.Password == newPass &#123;</span><br><span class="line">		<span class="keyword">var</span> users models.User</span><br><span class="line">		users.Last_logintime = now</span><br><span class="line">		models.UpdateUserInfo(users)</span><br><span class="line"></span><br><span class="line">		<span class="comment">//登录成功设置session</span></span><br><span class="line">		sess := globalSessions.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)</span><br><span class="line">		sess.Set(<span class="string">"uid"</span>, userInfo.Id)</span><br><span class="line">		sess.Set(<span class="string">"uname"</span>, userInfo.Username)</span><br><span class="line"></span><br><span class="line">		this.Ctx.Redirect(<span class="number">302</span>, <span class="string">"/"</span>)</span><br><span class="line">	&#125;	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//注册处理</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *RegController)</span> <span class="title">Post</span><span class="params">()</span></span> &#123;</span><br><span class="line">	this.TplNames = <span class="string">"reg.tpl"</span></span><br><span class="line">	this.Ctx.Request.ParseForm()</span><br><span class="line">	username := this.Ctx.Request.Form.Get(<span class="string">"username"</span>)</span><br><span class="line">	password := this.Ctx.Request.Form.Get(<span class="string">"password"</span>)</span><br><span class="line">	usererr := checkUsername(username)</span><br><span class="line">	fmt.Println(usererr)</span><br><span class="line">	<span class="keyword">if</span> usererr == <span class="literal">false</span> &#123;</span><br><span class="line">		this.Data[<span class="string">"UsernameErr"</span>] = <span class="string">"Username error, Please to again"</span></span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	passerr := checkPassword(password)</span><br><span class="line">	<span class="keyword">if</span> passerr == <span class="literal">false</span> &#123;</span><br><span class="line">		this.Data[<span class="string">"PasswordErr"</span>] = <span class="string">"Password error, Please to again"</span></span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	md5Password := md5.New()</span><br><span class="line">	io.WriteString(md5Password, password)</span><br><span class="line">	buffer := bytes.NewBuffer(<span class="literal">nil</span>)</span><br><span class="line">	fmt.Fprintf(buffer, <span class="string">"%x"</span>, md5Password.Sum(<span class="literal">nil</span>))</span><br><span class="line">	newPass := buffer.String()</span><br><span class="line"></span><br><span class="line">	now := time.Now().Format(<span class="string">"2006-01-02 15:04:05"</span>)</span><br><span class="line"></span><br><span class="line">	userInfo := models.GetUserInfo(username)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> userInfo.Username == <span class="string">""</span> &#123;</span><br><span class="line">		<span class="keyword">var</span> users models.User</span><br><span class="line">		users.Username = username</span><br><span class="line">		users.Password = newPass</span><br><span class="line">		users.Created = now</span><br><span class="line">		users.Last_logintime = now</span><br><span class="line">		models.AddUser(users)</span><br><span class="line"></span><br><span class="line">		<span class="comment">//登录成功设置session</span></span><br><span class="line">		sess := globalSessions.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)</span><br><span class="line">		sess.Set(<span class="string">"uid"</span>, userInfo.Id)</span><br><span class="line">		sess.Set(<span class="string">"uname"</span>, userInfo.Username)</span><br><span class="line">		this.Ctx.Redirect(<span class="number">302</span>, <span class="string">"/"</span>)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		this.Data[<span class="string">"UsernameErr"</span>] = <span class="string">"User already exists"</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">checkPassword</span><span class="params">(password <span class="keyword">string</span>)</span> <span class="params">(b <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> ok, _ := regexp.MatchString(<span class="string">"^[a-zA-Z0-9]&#123;4,16&#125;$"</span>, password); !ok &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">checkUsername</span><span class="params">(username <span class="keyword">string</span>)</span> <span class="params">(b <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> ok, _ := regexp.MatchString(<span class="string">"^[a-zA-Z0-9]&#123;4,16&#125;$"</span>, username); !ok &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`	</span></span><br><span class="line"><span class="string">有了用户登陆和注册之后，其他模块的地方可以增加如下这样的用户是否登陆的判断：</span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>Go</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *AddBlogController)</span> <span class="title">Prepare</span><span class="params">()</span></span> &#123;</span><br><span class="line">	sess := globalSessions.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)</span><br><span class="line">	sess_uid := sess.Get(<span class="string">"userid"</span>)</span><br><span class="line">	sess_username := sess.Get(<span class="string">"username"</span>)</span><br><span class="line">	<span class="keyword">if</span> sess_uid == <span class="literal">nil</span> &#123;</span><br><span class="line">		this.Ctx.Redirect(<span class="number">302</span>, <span class="string">"/admin/login"</span>)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	this.Data[<span class="string">"Username"</span>] = sess_username</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/14.3/" title="表单及验证支持">表单及验证支持</a></li>
+<li>下一节: <a href="/2018/08/03/14.5/" title="多语言支持">多语言支持</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/14.7/" rel="next" title="小结">
+                <i class="fa fa-chevron-left"></i> 小结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/14.3/" rel="prev" title="表单支持">
+                表单支持 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#14-4-用户认证"><span class="nav-number">1.</span> <span class="nav-text">14.4 用户认证</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-Basic和-HTTP-Digest认证"><span class="nav-number">1.1.</span> <span class="nav-text">HTTP Basic和 HTTP Digest认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#oauth和oauth2的认证"><span class="nav-number">1.2.</span> <span class="nav-text">oauth和oauth2的认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义认证"><span class="nav-number">1.3.</span> <span class="nav-text">自定义认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.4.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

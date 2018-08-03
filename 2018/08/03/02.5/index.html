@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="2.5 面向对象前面两章我们介绍了函数和struct，那你是否想过函数当作struct的字段一样来处理呢？今天我们就讲解一下函数的另一种形态，带有接收者的函数，我们称为method method现在假设有这么一个场景，你定义了一个struct叫做长方形，你现在想要计算他的面积，那么按照我们一般的思路应该会用下面的方式来实现123456789101112131415package main&amp;lt;!">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面向对象">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/02.5/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="2.5 面向对象前面两章我们介绍了函数和struct，那你是否想过函数当作struct的字段一样来处理呢？今天我们就讲解一下函数的另一种形态，带有接收者的函数，我们称为method method现在假设有这么一个场景，你定义了一个struct叫做长方形，你现在想要计算他的面积，那么按照我们一般的思路应该会用下面的方式来实现123456789101112131415package main&amp;lt;!">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/02.5/images/2.5.rect_func_without_receiver.png">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/02.5/images/2.5.shapes_func_with_receiver_cp.png">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.588Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="面向对象">
+<meta name="twitter:description" content="2.5 面向对象前面两章我们介绍了函数和struct，那你是否想过函数当作struct的字段一样来处理呢？今天我们就讲解一下函数的另一种形态，带有接收者的函数，我们称为method method现在假设有这么一个场景，你定义了一个struct叫做长方形，你现在想要计算他的面积，那么按照我们一般的思路应该会用下面的方式来实现123456789101112131415package main&amp;lt;!">
+<meta name="twitter:image" content="http://darrenwonder.github.io/2018/08/03/02.5/images/2.5.rect_func_without_receiver.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/02.5/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>面向对象 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/02.5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">面向对象
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="2-5-面向对象"><a href="#2-5-面向对象" class="headerlink" title="2.5 面向对象"></a>2.5 面向对象</h1><p>前面两章我们介绍了函数和struct，那你是否想过函数当作struct的字段一样来处理呢？今天我们就讲解一下函数的另一种形态，带有接收者的函数，我们称为<code>method</code></p>
+<h2 id="method"><a href="#method" class="headerlink" title="method"></a>method</h2><p>现在假设有这么一个场景，你定义了一个struct叫做长方形，你现在想要计算他的面积，那么按照我们一般的思路应该会用下面的方式来实现<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line">&lt;!-- more --&gt;</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="keyword">type</span> Rectangle <span class="keyword">struct</span> &#123;</span><br><span class="line">	width, height <span class="keyword">float64</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">area</span><span class="params">(r Rectangle)</span> <span class="title">float64</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> r.width*r.height</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	r1 := Rectangle&#123;<span class="number">12</span>, <span class="number">2</span>&#125;</span><br><span class="line">	r2 := Rectangle&#123;<span class="number">9</span>, <span class="number">4</span>&#125;</span><br><span class="line">	fmt.Println(<span class="string">"Area of r1 is: "</span>, area(r1))</span><br><span class="line">	fmt.Println(<span class="string">"Area of r2 is: "</span>, area(r2))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码可以计算出来长方形的面积，但是area()不是作为Rectangle的方法实现的（类似面向对象里面的方法），而是将Rectangle的对象（如r1,r2）作为参数传入函数计算面积的。<br>这样实现当然没有问题咯，但是当需要增加圆形、正方形、五边形甚至其它多边形的时候，你想计算他们的面积的时候怎么办啊？那就只能增加新的函数咯，但是函数名你就必须要跟着换了，变成<code>area_rectangle, area_circle, area_triangle...</code><br>像下图所表示的那样， 椭圆代表函数, 而这些函数并不从属于struct(或者以面向对象的术语来说，并不属于class)，他们是单独存在于struct外围，而非在概念上属于某个struct的。<br><img src="/2018/08/03/02.5/images/2.5.rect_func_without_receiver.png"><br>图2.8 方法和struct的关系图<br>很显然，这样的实现并不优雅，并且从概念上来说”面积”是”形状”的一个属性，它是属于这个特定的形状的，就像长方形的长和宽一样。<br>基于上面的原因所以就有了<code>method</code>的概念，<code>method</code>是附属在一个给定的类型上的，他的语法和函数的声明语法几乎一样，只是在<code>func</code>后面增加了一个receiver(也就是method所依从的主体)。<br>用上面提到的形状的例子来说，method <code>area()</code> 是依赖于某个形状(比如说Rectangle)来发生作用的。Rectangle.area()的发出者是Rectangle， area()是属于Rectangle的方法，而非一个外围函数。<br>更具体地说，Rectangle存在字段 height 和 width, 同时存在方法area(), 这些字段和方法都属于Rectangle。<br>用Rob Pike的话来说就是：</p>
+<blockquote>
+<p>“A method is a function with an implicit first argument, called a receiver.”<br>method的语法如下：<br>    func (r ReceiverType) funcName(parameters) (results)<br>下面我们用最开始的例子用method来实现：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"math"</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">type</span> Rectangle <span class="keyword">struct</span> &#123;</span><br><span class="line">	width, height <span class="keyword">float64</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Circle <span class="keyword">struct</span> &#123;</span><br><span class="line">	radius <span class="keyword">float64</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(r Rectangle)</span> <span class="title">area</span><span class="params">()</span> <span class="title">float64</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> r.width*r.height</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c Circle)</span> <span class="title">area</span><span class="params">()</span> <span class="title">float64</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> c.radius * c.radius * math.Pi</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	r1 := Rectangle&#123;<span class="number">12</span>, <span class="number">2</span>&#125;</span><br><span class="line">	r2 := Rectangle&#123;<span class="number">9</span>, <span class="number">4</span>&#125;</span><br><span class="line">	c1 := Circle&#123;<span class="number">10</span>&#125;</span><br><span class="line">	c2 := Circle&#123;<span class="number">25</span>&#125;</span><br><span class="line">	fmt.Println(<span class="string">"Area of r1 is: "</span>, r1.area())</span><br><span class="line">	fmt.Println(<span class="string">"Area of r2 is: "</span>, r2.area())</span><br><span class="line">	fmt.Println(<span class="string">"Area of c1 is: "</span>, c1.area())</span><br><span class="line">	fmt.Println(<span class="string">"Area of c2 is: "</span>, c2.area())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<p>在使用method的时候重要注意几点</p>
+<ul>
+<li>虽然method的名字一模一样，但是如果接收者不一样，那么method就不一样</li>
+<li>method里面可以访问接收者的字段</li>
+<li>调用method通过<code>.</code>访问，就像struct里面访问字段一样<br>图示如下:<img src="/2018/08/03/02.5/images/2.5.shapes_func_with_receiver_cp.png">
+图2.9 不同struct的method不同<br>在上例，method area() 分别属于Rectangle和Circle， 于是他们的 Receiver 就变成了Rectangle 和 Circle, 或者说，这个area()方法 是由 Rectangle/Circle 发出的。<blockquote>
+<p>值得说明的一点是，图示中method用虚线标出，意思是此处方法的Receiver是以值传递，而非引用传递，是的，Receiver还可以是指针, 两者的差别在于, 指针作为Receiver会对实例对象的内容发生操作,而普通类型作为Receiver仅仅是以副本作为操作对象,并不对原实例对象发生操作。后文对此会有详细论述。<br>那是不是method只能作用在struct上面呢？当然不是咯，他可以定义在任何你自定义的类型、内置类型、struct等各种类型上面。这里你是不是有点迷糊了，什么叫自定义类型，自定义类型不就是struct嘛，不是这样的哦，struct只是自定义类型里面一种比较特殊的类型而已，还有其他自定义类型申明，可以通过如下这样的申明来实现。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> typeName typeLiteral</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ul>
+<p>请看下面这个申明自定义类型的代码<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ages <span class="keyword">int</span></span><br><span class="line"><span class="keyword">type</span> money <span class="keyword">float32</span></span><br><span class="line"><span class="keyword">type</span> months <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span></span><br><span class="line">m := months &#123;</span><br><span class="line">	<span class="string">"January"</span>:<span class="number">31</span>,</span><br><span class="line">	<span class="string">"February"</span>:<span class="number">28</span>,</span><br><span class="line">	...</span><br><span class="line">	<span class="string">"December"</span>:<span class="number">31</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>看到了吗？简单的很吧，这样你就可以在自己的代码里面定义有意义的类型了，实际上只是一个定义了一个别名,有点类似于c中的typedef，例如上面ages替代了int<br>好了，让我们回到<code>method</code><br>你可以在任何的自定义类型中定义任意多的<code>method</code>，接下来让我们看一个复杂一点的例子<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="keyword">const</span>(</span><br><span class="line">	WHITE = <span class="literal">iota</span></span><br><span class="line">	BLACK</span><br><span class="line">	BLUE</span><br><span class="line">	RED</span><br><span class="line">	YELLOW</span><br><span class="line">)</span><br><span class="line"><span class="keyword">type</span> Color <span class="keyword">byte</span></span><br><span class="line"><span class="keyword">type</span> Box <span class="keyword">struct</span> &#123;</span><br><span class="line">	width, height, depth <span class="keyword">float64</span></span><br><span class="line">	color Color</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> BoxList []Box <span class="comment">//a slice of boxes</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b Box)</span> <span class="title">Volume</span><span class="params">()</span> <span class="title">float64</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> b.width * b.height * b.depth</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Box)</span> <span class="title">SetColor</span><span class="params">(c Color)</span></span> &#123;</span><br><span class="line">	b.color = c</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bl BoxList)</span> <span class="title">BiggestColor</span><span class="params">()</span> <span class="title">Color</span></span> &#123;</span><br><span class="line">	v := <span class="number">0.00</span></span><br><span class="line">	k := Color(WHITE)</span><br><span class="line">	<span class="keyword">for</span> _, b := <span class="keyword">range</span> bl &#123;</span><br><span class="line">		<span class="keyword">if</span> bv := b.Volume(); bv &gt; v &#123;</span><br><span class="line">			v = bv</span><br><span class="line">			k = b.color</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> k</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bl BoxList)</span> <span class="title">PaintItBlack</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="keyword">range</span> bl &#123;</span><br><span class="line">		bl[i].SetColor(BLACK)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c Color)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	strings := []<span class="keyword">string</span> &#123;<span class="string">"WHITE"</span>, <span class="string">"BLACK"</span>, <span class="string">"BLUE"</span>, <span class="string">"RED"</span>, <span class="string">"YELLOW"</span>&#125;</span><br><span class="line">	<span class="keyword">return</span> strings[c]</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	boxes := BoxList &#123;</span><br><span class="line">		Box&#123;<span class="number">4</span>, <span class="number">4</span>, <span class="number">4</span>, RED&#125;,</span><br><span class="line">		Box&#123;<span class="number">10</span>, <span class="number">10</span>, <span class="number">1</span>, YELLOW&#125;,</span><br><span class="line">		Box&#123;<span class="number">1</span>, <span class="number">1</span>, <span class="number">20</span>, BLACK&#125;,</span><br><span class="line">		Box&#123;<span class="number">10</span>, <span class="number">10</span>, <span class="number">1</span>, BLUE&#125;,</span><br><span class="line">		Box&#123;<span class="number">10</span>, <span class="number">30</span>, <span class="number">1</span>, WHITE&#125;,</span><br><span class="line">		Box&#123;<span class="number">20</span>, <span class="number">20</span>, <span class="number">20</span>, YELLOW&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"We have %d boxes in our set\n"</span>, <span class="built_in">len</span>(boxes))</span><br><span class="line">	fmt.Println(<span class="string">"The volume of the first one is"</span>, boxes[<span class="number">0</span>].Volume(), <span class="string">"cm³"</span>)</span><br><span class="line">	fmt.Println(<span class="string">"The color of the last one is"</span>,boxes[<span class="built_in">len</span>(boxes)<span class="number">-1</span>].color.String())</span><br><span class="line">	fmt.Println(<span class="string">"The biggest one is"</span>, boxes.BiggestColor().String())</span><br><span class="line">	fmt.Println(<span class="string">"Let's paint them all black"</span>)</span><br><span class="line">	boxes.PaintItBlack()</span><br><span class="line">	fmt.Println(<span class="string">"The color of the second one is"</span>, boxes[<span class="number">1</span>].color.String())</span><br><span class="line">	fmt.Println(<span class="string">"Obviously, now, the biggest one is"</span>, boxes.BiggestColor().String())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的代码通过const定义了一些常量，然后定义了一些自定义类型</p>
+<ul>
+<li>Color作为byte的别名</li>
+<li>定义了一个struct:Box，含有三个长宽高字段和一个颜色属性</li>
+<li>定义了一个slice:BoxList，含有Box<br>然后以上面的自定义类型为接收者定义了一些method</li>
+<li>Volume()定义了接收者为Box，返回Box的容量</li>
+<li>SetColor(c Color)，把Box的颜色改为c</li>
+<li>BiggestColor()定在在BoxList上面，返回list里面容量最大的颜色</li>
+<li>PaintItBlack()把BoxList里面所有Box的颜色全部变成黑色</li>
+<li>String()定义在Color上面，返回Color的具体颜色(字符串格式)<br>上面的代码通过文字描述出来之后是不是很简单？我们一般解决问题都是通过问题的描述，去写相应的代码实现。<h3 id="指针作为receiver"><a href="#指针作为receiver" class="headerlink" title="指针作为receiver"></a>指针作为receiver</h3>现在让我们回过头来看看SetColor这个method，它的receiver是一个指向Box的指针，是的，你可以使用<em>Box。想想为啥要使用指针而不是Box本身呢？<br>我们定义SetColor的真正目的是想改变这个Box的颜色，如果不传Box的指针，那么SetColor接受的其实是Box的一个copy，也就是说method内对于颜色值的修改，其实只作用于Box的copy，而不是真正的Box。所以我们需要传入指针。<br>这里可以把receiver当作method的第一个参数来看，然后结合前面函数讲解的传值和传引用就不难理解<br>这里你也许会问了那SetColor函数里面应该这样定义`</em>b.Color=c<code>,而不是</code>b.Color=c<code>,因为我们需要读取到指针相应的值。
+你是对的，其实Go里面这两种方式都是正确的，当你用指针去访问相应的字段时(虽然指针没有任何的字段)，Go知道你要通过指针去获取这个值，看到了吧，Go的设计是不是越来越吸引你了。
+也许细心的读者会问这样的问题，PaintItBlack里面调用SetColor的时候是不是应该写成</code>(&amp;bl[i]).SetColor(BLACK)`，因为SetColor的receiver是*Box，而不是Box。<br>你又说对了，这两种方式都可以，因为Go知道receiver是指针，他自动帮你转了。<br>也就是说：<blockquote>
+<p>如果一个method的receiver是<em>T,你可以在一个T类型的实例变量V上面调用这个method，而不需要&amp;V去调用这个method<br>类似的<br>如果一个method的receiver是T，你可以在一个</em>T类型的变量P上面调用这个method，而不需要 *P去调用这个method<br>所以，你不用担心你是调用的指针的method还是不是指针的method，Go知道你要做的一切，这对于有多年C/C++编程经验的同学来说，真是解决了一个很大的痛苦。</p>
+</blockquote>
+<h3 id="method继承"><a href="#method继承" class="headerlink" title="method继承"></a>method继承</h3>前面一章我们学习了字段的继承，那么你也会发现Go的一个神奇之处，method也是可以继承的。如果匿名字段实现了一个method，那么包含这个匿名字段的struct也能调用该method。让我们来看下面这个例子<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="keyword">type</span> Human <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">	age <span class="keyword">int</span></span><br><span class="line">	phone <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">	Human <span class="comment">//匿名字段</span></span><br><span class="line">	school <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Employee <span class="keyword">struct</span> &#123;</span><br><span class="line">	Human <span class="comment">//匿名字段</span></span><br><span class="line">	company <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//在human上面定义了一个method</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h *Human)</span> <span class="title">SayHi</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"Hi, I am %s you can call me on %s\n"</span>, h.name, h.phone)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	mark := Student&#123;Human&#123;<span class="string">"Mark"</span>, <span class="number">25</span>, <span class="string">"222-222-YYYY"</span>&#125;, <span class="string">"MIT"</span>&#125;</span><br><span class="line">	sam := Employee&#123;Human&#123;<span class="string">"Sam"</span>, <span class="number">45</span>, <span class="string">"111-888-XXXX"</span>&#125;, <span class="string">"Golang Inc"</span>&#125;</span><br><span class="line">	mark.SayHi()</span><br><span class="line">	sam.SayHi()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="method重写"><a href="#method重写" class="headerlink" title="method重写"></a>method重写</h3><p>上面的例子中，如果Employee想要实现自己的SayHi,怎么办？简单，和匿名字段冲突一样的道理，我们可以在Employee上面定义一个method，重写了匿名字段的方法。请看下面的例子<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="keyword">type</span> Human <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">	age <span class="keyword">int</span></span><br><span class="line">	phone <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">	Human <span class="comment">//匿名字段</span></span><br><span class="line">	school <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Employee <span class="keyword">struct</span> &#123;</span><br><span class="line">	Human <span class="comment">//匿名字段</span></span><br><span class="line">	company <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Human定义method</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h *Human)</span> <span class="title">SayHi</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"Hi, I am %s you can call me on %s\n"</span>, h.name, h.phone)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Employee的method重写Human的method</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Employee)</span> <span class="title">SayHi</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"Hi, I am %s, I work at %s. Call me on %s\n"</span>, e.name,</span><br><span class="line">		e.company, e.phone) <span class="comment">//Yes you can split into 2 lines here.</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	mark := Student&#123;Human&#123;<span class="string">"Mark"</span>, <span class="number">25</span>, <span class="string">"222-222-YYYY"</span>&#125;, <span class="string">"MIT"</span>&#125;</span><br><span class="line">	sam := Employee&#123;Human&#123;<span class="string">"Sam"</span>, <span class="number">45</span>, <span class="string">"111-888-XXXX"</span>&#125;, <span class="string">"Golang Inc"</span>&#125;</span><br><span class="line">	mark.SayHi()</span><br><span class="line">	sam.SayHi()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的代码设计的是如此的美妙，让人不自觉的为Go的设计惊叹！<br>通过这些内容，我们可以设计出基本的面向对象的程序了，但是Go里面的面向对象是如此的简单，没有任何的私有、公有关键字，通过大小写来实现(大写开头的为公有，小写开头的为私有)，方法也同样适用这个原则。</p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一章: <a href="/2018/08/03/02.4/" title="struct类型">struct类型</a></li>
+<li>下一节: <a href="/2018/08/03/02.6/" title="interface">interface</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/02.7/" rel="next" title="并发">
+                <i class="fa fa-chevron-left"></i> 并发
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/02.4/" rel="prev" title="struct">
+                struct <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#2-5-面向对象"><span class="nav-number">1.</span> <span class="nav-text">2.5 面向对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#method"><span class="nav-number">1.1.</span> <span class="nav-text">method</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#指针作为receiver"><span class="nav-number">1.1.1.</span> <span class="nav-text">指针作为receiver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#method继承"><span class="nav-number">1.1.2.</span> <span class="nav-text">method继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#method重写"><span class="nav-number">1.1.3.</span> <span class="nav-text">method重写</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.2.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

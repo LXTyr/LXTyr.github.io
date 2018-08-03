@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="7.3 正则处理正则表达式是一种进行模式匹配和文本操纵的复杂而又强大的工具。虽然正则表达式比纯粹的文本匹配效率低，但是它却更灵活。按照它的语法规则，随需构造出的匹配模式就能够从原始文本中筛选出几乎任何你想要得到的字符组合。如果你在Web开发中需要从一些文本数据源中获取数据,那么你只需要按照它的语法规则，随需构造出正确的模式字符串就能够从原数据源提取出有意义的文本信息。Go语言通过regexp标准包">
+<meta property="og:type" content="article">
+<meta property="og:title" content="正则处理">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/07.3/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="7.3 正则处理正则表达式是一种进行模式匹配和文本操纵的复杂而又强大的工具。虽然正则表达式比纯粹的文本匹配效率低，但是它却更灵活。按照它的语法规则，随需构造出的匹配模式就能够从原始文本中筛选出几乎任何你想要得到的字符组合。如果你在Web开发中需要从一些文本数据源中获取数据,那么你只需要按照它的语法规则，随需构造出正确的模式字符串就能够从原数据源提取出有意义的文本信息。Go语言通过regexp标准包">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.646Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="正则处理">
+<meta name="twitter:description" content="7.3 正则处理正则表达式是一种进行模式匹配和文本操纵的复杂而又强大的工具。虽然正则表达式比纯粹的文本匹配效率低，但是它却更灵活。按照它的语法规则，随需构造出的匹配模式就能够从原始文本中筛选出几乎任何你想要得到的字符组合。如果你在Web开发中需要从一些文本数据源中获取数据,那么你只需要按照它的语法规则，随需构造出正确的模式字符串就能够从原数据源提取出有意义的文本信息。Go语言通过regexp标准包">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/07.3/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>正则处理 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/07.3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">正则处理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="7-3-正则处理"><a href="#7-3-正则处理" class="headerlink" title="7.3 正则处理"></a>7.3 正则处理</h1><p>正则表达式是一种进行模式匹配和文本操纵的复杂而又强大的工具。虽然正则表达式比纯粹的文本匹配效率低，但是它却更灵活。按照它的语法规则，随需构造出的匹配模式就能够从原始文本中筛选出几乎任何你想要得到的字符组合。如果你在Web开发中需要从一些文本数据源中获取数据,那么你只需要按照它的语法规则，随需构造出正确的模式字符串就能够从原数据源提取出有意义的文本信息。<br>Go语言通过<code>regexp</code>标准包为正则表达式提供了官方支持，如果你已经使用过其他编程语言提供的正则相关功能，那么你应该对Go语言版本的不会太陌生，但是它们之间也有一些小的差异，因为Go实现的是RE2标准，除了\C，详细的语法描述参考：<code>http://code.google.com/p/re2/wiki/Syntax</code><br>其实字符串处理我们可以使用<code>strings</code>包来进行搜索(Contains、Index)、替换(Replace)和解析(Split、Join)等操作，但是这些都是简单的字符串操作，他们的搜索都是大小写敏感，而且固定的字符串，如果我们需要匹配可变的那种就没办法实现了，当然如果<code>strings</code>包能解决你的问题，那么就尽量使用它来解决。因为他们足够简单、而且性能和可读性都会比正则好。<br><a id="more"></a><br>如果你还记得，在前面表单验证的小节里，我们已经接触过正则处理，在那里我们利用了它来验证输入的信息是否满足某些预设的条件。在使用中需要注意的一点就是：所有的字符都是UTF-8编码的。接下来让我们更加深入的来学习Go语言的<code>regexp</code>包相关知识吧。</p>
+<h2 id="通过正则判断是否匹配"><a href="#通过正则判断是否匹配" class="headerlink" title="通过正则判断是否匹配"></a>通过正则判断是否匹配</h2><p><code>regexp</code>包中含有三个函数用来判断是否匹配，如果匹配返回true，否则返回false<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Match</span><span class="params">(pattern <span class="keyword">string</span>, b []<span class="keyword">byte</span>)</span> <span class="params">(matched <span class="keyword">bool</span>, error error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">MatchReader</span><span class="params">(pattern <span class="keyword">string</span>, r io.RuneReader)</span> <span class="params">(matched <span class="keyword">bool</span>, error error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">MatchString</span><span class="params">(pattern <span class="keyword">string</span>, s <span class="keyword">string</span>)</span> <span class="params">(matched <span class="keyword">bool</span>, error error)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>上面的三个函数实现了同一个功能，就是判断<code>pattern</code>是否和输入源匹配，匹配的话就返回true，如果解析正则出错则返回error。三个函数的输入源分别是byte slice、RuneReader和string。<br>如果要验证一个输入是不是IP地址，那么如何来判断呢？请看如下实现<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">IsIP</span><span class="params">(ip <span class="keyword">string</span>)</span> <span class="params">(b <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> m, _ := regexp.MatchString(<span class="string">"^[0-9]&#123;1,3&#125;\\.[0-9]&#123;1,3&#125;\\.[0-9]&#123;1,3&#125;\\.[0-9]&#123;1,3&#125;$"</span>, ip); !m &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，<code>regexp</code>的pattern和我们平常使用的正则一模一样。再来看一个例子：当用户输入一个字符串，我们想知道是不是一次合法的输入：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(os.Args) == <span class="number">1</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"Usage: regexp [string]"</span>)</span><br><span class="line">		os.Exit(<span class="number">1</span>)</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> m, _ := regexp.MatchString(<span class="string">"^[0-9]+$"</span>, os.Args[<span class="number">1</span>]); m &#123;</span><br><span class="line">		fmt.Println(<span class="string">"数字"</span>)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"不是数字"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在上面的两个小例子中，我们采用了Match(Reader|String)来判断一些字符串是否符合我们的描述需求，它们使用起来非常方便。</p>
+<h2 id="通过正则获取内容"><a href="#通过正则获取内容" class="headerlink" title="通过正则获取内容"></a>通过正则获取内容</h2><p>Match模式只能用来对字符串的判断，而无法截取字符串的一部分、过滤字符串、或者提取出符合条件的一批字符串。如果想要满足这些需求，那就需要使用正则表达式的复杂模式。<br>我们经常需要一些爬虫程序，下面就以爬虫为例来说明如何使用正则来过滤或截取抓取到的数据：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"io/ioutil"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">	<span class="string">"regexp"</span></span><br><span class="line">	<span class="string">"strings"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	resp, err := http.Get(<span class="string">"http://www.baidu.com"</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"http get error."</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line">	body, err := ioutil.ReadAll(resp.Body)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"http read error"</span>)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	src := <span class="keyword">string</span>(body)</span><br><span class="line">	<span class="comment">//将HTML标签全转换成小写</span></span><br><span class="line">	re, _ := regexp.Compile(<span class="string">"\\&lt;[\\S\\s]+?\\&gt;"</span>)</span><br><span class="line">	src = re.ReplaceAllStringFunc(src, strings.ToLower)</span><br><span class="line">	<span class="comment">//去除STYLE</span></span><br><span class="line">	re, _ = regexp.Compile(<span class="string">"\\&lt;style[\\S\\s]+?\\&lt;/style\\&gt;"</span>)</span><br><span class="line">	src = re.ReplaceAllString(src, <span class="string">""</span>)</span><br><span class="line">	<span class="comment">//去除SCRIPT</span></span><br><span class="line">	re, _ = regexp.Compile(<span class="string">"\\&lt;script[\\S\\s]+?\\&lt;/script\\&gt;"</span>)</span><br><span class="line">	src = re.ReplaceAllString(src, <span class="string">""</span>)</span><br><span class="line">	<span class="comment">//去除所有尖括号内的HTML代码，并换成换行符</span></span><br><span class="line">	re, _ = regexp.Compile(<span class="string">"\\&lt;[\\S\\s]+?\\&gt;"</span>)</span><br><span class="line">	src = re.ReplaceAllString(src, <span class="string">"\n"</span>)</span><br><span class="line">	<span class="comment">//去除连续的换行符</span></span><br><span class="line">	re, _ = regexp.Compile(<span class="string">"\\s&#123;2,&#125;"</span>)</span><br><span class="line">	src = re.ReplaceAllString(src, <span class="string">"\n"</span>)</span><br><span class="line">	fmt.Println(strings.TrimSpace(src))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>从这个示例可以看出，使用复杂的正则首先是Compile，它会解析正则表达式是否合法，如果正确，那么就会返回一个Regexp，然后就可以利用返回的Regexp在任意的字符串上面执行需要的操作。<br>解析正则表达式的有如下几个方法：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Compile</span><span class="params">(expr <span class="keyword">string</span>)</span> <span class="params">(*Regexp, error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">CompilePOSIX</span><span class="params">(expr <span class="keyword">string</span>)</span> <span class="params">(*Regexp, error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">MustCompile</span><span class="params">(str <span class="keyword">string</span>)</span> *<span class="title">Regexp</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">MustCompilePOSIX</span><span class="params">(str <span class="keyword">string</span>)</span> *<span class="title">Regexp</span></span></span><br></pre></td></tr></table></figure></p>
+<p>CompilePOSIX和Compile的不同点在于POSIX必须使用POSIX语法，它使用最左最长方式搜索，而Compile是采用的则只采用最左方式搜索(例如[a-z]{2,4}这样一个正则表达式，应用于”aa09aaa88aaaa”这个文本串时，CompilePOSIX返回了aaaa，而Compile的返回的是aa)。前缀有Must的函数表示，在解析正则语法的时候，如果匹配模式串不满足正确的语法则直接panic，而不加Must的则只是返回错误。<br>在了解了如何新建一个Regexp之后，我们再来看一下这个struct提供了哪些方法来辅助我们操作字符串，首先我们来看下面这些用来搜索的函数：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(re *Regexp)</span> <span class="title">Find</span><span class="params">(b []<span class="keyword">byte</span>)</span> []<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAll</span><span class="params">(b []<span class="keyword">byte</span>, n <span class="keyword">int</span>)</span> [][]<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAllIndex</span><span class="params">(b []<span class="keyword">byte</span>, n <span class="keyword">int</span>)</span> [][]<span class="title">int</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAllString</span><span class="params">(s <span class="keyword">string</span>, n <span class="keyword">int</span>)</span> []<span class="title">string</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAllStringIndex</span><span class="params">(s <span class="keyword">string</span>, n <span class="keyword">int</span>)</span> [][]<span class="title">int</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAllStringSubmatch</span><span class="params">(s <span class="keyword">string</span>, n <span class="keyword">int</span>)</span> [][]<span class="title">string</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAllStringSubmatchIndex</span><span class="params">(s <span class="keyword">string</span>, n <span class="keyword">int</span>)</span> [][]<span class="title">int</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAllSubmatch</span><span class="params">(b []<span class="keyword">byte</span>, n <span class="keyword">int</span>)</span> [][][]<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAllSubmatchIndex</span><span class="params">(b []<span class="keyword">byte</span>, n <span class="keyword">int</span>)</span> [][]<span class="title">int</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindIndex</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="params">(loc []<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindReaderIndex</span><span class="params">(r io.RuneReader)</span> <span class="params">(loc []<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindReaderSubmatchIndex</span><span class="params">(r io.RuneReader)</span> []<span class="title">int</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindString</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">string</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindStringIndex</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="params">(loc []<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindStringSubmatch</span><span class="params">(s <span class="keyword">string</span>)</span> []<span class="title">string</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindStringSubmatchIndex</span><span class="params">(s <span class="keyword">string</span>)</span> []<span class="title">int</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindSubmatch</span><span class="params">(b []<span class="keyword">byte</span>)</span> [][]<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindSubmatchIndex</span><span class="params">(b []<span class="keyword">byte</span>)</span> []<span class="title">int</span></span></span><br></pre></td></tr></table></figure></p>
+<p>上面这18个函数我们根据输入源(byte slice、string和io.RuneReader)不同还可以继续简化成如下几个，其他的只是输入源不一样，其他功能基本是一样的：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(re *Regexp)</span> <span class="title">Find</span><span class="params">(b []<span class="keyword">byte</span>)</span> []<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAll</span><span class="params">(b []<span class="keyword">byte</span>, n <span class="keyword">int</span>)</span> [][]<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAllIndex</span><span class="params">(b []<span class="keyword">byte</span>, n <span class="keyword">int</span>)</span> [][]<span class="title">int</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAllSubmatch</span><span class="params">(b []<span class="keyword">byte</span>, n <span class="keyword">int</span>)</span> [][][]<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindAllSubmatchIndex</span><span class="params">(b []<span class="keyword">byte</span>, n <span class="keyword">int</span>)</span> [][]<span class="title">int</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindIndex</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="params">(loc []<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindSubmatch</span><span class="params">(b []<span class="keyword">byte</span>)</span> [][]<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">FindSubmatchIndex</span><span class="params">(b []<span class="keyword">byte</span>)</span> []<span class="title">int</span></span></span><br></pre></td></tr></table></figure></p>
+<p>对于这些函数的使用我们来看下面这个例子<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"regexp"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	a := <span class="string">"I am learning Go language"</span></span><br><span class="line">	re, _ := regexp.Compile(<span class="string">"[a-z]&#123;2,4&#125;"</span>)</span><br><span class="line">	<span class="comment">//查找符合正则的第一个</span></span><br><span class="line">	one := re.Find([]<span class="keyword">byte</span>(a))</span><br><span class="line">	fmt.Println(<span class="string">"Find:"</span>, <span class="keyword">string</span>(one))</span><br><span class="line">	<span class="comment">//查找符合正则的所有slice,n小于0表示返回全部符合的字符串，不然就是返回指定的长度</span></span><br><span class="line">	all := re.FindAll([]<span class="keyword">byte</span>(a), <span class="number">-1</span>)</span><br><span class="line">	fmt.Println(<span class="string">"FindAll"</span>, all)</span><br><span class="line">	<span class="comment">//查找符合条件的index位置,开始位置和结束位置</span></span><br><span class="line">	index := re.FindIndex([]<span class="keyword">byte</span>(a))</span><br><span class="line">	fmt.Println(<span class="string">"FindIndex"</span>, index)</span><br><span class="line">	<span class="comment">//查找符合条件的所有的index位置，n同上</span></span><br><span class="line">	allindex := re.FindAllIndex([]<span class="keyword">byte</span>(a), <span class="number">-1</span>)</span><br><span class="line">	fmt.Println(<span class="string">"FindAllIndex"</span>, allindex)</span><br><span class="line">	re2, _ := regexp.Compile(<span class="string">"am(.*)lang(.*)"</span>)</span><br><span class="line">	<span class="comment">//查找Submatch,返回数组，第一个元素是匹配的全部元素，第二个元素是第一个()里面的，第三个是第二个()里面的</span></span><br><span class="line">	<span class="comment">//下面的输出第一个元素是"am learning Go language"</span></span><br><span class="line">	<span class="comment">//第二个元素是" learning Go "，注意包含空格的输出</span></span><br><span class="line">	<span class="comment">//第三个元素是"uage"</span></span><br><span class="line">	submatch := re2.FindSubmatch([]<span class="keyword">byte</span>(a))</span><br><span class="line">	fmt.Println(<span class="string">"FindSubmatch"</span>, submatch)</span><br><span class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> submatch &#123;</span><br><span class="line">		fmt.Println(<span class="keyword">string</span>(v))</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//定义和上面的FindIndex一样</span></span><br><span class="line">	submatchindex := re2.FindSubmatchIndex([]<span class="keyword">byte</span>(a))</span><br><span class="line">	fmt.Println(submatchindex)</span><br><span class="line">	<span class="comment">//FindAllSubmatch,查找所有符合条件的子匹配</span></span><br><span class="line">	submatchall := re2.FindAllSubmatch([]<span class="keyword">byte</span>(a), <span class="number">-1</span>)</span><br><span class="line">	fmt.Println(submatchall)</span><br><span class="line">	<span class="comment">//FindAllSubmatchIndex,查找所有字匹配的index</span></span><br><span class="line">	submatchallindex := re2.FindAllSubmatchIndex([]<span class="keyword">byte</span>(a), <span class="number">-1</span>)</span><br><span class="line">	fmt.Println(submatchallindex)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>前面介绍过匹配函数，Regexp也定义了三个函数，它们和同名的外部函数功能一模一样，其实外部函数就是调用了这Regexp的三个函数来实现的：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(re *Regexp)</span> <span class="title">Match</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="title">bool</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">MatchReader</span><span class="params">(r io.RuneReader)</span> <span class="title">bool</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">MatchString</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">bool</span></span></span><br></pre></td></tr></table></figure></p>
+<p>接下里让我们来了解替换函数是怎么操作的？<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(re *Regexp)</span> <span class="title">ReplaceAll</span><span class="params">(src, repl []<span class="keyword">byte</span>)</span> []<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">ReplaceAllFunc</span><span class="params">(src []<span class="keyword">byte</span>, repl <span class="keyword">func</span>([]<span class="keyword">byte</span>)</span> []<span class="title">byte</span>) []<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">ReplaceAllLiteral</span><span class="params">(src, repl []<span class="keyword">byte</span>)</span> []<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">ReplaceAllLiteralString</span><span class="params">(src, repl <span class="keyword">string</span>)</span> <span class="title">string</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">ReplaceAllString</span><span class="params">(src, repl <span class="keyword">string</span>)</span> <span class="title">string</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">ReplaceAllStringFunc</span><span class="params">(src <span class="keyword">string</span>, repl <span class="keyword">func</span>(<span class="keyword">string</span>)</span> <span class="title">string</span>) <span class="title">string</span></span></span><br></pre></td></tr></table></figure></p>
+<p>这些替换函数我们在上面的抓网页的例子有详细应用示例，<br>接下来我们看一下Expand的解释：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(re *Regexp)</span> <span class="title">Expand</span><span class="params">(dst []<span class="keyword">byte</span>, template []<span class="keyword">byte</span>, src []<span class="keyword">byte</span>, match []<span class="keyword">int</span>)</span> []<span class="title">byte</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(re *Regexp)</span> <span class="title">ExpandString</span><span class="params">(dst []<span class="keyword">byte</span>, template <span class="keyword">string</span>, src <span class="keyword">string</span>, match []<span class="keyword">int</span>)</span> []<span class="title">byte</span></span></span><br></pre></td></tr></table></figure></p>
+<p>那么这个Expand到底用来干嘛的呢？请看下面的例子：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	src := []<span class="keyword">byte</span>(<span class="string">`</span></span><br><span class="line"><span class="string">		call hello alice</span></span><br><span class="line"><span class="string">		hello bob</span></span><br><span class="line"><span class="string">		call hello eve</span></span><br><span class="line"><span class="string">	`</span>)</span><br><span class="line">	pat := regexp.MustCompile(<span class="string">`(?m)(call)\s+(?P&lt;cmd&gt;\w+)\s+(?P&lt;arg&gt;.+)\s*$`</span>)</span><br><span class="line">	res := []<span class="keyword">byte</span>&#123;&#125;</span><br><span class="line">	<span class="keyword">for</span> _, s := <span class="keyword">range</span> pat.FindAllSubmatchIndex(src, <span class="number">-1</span>) &#123;</span><br><span class="line">		res = pat.Expand(res, []<span class="keyword">byte</span>(<span class="string">"$cmd('$arg')\n"</span>), src, s)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(<span class="keyword">string</span>(res))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>至此我们已经全部介绍完Go语言的<code>regexp</code>包，通过对它的主要函数介绍及演示，相信大家应该能够通过Go语言的正则包进行一些基本的正则的操作了。</p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/07.2/" title="Json处理">Json处理</a></li>
+<li>下一节: <a href="/2018/08/03/07.4/" title="模板处理">模板处理</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/07.5/" rel="next" title="文件操作">
+                <i class="fa fa-chevron-left"></i> 文件操作
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/07.2/" rel="prev" title="JSON处理">
+                JSON处理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#7-3-正则处理"><span class="nav-number">1.</span> <span class="nav-text">7.3 正则处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通过正则判断是否匹配"><span class="nav-number">1.1.</span> <span class="nav-text">通过正则判断是否匹配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过正则获取内容"><span class="nav-number">1.2.</span> <span class="nav-text">通过正则获取内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.3.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="6.2 Go如何使用session通过上一小节的介绍，我们知道session是在服务器端实现的一种用户和服务器之间认证的解决方案，目前Go标准包没有为session提供任何支持，这小节我们将会自己动手来实现go版本的session管理和创建。 session创建过程session的基本原理是由服务器为每个会话维护一份信息数据，客户端和服务端依靠一个全局唯一的标识来访问这份数据，以达到交互的目的。当">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go如何使用session">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/06.2/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="6.2 Go如何使用session通过上一小节的介绍，我们知道session是在服务器端实现的一种用户和服务器之间认证的解决方案，目前Go标准包没有为session提供任何支持，这小节我们将会自己动手来实现go版本的session管理和创建。 session创建过程session的基本原理是由服务器为每个会话维护一份信息数据，客户端和服务端依靠一个全局唯一的标识来访问这份数据，以达到交互的目的。当">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.635Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go如何使用session">
+<meta name="twitter:description" content="6.2 Go如何使用session通过上一小节的介绍，我们知道session是在服务器端实现的一种用户和服务器之间认证的解决方案，目前Go标准包没有为session提供任何支持，这小节我们将会自己动手来实现go版本的session管理和创建。 session创建过程session的基本原理是由服务器为每个会话维护一份信息数据，客户端和服务端依靠一个全局唯一的标识来访问这份数据，以达到交互的目的。当">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/06.2/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Go如何使用session | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/06.2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go如何使用session
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="6-2-Go如何使用session"><a href="#6-2-Go如何使用session" class="headerlink" title="6.2 Go如何使用session"></a>6.2 Go如何使用session</h1><p>通过上一小节的介绍，我们知道session是在服务器端实现的一种用户和服务器之间认证的解决方案，目前Go标准包没有为session提供任何支持，这小节我们将会自己动手来实现go版本的session管理和创建。</p>
+<h2 id="session创建过程"><a href="#session创建过程" class="headerlink" title="session创建过程"></a>session创建过程</h2><p>session的基本原理是由服务器为每个会话维护一份信息数据，客户端和服务端依靠一个全局唯一的标识来访问这份数据，以达到交互的目的。当用户访问Web应用时，服务端程序会随需要创建session，这个过程可以概括为三个步骤：</p>
+<ul>
+<li>生成全局唯一标识符（sessionid）；</li>
+<li>开辟数据存储空间。一般会在内存中创建相应的数据结构，但这种情况下，系统一旦掉电，所有的会话数据就会丢失，如果是电子商务类网站，这将造成严重的后果。所以为了解决这类问题，你可以将会话数据写到文件里或存储在数据库中，当然这样会增加I/O开销，但是它可以实现某种程度的session持久化，也更有利于session的共享；</li>
+<li>将session的全局唯一标示符发送给客户端。<a id="more"></a>
+以上三个步骤中，最关键的是如何发送这个session的唯一标识这一步上。考虑到HTTP协议的定义，数据无非可以放到请求行、头域或Body里，所以一般来说会有两种常用的方式：cookie和URL重写。</li>
+</ul>
+<ol>
+<li>Cookie<br>服务端通过设置Set-cookie头就可以将session的标识符传送到客户端，而客户端此后的每一次请求都会带上这个标识符，另外一般包含session信息的cookie会将失效时间设置为0(会话cookie)，即浏览器进程有效时间。至于浏览器怎么处理这个0，每个浏览器都有自己的方案，但差别都不会太大(一般体现在新建浏览器窗口的时候)；</li>
+<li>URL重写<br>所谓URL重写，就是在返回给用户的页面里的所有的URL后面追加session标识符，这样用户在收到响应之后，无论点击响应页面里的哪个链接或提交表单，都会自动带上session标识符，从而就实现了会话的保持。虽然这种做法比较麻烦，但是，如果客户端禁用了cookie的话，此种方案将会是首选。<h2 id="Go实现session管理"><a href="#Go实现session管理" class="headerlink" title="Go实现session管理"></a>Go实现session管理</h2>通过上面session创建过程的讲解，读者应该对session有了一个大体的认识，但是具体到动态页面技术里面，又是怎么实现session的呢？下面我们将结合session的生命周期（lifecycle），来实现go语言版本的session管理。<h3 id="session管理设计"><a href="#session管理设计" class="headerlink" title="session管理设计"></a>session管理设计</h3>我们知道session管理涉及到如下几个因素</li>
+</ol>
+<ul>
+<li>全局session管理器</li>
+<li>保证sessionid 的全局唯一性</li>
+<li>为每个客户关联一个session</li>
+<li>session 的存储(可以存储到内存、文件、数据库等)</li>
+<li>session 过期处理<br>接下来我将讲解一下我关于session管理的整个设计思路以及相应的go代码示例：<h3 id="Session管理器"><a href="#Session管理器" class="headerlink" title="Session管理器"></a>Session管理器</h3>定义一个全局的session管理器<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Manager <span class="keyword">struct</span> &#123;</span><br><span class="line">	cookieName  <span class="keyword">string</span>     <span class="comment">// private cookiename</span></span><br><span class="line">	lock        sync.Mutex <span class="comment">// protects session</span></span><br><span class="line">	provider    Provider</span><br><span class="line">	maxLifeTime <span class="keyword">int64</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewManager</span><span class="params">(provideName, cookieName <span class="keyword">string</span>, maxLifeTime <span class="keyword">int64</span>)</span> <span class="params">(*Manager, error)</span></span> &#123;</span><br><span class="line">	provider, ok := provides[provideName]</span><br><span class="line">	<span class="keyword">if</span> !ok &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">"session: unknown provide %q (forgotten import?)"</span>, provideName)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> &amp;Manager&#123;provider: provider, cookieName: cookieName, maxLifeTime: maxLifeTime&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>Go实现整个的流程应该也是这样的，在main包中创建一个全局的session管理器<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> globalSessions *session.Manager</span><br><span class="line"><span class="comment">//然后在init函数中初始化</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	globalSessions, _ = NewManager(<span class="string">"memory"</span>, <span class="string">"gosessionid"</span>, <span class="number">3600</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们知道session是保存在服务器端的数据，它可以以任何的方式存储，比如存储在内存、数据库或者文件中。因此我们抽象出一个Provider接口，用以表征session管理器底层存储结构。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Provider <span class="keyword">interface</span> &#123;</span><br><span class="line">	SessionInit(sid <span class="keyword">string</span>) (Session, error)</span><br><span class="line">	SessionRead(sid <span class="keyword">string</span>) (Session, error)</span><br><span class="line">	SessionDestroy(sid <span class="keyword">string</span>) error</span><br><span class="line">	SessionGC(maxLifeTime <span class="keyword">int64</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>SessionInit函数实现Session的初始化，操作成功则返回此新的Session变量</li>
+<li>SessionRead函数返回sid所代表的Session变量，如果不存在，那么将以sid为参数调用SessionInit函数创建并返回一个新的Session变量</li>
+<li>SessionDestroy函数用来销毁sid对应的Session变量</li>
+<li>SessionGC根据maxLifeTime来删除过期的数据<br>那么Session接口需要实现什么样的功能呢？有过Web开发经验的读者知道，对Session的处理基本就 设置值、读取值、删除值以及获取当前sessionID这四个操作，所以我们的Session接口也就实现这四个操作。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Session <span class="keyword">interface</span> &#123;</span><br><span class="line">	Set(key, value <span class="keyword">interface</span>&#123;&#125;) error <span class="comment">// set session value</span></span><br><span class="line">	Get(key <span class="keyword">interface</span>&#123;&#125;) <span class="keyword">interface</span>&#123;&#125;  <span class="comment">// get session value</span></span><br><span class="line">	Delete(key <span class="keyword">interface</span>&#123;&#125;) error     <span class="comment">// delete session value</span></span><br><span class="line">	SessionID() <span class="keyword">string</span>                <span class="comment">// back current sessionID</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<blockquote>
+<p>以上设计思路来源于database/sql/driver，先定义好接口，然后具体的存储session的结构实现相应的接口并注册后，相应功能这样就可以使用了，以下是用来随需注册存储session的结构的Register函数的实现。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> provides = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]Provider)</span><br><span class="line"><span class="comment">// Register makes a session provide available by the provided name.</span></span><br><span class="line"><span class="comment">// If Register is called twice with the same name or if driver is nil,</span></span><br><span class="line"><span class="comment">// it panics.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Register</span><span class="params">(name <span class="keyword">string</span>, provider Provider)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> provider == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(<span class="string">"session: Register provider is nil"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> _, dup := provides[name]; dup &#123;</span><br><span class="line">		<span class="built_in">panic</span>(<span class="string">"session: Register called twice for provider "</span> + name)</span><br><span class="line">	&#125;</span><br><span class="line">	provides[name] = provider</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="全局唯一的Session-ID"><a href="#全局唯一的Session-ID" class="headerlink" title="全局唯一的Session ID"></a>全局唯一的Session ID</h3><p>Session ID是用来识别访问Web应用的每一个用户，因此必须保证它是全局唯一的（GUID），下面代码展示了如何满足这一需求：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(manager *Manager)</span> <span class="title">sessionId</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	b := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">32</span>)</span><br><span class="line">	<span class="keyword">if</span> _, err := rand.Read(b); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> base64.URLEncoding.EncodeToString(b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="session创建"><a href="#session创建" class="headerlink" title="session创建"></a>session创建</h3><p>我们需要为每个来访用户分配或获取与他相关连的Session，以便后面根据Session信息来验证操作。SessionStart这个函数就是用来检测是否已经有某个Session与当前来访用户发生了关联，如果没有则创建之。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(manager *Manager)</span> <span class="title">SessionStart</span><span class="params">(w http.ResponseWriter, r *http.Request)</span> <span class="params">(session Session)</span></span> &#123;</span><br><span class="line">	manager.lock.Lock()</span><br><span class="line">	<span class="keyword">defer</span> manager.lock.Unlock()</span><br><span class="line">	cookie, err := r.Cookie(manager.cookieName)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> || cookie.Value == <span class="string">""</span> &#123;</span><br><span class="line">		sid := manager.sessionId()</span><br><span class="line">		session, _ = manager.provider.SessionInit(sid)</span><br><span class="line">		cookie := http.Cookie&#123;Name: manager.cookieName, Value: url.QueryEscape(sid), Path: <span class="string">"/"</span>, HttpOnly: <span class="literal">true</span>, MaxAge: <span class="keyword">int</span>(manager.maxLifeTime)&#125;</span><br><span class="line">		http.SetCookie(w, &amp;cookie)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		sid, _ := url.QueryUnescape(cookie.Value)</span><br><span class="line">		session, _ = manager.provider.SessionRead(sid)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们用前面login操作来演示session的运用：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">login</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">	sess := globalSessions.SessionStart(w, r)</span><br><span class="line">	r.ParseForm()</span><br><span class="line">	<span class="keyword">if</span> r.Method == <span class="string">"GET"</span> &#123;</span><br><span class="line">		t, _ := template.ParseFiles(<span class="string">"login.gtpl"</span>)</span><br><span class="line">		w.Header().Set(<span class="string">"Content-Type"</span>, <span class="string">"text/html"</span>)</span><br><span class="line">		t.Execute(w, sess.Get(<span class="string">"username"</span>))</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		sess.Set(<span class="string">"username"</span>, r.Form[<span class="string">"username"</span>])</span><br><span class="line">		http.Redirect(w, r, <span class="string">"/"</span>, <span class="number">302</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="操作值：设置、读取和删除"><a href="#操作值：设置、读取和删除" class="headerlink" title="操作值：设置、读取和删除"></a>操作值：设置、读取和删除</h3><p>SessionStart函数返回的是一个满足Session接口的变量，那么我们该如何用他来对session数据进行操作呢？<br>上面的例子中的代码<code>session.Get(&quot;uid&quot;)</code>已经展示了基本的读取数据的操作，现在我们再来看一下详细的操作:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">count</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">	sess := globalSessions.SessionStart(w, r)</span><br><span class="line">	createtime := sess.Get(<span class="string">"createtime"</span>)</span><br><span class="line">	<span class="keyword">if</span> createtime == <span class="literal">nil</span> &#123;</span><br><span class="line">		sess.Set(<span class="string">"createtime"</span>, time.Now().Unix())</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (createtime.(<span class="keyword">int64</span>) + <span class="number">360</span>) &lt; (time.Now().Unix()) &#123;</span><br><span class="line">		globalSessions.SessionDestroy(w, r)</span><br><span class="line">		sess = globalSessions.SessionStart(w, r)</span><br><span class="line">	&#125;</span><br><span class="line">	ct := sess.Get(<span class="string">"countnum"</span>)</span><br><span class="line">	<span class="keyword">if</span> ct == <span class="literal">nil</span> &#123;</span><br><span class="line">		sess.Set(<span class="string">"countnum"</span>, <span class="number">1</span>)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		sess.Set(<span class="string">"countnum"</span>, (ct.(<span class="keyword">int</span>) + <span class="number">1</span>))</span><br><span class="line">	&#125;</span><br><span class="line">	t, _ := template.ParseFiles(<span class="string">"count.gtpl"</span>)</span><br><span class="line">	w.Header().Set(<span class="string">"Content-Type"</span>, <span class="string">"text/html"</span>)</span><br><span class="line">	t.Execute(w, sess.Get(<span class="string">"countnum"</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过上面的例子可以看到，Session的操作和操作key/value数据库类似:Set、Get、Delete等操作<br>因为Session有过期的概念，所以我们定义了GC操作，当访问过期时间满足GC的触发条件后将会引起GC，但是当我们进行了任意一个session操作，都会对Session实体进行更新，都会触发对最后访问时间的修改，这样当GC的时候就不会误删除还在使用的Session实体。</p>
+<h3 id="session重置"><a href="#session重置" class="headerlink" title="session重置"></a>session重置</h3><p>我们知道，Web应用中有用户退出这个操作，那么当用户退出应用的时候，我们需要对该用户的session数据进行销毁操作，上面的代码已经演示了如何使用session重置操作，下面这个函数就是实现了这个功能：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Destroy sessionid</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(manager *Manager)</span> <span class="title">SessionDestroy</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span>&#123;</span><br><span class="line">	cookie, err := r.Cookie(manager.cookieName)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> || cookie.Value == <span class="string">""</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		manager.lock.Lock()</span><br><span class="line">		<span class="keyword">defer</span> manager.lock.Unlock()</span><br><span class="line">		manager.provider.SessionDestroy(cookie.Value)</span><br><span class="line">		expiration := time.Now()</span><br><span class="line">		cookie := http.Cookie&#123;Name: manager.cookieName, Path: <span class="string">"/"</span>, HttpOnly: <span class="literal">true</span>, Expires: expiration, MaxAge: <span class="number">-1</span>&#125;</span><br><span class="line">		http.SetCookie(w, &amp;cookie)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="session销毁"><a href="#session销毁" class="headerlink" title="session销毁"></a>session销毁</h3><p>我们来看一下Session管理器如何来管理销毁，只要我们在Main启动的时候启动：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> globalSessions.GC()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(manager *Manager)</span> <span class="title">GC</span><span class="params">()</span></span> &#123;</span><br><span class="line">	manager.lock.Lock()</span><br><span class="line">	<span class="keyword">defer</span> manager.lock.Unlock()</span><br><span class="line">	manager.provider.SessionGC(manager.maxLifeTime)</span><br><span class="line">	time.AfterFunc(time.Duration(manager.maxLifeTime), <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; manager.GC() &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以看到GC充分利用了time包中的定时器功能，当超时<code>maxLifeTime</code>之后调用GC函数，这样就可以保证<code>maxLifeTime</code>时间内的session都是可用的，类似的方案也可以用于统计在线用户数之类的。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此 我们实现了一个用来在Web应用中全局管理Session的SessionManager，定义了用来提供Session存储实现Provider的接口，下一小节，我们将会通过接口定义来实现一些Provider,供大家参考学习。</p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/06.1/" title="session和cookie">session和cookie</a></li>
+<li>下一节: <a href="/2018/08/03/06.3/" title="session存储">session存储</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/06.5/" rel="next" title="小结">
+                <i class="fa fa-chevron-left"></i> 小结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/06.4/" rel="prev" title="预防session劫持">
+                预防session劫持 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#6-2-Go如何使用session"><span class="nav-number">1.</span> <span class="nav-text">6.2 Go如何使用session</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#session创建过程"><span class="nav-number">1.1.</span> <span class="nav-text">session创建过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go实现session管理"><span class="nav-number">1.2.</span> <span class="nav-text">Go实现session管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#session管理设计"><span class="nav-number">1.2.1.</span> <span class="nav-text">session管理设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Session管理器"><span class="nav-number">1.2.2.</span> <span class="nav-text">Session管理器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全局唯一的Session-ID"><span class="nav-number">1.2.3.</span> <span class="nav-text">全局唯一的Session ID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#session创建"><span class="nav-number">1.2.4.</span> <span class="nav-text">session创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作值：设置、读取和删除"><span class="nav-number">1.2.5.</span> <span class="nav-text">操作值：设置、读取和删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#session重置"><span class="nav-number">1.2.6.</span> <span class="nav-text">session重置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#session销毁"><span class="nav-number">1.2.7.</span> <span class="nav-text">session销毁</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.4.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

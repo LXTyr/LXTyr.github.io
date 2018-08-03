@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="2.2 Go基础这小节我们将要介绍如何定义变量、常量、Go内置类型以及Go程序设计中的一些技巧。 定义变量">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go基础">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/02.2/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="2.2 Go基础这小节我们将要介绍如何定义变量、常量、Go内置类型以及Go程序设计中的一些技巧。 定义变量">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/02.2/images/2.2.basic.png">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/02.2/images/2.2.array.png">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/02.2/images/2.2.slice.png">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/02.2/images/2.2.slice2.png">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/02.2/images/2.2.makenew.png">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.578Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go基础">
+<meta name="twitter:description" content="2.2 Go基础这小节我们将要介绍如何定义变量、常量、Go内置类型以及Go程序设计中的一些技巧。 定义变量">
+<meta name="twitter:image" content="http://darrenwonder.github.io/2018/08/03/02.2/images/2.2.basic.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/02.2/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Go基础 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/02.2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go基础
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="2-2-Go基础"><a href="#2-2-Go基础" class="headerlink" title="2.2 Go基础"></a>2.2 Go基础</h1><p>这小节我们将要介绍如何定义变量、常量、Go内置类型以及Go程序设计中的一些技巧。</p>
+<h2 id="定义变量"><a href="#定义变量" class="headerlink" title="定义变量"></a>定义变量</h2><a id="more"></a>
+<p>Go语言里面定义变量有多种方式。<br>使用<code>var</code>关键字是Go最基本的定义变量方式，与C语言不同的是Go把变量类型放在变量名后面：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义一个名称为“variableName”，类型为"type"的变量</span></span><br><span class="line"><span class="keyword">var</span> variableName <span class="keyword">type</span></span><br></pre></td></tr></table></figure></p>
+<p>定义多个变量<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义三个类型都是“type”的变量</span></span><br><span class="line"><span class="keyword">var</span> vname1, vname2, vname3 <span class="keyword">type</span></span><br></pre></td></tr></table></figure></p>
+<p>定义变量并初始化值<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//初始化“variableName”的变量为“value”值，类型是“type”</span></span><br><span class="line"><span class="keyword">var</span> variableName <span class="keyword">type</span> = value</span><br></pre></td></tr></table></figure></p>
+<p>同时初始化多个变量<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">	定义三个类型都是"type"的变量,并且分别初始化为相应的值</span></span><br><span class="line"><span class="comment">	vname1为v1，vname2为v2，vname3为v3</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">var</span> vname1, vname2, vname3 <span class="keyword">type</span>= v1, v2, v3</span><br></pre></td></tr></table></figure></p>
+<p>你是不是觉得上面这样的定义有点繁琐？没关系，因为Go语言的设计者也发现了，有一种写法可以让它变得简单一点。我们可以直接忽略类型声明，那么上面的代码变成这样了：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">	定义三个变量，它们分别初始化为相应的值</span></span><br><span class="line"><span class="comment">	vname1为v1，vname2为v2，vname3为v3</span></span><br><span class="line"><span class="comment">	然后Go会根据其相应值的类型来帮你初始化它们</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">var</span> vname1, vname2, vname3 = v1, v2, v3</span><br></pre></td></tr></table></figure></p>
+<p>你觉得上面的还是有些繁琐？好吧，我也觉得。让我们继续简化：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">	定义三个变量，它们分别初始化为相应的值</span></span><br><span class="line"><span class="comment">	vname1为v1，vname2为v2，vname3为v3</span></span><br><span class="line"><span class="comment">	编译器会根据初始化的值自动推导出相应的类型</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">vname1, vname2, vname3 := v1, v2, v3</span><br></pre></td></tr></table></figure></p>
+<p>现在是不是看上去非常简洁了？<code>:=</code>这个符号直接取代了<code>var</code>和<code>type</code>,这种形式叫做简短声明。不过它有一个限制，那就是它只能用在函数内部；在函数外部使用则会无法编译通过，所以一般用<code>var</code>方式来定义全局变量。<br><code>_</code>（下划线）是个特殊的变量名，任何赋予它的值都会被丢弃。在这个例子中，我们将值<code>35</code>赋予<code>b</code>，并同时丢弃<code>34</code>：<br>    _, b := 34, 35<br>Go对于已声明但未使用的变量会在编译阶段报错，比如下面的代码就会产生一个错误：声明了<code>i</code>但未使用。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> i <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h2><p>所谓常量，也就是在程序编译阶段就确定下来的值，而程序在运行时无法改变该值。在Go程序中，常量可定义为数值、布尔值或字符串等类型。<br>它的语法如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> constantName = value</span><br><span class="line"><span class="comment">//如果需要，也可以明确指定常量的类型：</span></span><br><span class="line"><span class="keyword">const</span> Pi <span class="keyword">float32</span> = <span class="number">3.1415926</span></span><br></pre></td></tr></table></figure></p>
+<p>下面是一些常量声明的例子：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Pi = <span class="number">3.1415926</span></span><br><span class="line"><span class="keyword">const</span> i = <span class="number">10000</span></span><br><span class="line"><span class="keyword">const</span> MaxThread = <span class="number">10</span></span><br><span class="line"><span class="keyword">const</span> prefix = <span class="string">"astaxie_"</span></span><br></pre></td></tr></table></figure></p>
+<p>Go 常量和一般程序语言不同的是，可以指定相当多的小数位数(例如200位)，<br>若指定給float32自动缩短为32bit，指定给float64自动缩短为64bit，详情参考<a href="http://golang.org/ref/spec#Constants" target="_blank" rel="noopener">链接</a></p>
+<h2 id="内置基础类型"><a href="#内置基础类型" class="headerlink" title="内置基础类型"></a>内置基础类型</h2><h3 id="Boolean"><a href="#Boolean" class="headerlink" title="Boolean"></a>Boolean</h3><p>在Go中，布尔值的类型为<code>bool</code>，值是<code>true</code>或<code>false</code>，默认为<code>false</code>。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//示例代码</span></span><br><span class="line"><span class="keyword">var</span> isActive <span class="keyword">bool</span>  <span class="comment">// 全局变量声明</span></span><br><span class="line"><span class="keyword">var</span> enabled, disabled = <span class="literal">true</span>, <span class="literal">false</span>  <span class="comment">// 忽略类型的声明</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> available <span class="keyword">bool</span>  <span class="comment">// 一般声明</span></span><br><span class="line">	valid := <span class="literal">false</span>      <span class="comment">// 简短声明</span></span><br><span class="line">	available = <span class="literal">true</span>    <span class="comment">// 赋值操作</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="数值类型"><a href="#数值类型" class="headerlink" title="数值类型"></a>数值类型</h3><p>整数类型有无符号和带符号两种。Go同时支持<code>int</code>和<code>uint</code>，这两种类型的长度相同，但具体长度取决于不同编译器的实现。Go里面也有直接定义好位数的类型：<code>rune</code>, <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>int64</code>和<code>byte</code>, <code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>uint64</code>。其中<code>rune</code>是<code>int32</code>的别称，<code>byte</code>是<code>uint8</code>的别称。</p>
+<blockquote>
+<p>需要注意的一点是，这些类型的变量之间不允许互相赋值或操作，不然会在编译时引起编译器报错。</p>
+<p>如下的代码会产生错误：invalid operation: a + b (mismatched types int8 and int32)</p>
+<blockquote>
+<p>   var a int8<br>   var b int32<br>   c:=a + b</p>
+</blockquote>
+<p>另外，尽管int的长度是32 bit, 但int 与 int32并不可以互用。<br>浮点数的类型有<code>float32</code>和<code>float64</code>两种（没有<code>float</code>类型），默认是<code>float64</code>。<br>这就是全部吗？No！Go还支持复数。它的默认类型是<code>complex128</code>（64位实数+64位虚数）。如果需要小一些的，也有<code>complex64</code>(32位实数+32位虚数)。复数的形式为<code>RE + IMi</code>，其中<code>RE</code>是实数部分，<code>IM</code>是虚数部分，而最后的<code>i</code>是虚数单位。下面是一个使用复数的例子：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> c <span class="keyword">complex64</span> = <span class="number">5</span>+<span class="number">5i</span></span><br><span class="line"><span class="comment">//output: (5+5i)</span></span><br><span class="line">fmt.Printf(<span class="string">"Value is: %v"</span>, c)</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><p>我们在上一节中讲过，Go中的字符串都是采用<code>UTF-8</code>字符集编码。字符串是用一对双引号（<code>&quot;&quot;</code>）或反引号（<code>`</code> <code>`</code>）括起来定义，它的类型是<code>string</code>。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//示例代码</span></span><br><span class="line"><span class="keyword">var</span> frenchHello <span class="keyword">string</span>  <span class="comment">// 声明变量为字符串的一般方法</span></span><br><span class="line"><span class="keyword">var</span> emptyString <span class="keyword">string</span> = <span class="string">""</span>  <span class="comment">// 声明了一个字符串变量，初始化为空字符串</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	no, yes, maybe := <span class="string">"no"</span>, <span class="string">"yes"</span>, <span class="string">"maybe"</span>  <span class="comment">// 简短声明，同时声明多个变量</span></span><br><span class="line">	japaneseHello := <span class="string">"Konichiwa"</span>  <span class="comment">// 同上</span></span><br><span class="line">	frenchHello = <span class="string">"Bonjour"</span>  <span class="comment">// 常规赋值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在Go中字符串是不可变的，例如下面的代码编译时会报错：cannot assign to s[0]<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> s <span class="keyword">string</span> = <span class="string">"hello"</span></span><br><span class="line">s[<span class="number">0</span>] = <span class="string">'c'</span></span><br></pre></td></tr></table></figure></p>
+<p>但如果真的想要修改怎么办呢？下面的代码可以实现：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">s := <span class="string">"hello"</span></span><br><span class="line">c := []<span class="keyword">byte</span>(s)  <span class="comment">// 将字符串 s 转换为 []byte 类型</span></span><br><span class="line">c[<span class="number">0</span>] = <span class="string">'c'</span></span><br><span class="line">s2 := <span class="keyword">string</span>(c)  <span class="comment">// 再转换回 string 类型</span></span><br><span class="line">fmt.Printf(<span class="string">"%s\n"</span>, s2)</span><br></pre></td></tr></table></figure></p>
+<p>Go中可以使用<code>+</code>操作符来连接两个字符串：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">s := <span class="string">"hello,"</span></span><br><span class="line">m := <span class="string">" world"</span></span><br><span class="line">a := s + m</span><br><span class="line">fmt.Printf(<span class="string">"%s\n"</span>, a)</span><br></pre></td></tr></table></figure></p>
+<p>修改字符串也可写为：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s := <span class="string">"hello"</span></span><br><span class="line">s = <span class="string">"c"</span> + s[<span class="number">1</span>:] <span class="comment">// 字符串虽不能更改，但可进行切片操作</span></span><br><span class="line">fmt.Printf(<span class="string">"%s\n"</span>, s)</span><br></pre></td></tr></table></figure></p>
+<p>如果要声明一个多行的字符串怎么办？可以通过<code>`</code>来声明：<br>    m := <code>hello
+        world</code><br><code>`</code> 括起的字符串为Raw字符串，即字符串在代码中的形式就是打印时的形式，它没有字符转义，换行也将原样输出。例如本例中会输出：<br>    hello<br>        world</p>
+<h3 id="错误类型"><a href="#错误类型" class="headerlink" title="错误类型"></a>错误类型</h3><p>Go内置有一个<code>error</code>类型，专门用来处理错误信息，Go的<code>package</code>里面还专门有一个包<code>errors</code>来处理错误：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">err := errors.New(<span class="string">"emit macho dwarf: elf header corrupted"</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">	fmt.Print(err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Go数据底层的存储"><a href="#Go数据底层的存储" class="headerlink" title="Go数据底层的存储"></a>Go数据底层的存储</h3><p>下面这张图来源于<a href="http://research.swtch.com/" target="_blank" rel="noopener">Russ Cox Blog</a>中一篇介绍<a href="http://research.swtch.com/godata" target="_blank" rel="noopener">Go数据结构</a>的文章，大家可以看到这些基础类型底层都是分配了一块内存，然后存储了相应的值。<br><img src="/2018/08/03/02.2/images/2.2.basic.png"><br>图2.1 Go数据格式的存储</p>
+<h2 id="一些技巧"><a href="#一些技巧" class="headerlink" title="一些技巧"></a>一些技巧</h2><h3 id="分组声明"><a href="#分组声明" class="headerlink" title="分组声明"></a>分组声明</h3><p>在Go语言中，同时声明多个常量、变量，或者导入多个包时，可采用分组的方式进行声明。<br>例如下面的代码：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">"os"</span></span><br><span class="line"><span class="keyword">const</span> i = <span class="number">100</span></span><br><span class="line"><span class="keyword">const</span> pi = <span class="number">3.1415</span></span><br><span class="line"><span class="keyword">const</span> prefix = <span class="string">"Go_"</span></span><br><span class="line"><span class="keyword">var</span> i <span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> pi <span class="keyword">float32</span></span><br><span class="line"><span class="keyword">var</span> prefix <span class="keyword">string</span></span><br></pre></td></tr></table></figure></p>
+<p>可以分组写成如下形式：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span>(</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">const</span>(</span><br><span class="line">	i = <span class="number">100</span></span><br><span class="line">	pi = <span class="number">3.1415</span></span><br><span class="line">	prefix = <span class="string">"Go_"</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">var</span>(</span><br><span class="line">	i <span class="keyword">int</span></span><br><span class="line">	pi <span class="keyword">float32</span></span><br><span class="line">	prefix <span class="keyword">string</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<h3 id="iota枚举"><a href="#iota枚举" class="headerlink" title="iota枚举"></a>iota枚举</h3><p>Go里面有一个关键字<code>iota</code>，这个关键字用来声明<code>enum</code>的时候采用，它默认开始值是0，const中每增加一行加1：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	x = <span class="literal">iota</span> <span class="comment">// x == 0</span></span><br><span class="line">	y = <span class="literal">iota</span> <span class="comment">// y == 1</span></span><br><span class="line">	z = <span class="literal">iota</span> <span class="comment">// z == 2</span></span><br><span class="line">	w        <span class="comment">// 常量声明省略值时，默认和之前一个值的字面相同。这里隐式地说w = iota，因此w == 3。其实上面y和z可同样不用"= iota"</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">const</span> v = <span class="literal">iota</span> <span class="comment">// 每遇到一个const关键字，iota就会重置，此时v == 0</span></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	h, i, j = <span class="literal">iota</span>, <span class="literal">iota</span>, <span class="literal">iota</span> <span class="comment">//h=0,i=0,j=0 iota在同一行值相同</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	a       = <span class="literal">iota</span> <span class="comment">//a=0</span></span><br><span class="line">	b       = <span class="string">"B"</span></span><br><span class="line">	c       = <span class="literal">iota</span>             <span class="comment">//c=2</span></span><br><span class="line">	d, e, f = <span class="literal">iota</span>, <span class="literal">iota</span>, <span class="literal">iota</span> <span class="comment">//d=3,e=3,f=3</span></span><br><span class="line">	g       = <span class="literal">iota</span>             <span class="comment">//g = 4</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(a, b, c, d, e, f, g, h, i, j, x, y, z, w, v)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>除非被显式设置为其它值或<code>iota</code>，每个<code>const</code>分组的第一个常量被默认设置为它的0值，第二及后续的常量被默认设置为它前面那个常量的值，如果前面那个常量的值是<code>iota</code>，则它也被设置为<code>iota</code>。</p>
+</blockquote>
+<h3 id="Go程序设计的一些规则"><a href="#Go程序设计的一些规则" class="headerlink" title="Go程序设计的一些规则"></a>Go程序设计的一些规则</h3><p>Go之所以会那么简洁，是因为它有一些默认的行为：</p>
+<ul>
+<li>大写字母开头的变量是可导出的，也就是其它包可以读取的，是公有变量；小写字母开头的就是不可导出的，是私有变量。</li>
+<li>大写字母开头的函数也是一样，相当于<code>class</code>中的带<code>public</code>关键词的公有函数；小写字母开头的就是有<code>private</code>关键词的私有函数。<h2 id="array、slice、map"><a href="#array、slice、map" class="headerlink" title="array、slice、map"></a>array、slice、map</h2><h3 id="array"><a href="#array" class="headerlink" title="array"></a>array</h3><code>array</code>就是数组，它的定义方式如下：<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr [n]<span class="keyword">type</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>在<code>[n]type</code>中，<code>n</code>表示数组的长度，<code>type</code>表示存储元素的类型。对数组的操作和其它语言类似，都是通过<code>[]</code>来进行读取或赋值：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr [<span class="number">10</span>]<span class="keyword">int</span>  <span class="comment">// 声明了一个int类型的数组</span></span><br><span class="line">arr[<span class="number">0</span>] = <span class="number">42</span>      <span class="comment">// 数组下标是从0开始的</span></span><br><span class="line">arr[<span class="number">1</span>] = <span class="number">13</span>      <span class="comment">// 赋值操作</span></span><br><span class="line">fmt.Printf(<span class="string">"The first element is %d\n"</span>, arr[<span class="number">0</span>])  <span class="comment">// 获取数据，返回42</span></span><br><span class="line">fmt.Printf(<span class="string">"The last element is %d\n"</span>, arr[<span class="number">9</span>]) <span class="comment">//返回未赋值的最后一个元素，默认返回0</span></span><br></pre></td></tr></table></figure></p>
+<p>由于长度也是数组类型的一部分，因此<code>[3]int</code>与<code>[4]int</code>是不同的类型，数组也就不能改变长度。数组之间的赋值是值的赋值，即当把一个数组作为参数传入函数的时候，传入的其实是该数组的副本，而不是它的指针。如果要使用指针，那么就需要用到后面介绍的<code>slice</code>类型了。<br>数组可以使用另一种<code>:=</code>来声明<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a := [<span class="number">3</span>]<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125; <span class="comment">// 声明了一个长度为3的int数组</span></span><br><span class="line">b := [<span class="number">10</span>]<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125; <span class="comment">// 声明了一个长度为10的int数组，其中前三个元素初始化为1、2、3，其它默认为0</span></span><br><span class="line">c := [...]<span class="keyword">int</span>&#123;<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>&#125; <span class="comment">// 可以省略长度而采用`...`的方式，Go会自动根据元素个数来计算长度</span></span><br></pre></td></tr></table></figure></p>
+<p>也许你会说，我想数组里面的值还是数组，能实现吗？当然咯，Go支持嵌套数组，即多维数组。比如下面的代码就声明了一个二维数组：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明了一个二维数组，该数组以两个数组作为元素，其中每个数组中又有4个int类型的元素</span></span><br><span class="line">doubleArray := [<span class="number">2</span>][<span class="number">4</span>]<span class="keyword">int</span>&#123;[<span class="number">4</span>]<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;, [<span class="number">4</span>]<span class="keyword">int</span>&#123;<span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>&#125;&#125;</span><br><span class="line"><span class="comment">// 上面的声明可以简化，直接忽略内部的类型</span></span><br><span class="line">easyArray := [<span class="number">2</span>][<span class="number">4</span>]<span class="keyword">int</span>&#123;&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;, &#123;<span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>数组的分配如下所示：<br><img src="/2018/08/03/02.2/images/2.2.array.png"><br>图2.2 多维数组的映射关系</p>
+<h3 id="slice"><a href="#slice" class="headerlink" title="slice"></a>slice</h3><p>在很多应用场景中，数组并不能满足我们的需求。在初始定义数组时，我们并不知道需要多大的数组，因此我们就需要“动态数组”。在Go里面这种数据结构叫<code>slice</code><br><code>slice</code>并不是真正意义上的动态数组，而是一个引用类型。<code>slice</code>总是指向一个底层<code>array</code>，<code>slice</code>的声明也可以像<code>array</code>一样，只是不需要长度。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 和声明array一样，只是少了长度</span></span><br><span class="line"><span class="keyword">var</span> fslice []<span class="keyword">int</span></span><br></pre></td></tr></table></figure></p>
+<p>接下来我们可以声明一个<code>slice</code>，并初始化数据，如下所示：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">slice := []<span class="keyword">byte</span> &#123;<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>slice</code>可以从一个数组或一个已经存在的<code>slice</code>中再次声明。<code>slice</code>通过<code>array[i:j]</code>来获取，其中<code>i</code>是数组的开始位置，<code>j</code>是结束位置，但不包含<code>array[j]</code>，它的长度是<code>j-i</code>。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明一个含有10个元素元素类型为byte的数组</span></span><br><span class="line"><span class="keyword">var</span> ar = [<span class="number">10</span>]<span class="keyword">byte</span> &#123;<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>, <span class="string">'f'</span>, <span class="string">'g'</span>, <span class="string">'h'</span>, <span class="string">'i'</span>, <span class="string">'j'</span>&#125;</span><br><span class="line"><span class="comment">// 声明两个含有byte的slice</span></span><br><span class="line"><span class="keyword">var</span> a, b []<span class="keyword">byte</span></span><br><span class="line"><span class="comment">// a指向数组的第3个元素开始，并到第五个元素结束，</span></span><br><span class="line">a = ar[<span class="number">2</span>:<span class="number">5</span>]</span><br><span class="line"><span class="comment">//现在a含有的元素: ar[2]、ar[3]和ar[4]</span></span><br><span class="line"><span class="comment">// b是数组ar的另一个slice</span></span><br><span class="line">b = ar[<span class="number">3</span>:<span class="number">5</span>]</span><br><span class="line"><span class="comment">// b的元素是：ar[3]和ar[4]</span></span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>注意<code>slice</code>和数组在声明时的区别：声明数组时，方括号内写明了数组的长度或使用<code>...</code>自动计算长度，而声明<code>slice</code>时，方括号内没有任何字符。<br>它们的数据结构如下所示<br><img src="/2018/08/03/02.2/images/2.2.slice.png"><br>图2.3 slice和array的对应关系图<br>slice有一些简便的操作</p>
+<ul>
+<li><code>slice</code>的默认开始位置是0，<code>ar[:n]</code>等价于<code>ar[0:n]</code></li>
+<li><code>slice</code>的第二个序列默认是数组的长度，<code>ar[n:]</code>等价于<code>ar[n:len(ar)]</code></li>
+<li>如果从一个数组里面直接获取<code>slice</code>，可以这样<code>ar[:]</code>，因为默认第一个序列是0，第二个是数组的长度，即等价于<code>ar[0:len(ar)]</code><br>下面这个例子展示了更多关于<code>slice</code>的操作：<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明一个数组</span></span><br><span class="line"><span class="keyword">var</span> array = [<span class="number">10</span>]<span class="keyword">byte</span>&#123;<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>, <span class="string">'f'</span>, <span class="string">'g'</span>, <span class="string">'h'</span>, <span class="string">'i'</span>, <span class="string">'j'</span>&#125;</span><br><span class="line"><span class="comment">// 声明两个slice</span></span><br><span class="line"><span class="keyword">var</span> aSlice, bSlice []<span class="keyword">byte</span></span><br><span class="line"><span class="comment">// 演示一些简便操作</span></span><br><span class="line">aSlice = array[:<span class="number">3</span>] <span class="comment">// 等价于aSlice = array[0:3] aSlice包含元素: a,b,c</span></span><br><span class="line">aSlice = array[<span class="number">5</span>:] <span class="comment">// 等价于aSlice = array[5:10] aSlice包含元素: f,g,h,i,j</span></span><br><span class="line">aSlice = array[:]  <span class="comment">// 等价于aSlice = array[0:10] 这样aSlice包含了全部的元素</span></span><br><span class="line"><span class="comment">// 从slice中获取slice</span></span><br><span class="line">aSlice = array[<span class="number">3</span>:<span class="number">7</span>]  <span class="comment">// aSlice包含元素: d,e,f,g，len=4，cap=7</span></span><br><span class="line">bSlice = aSlice[<span class="number">1</span>:<span class="number">3</span>] <span class="comment">// bSlice 包含aSlice[1], aSlice[2] 也就是含有: e,f</span></span><br><span class="line">bSlice = aSlice[:<span class="number">3</span>]  <span class="comment">// bSlice 包含 aSlice[0], aSlice[1], aSlice[2] 也就是含有: d,e,f</span></span><br><span class="line">bSlice = aSlice[<span class="number">0</span>:<span class="number">5</span>] <span class="comment">// 对slice的slice可以在cap范围内扩展，此时bSlice包含：d,e,f,g,h</span></span><br><span class="line">bSlice = aSlice[:]   <span class="comment">// bSlice包含所有aSlice的元素: d,e,f,g</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</blockquote>
+<p><code>slice</code>是引用类型，所以当引用改变其中元素的值时，其它的所有引用都会改变该值，例如上面的<code>aSlice</code>和<code>bSlice</code>，如果修改了<code>aSlice</code>中元素的值，那么<code>bSlice</code>相对应的值也会改变。<br>从概念上面来说<code>slice</code>像一个结构体，这个结构体包含了三个元素：</p>
+<ul>
+<li>一个指针，指向数组中<code>slice</code>指定的开始位置</li>
+<li>长度，即<code>slice</code>的长度</li>
+<li>最大长度，也就是<code>slice</code>开始位置到数组的最后位置的长度<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Array_a := [<span class="number">10</span>]<span class="keyword">byte</span>&#123;<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>, <span class="string">'f'</span>, <span class="string">'g'</span>, <span class="string">'h'</span>, <span class="string">'i'</span>, <span class="string">'j'</span>&#125;</span><br><span class="line">Slice_a := Array_a[<span class="number">2</span>:<span class="number">5</span>]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>上面代码的真正存储结构如下图所示<br><img src="/2018/08/03/02.2/images/2.2.slice2.png"><br>图2.4 slice对应数组的信息<br>对于<code>slice</code>有几个有用的内置函数：</p>
+<ul>
+<li><code>len</code>    获取<code>slice</code>的长度</li>
+<li><code>cap</code>    获取<code>slice</code>的最大容量</li>
+<li><code>append</code> 向<code>slice</code>里面追加一个或者多个元素，然后返回一个和<code>slice</code>一样类型的<code>slice</code></li>
+<li><code>copy</code>   函数<code>copy</code>从源<code>slice</code>的<code>src</code>中复制元素到目标<code>dst</code>，并且返回复制的元素的个数<br>注：<code>append</code>函数会改变<code>slice</code>所引用的数组的内容，从而影响到引用同一数组的其它<code>slice</code>。<br>但当<code>slice</code>中没有剩余空间（即<code>(cap-len) == 0</code>）时，此时将动态分配新的数组空间。返回的<code>slice</code>数组指针将指向这个空间，而原数组的内容将保持不变；其它引用此数组的<code>slice</code>则不受影响。<br>从Go1.2开始slice支持了三个参数的slice，之前我们一直采用这种方式在slice或者array基础上来获取一个slice<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> array [<span class="number">10</span>]<span class="keyword">int</span></span><br><span class="line">slice := array[<span class="number">2</span>:<span class="number">4</span>]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这个例子里面slice的容量是8，新版本里面可以指定这个容量<br>    slice = array[2:4:7]<br>上面这个的容量就是<code>7-2</code>，即5。这样这个产生的新的slice就没办法访问最后的三个元素。<br>如果slice是这样的形式<code>array[:i:j]</code>，即第一个参数为空，默认值就是0。</p>
+<h3 id="map"><a href="#map" class="headerlink" title="map"></a>map</h3><p><code>map</code>也就是Python中字典的概念，它的格式为<code>map[keyType]valueType</code><br>我们看下面的代码，<code>map</code>的读取和设置也类似<code>slice</code>一样，通过<code>key</code>来操作，只是<code>slice</code>的<code>index</code>只能是｀int｀类型，而<code>map</code>多了很多类型，可以是<code>int</code>，可以是<code>string</code>及所有完全定义了<code>==</code>与<code>!=</code>操作的类型。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明一个key是字符串，值为int的字典,这种方式的声明需要在使用之前使用make初始化</span></span><br><span class="line"><span class="keyword">var</span> numbers <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span></span><br><span class="line"><span class="comment">// 另一种map的声明方式</span></span><br><span class="line">numbers = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>)</span><br><span class="line">numbers[<span class="string">"one"</span>] = <span class="number">1</span>  <span class="comment">//赋值</span></span><br><span class="line">numbers[<span class="string">"ten"</span>] = <span class="number">10</span> <span class="comment">//赋值</span></span><br><span class="line">numbers[<span class="string">"three"</span>] = <span class="number">3</span></span><br><span class="line">fmt.Println(<span class="string">"第三个数字是: "</span>, numbers[<span class="string">"three"</span>]) <span class="comment">// 读取数据</span></span><br><span class="line"><span class="comment">// 打印出来如:第三个数字是: 3</span></span><br></pre></td></tr></table></figure></p>
+<p>这个<code>map</code>就像我们平常看到的表格一样，左边列是<code>key</code>，右边列是值<br>使用map过程中需要注意的几点：</p>
+<ul>
+<li><code>map</code>是无序的，每次打印出来的<code>map</code>都会不一样，它不能通过<code>index</code>获取，而必须通过<code>key</code>获取</li>
+<li><code>map</code>的长度是不固定的，也就是和<code>slice</code>一样，也是一种引用类型</li>
+<li>内置的<code>len</code>函数同样适用于<code>map</code>，返回<code>map</code>拥有的<code>key</code>的数量</li>
+<li><code>map</code>的值可以很方便的修改，通过<code>numbers[&quot;one&quot;]=11</code>可以很容易的把key为<code>one</code>的字典值改为<code>11</code></li>
+<li><code>map</code>和其他基本型别不同，它不是thread-safe，在多个go-routine存取时，必须使用mutex lock机制<br><code>map</code>的初始化可以通过<code>key:val</code>的方式初始化值，同时<code>map</code>内置有判断是否存在<code>key</code>的方式<br>通过<code>delete</code>删除<code>map</code>的元素：<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始化一个字典</span></span><br><span class="line">rating := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">float32</span>&#123;<span class="string">"C"</span>:<span class="number">5</span>, <span class="string">"Go"</span>:<span class="number">4.5</span>, <span class="string">"Python"</span>:<span class="number">4.5</span>, <span class="string">"C++"</span>:<span class="number">2</span> &#125;</span><br><span class="line"><span class="comment">// map有两个返回值，第二个返回值，如果不存在key，那么ok为false，如果存在ok为true</span></span><br><span class="line">csharpRating, ok := rating[<span class="string">"C#"</span>]</span><br><span class="line"><span class="keyword">if</span> ok &#123;</span><br><span class="line">	fmt.Println(<span class="string">"C# is in the map and its rating is "</span>, csharpRating)</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"We have no rating associated with C# in the map"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">delete</span>(rating, <span class="string">"C"</span>)  <span class="comment">// 删除key为C的元素</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>上面说过了，<code>map</code>也是一种引用类型，如果两个<code>map</code>同时指向一个底层，那么一个改变，另一个也相应的改变：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">m := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>)</span><br><span class="line">m[<span class="string">"Hello"</span>] = <span class="string">"Bonjour"</span></span><br><span class="line">m1 := m</span><br><span class="line">m1[<span class="string">"Hello"</span>] = <span class="string">"Salut"</span>  <span class="comment">// 现在m["hello"]的值已经是Salut了</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="make、new操作"><a href="#make、new操作" class="headerlink" title="make、new操作"></a>make、new操作</h3><p><code>make</code>用于内建类型（<code>map</code>、<code>slice</code> 和<code>channel</code>）的内存分配。<code>new</code>用于各种类型的内存分配。<br>内建函数<code>new</code>本质上说跟其它语言中的同名函数功能一样：<code>new(T)</code>分配了零值填充的<code>T</code>类型的内存空间，并且返回其地址，即一个<code>*T</code>类型的值。用Go的术语说，它返回了一个指针，指向新分配的类型<code>T</code>的零值。有一点非常重要：</p>
+<blockquote>
+<p><code>new</code>返回指针。<br>内建函数<code>make(T, args)</code>与<code>new(T)</code>有着不同的功能，make只能创建<code>slice</code>、<code>map</code>和<code>channel</code>，并且返回一个有初始值(非零)的<code>T</code>类型，而不是<code>*T</code>。本质来讲，导致这三个类型有所不同的原因是指向数据结构的引用在使用前必须被初始化。例如，一个<code>slice</code>，是一个包含指向数据（内部<code>array</code>）的指针、长度和容量的三项描述符；在这些项目被初始化之前，<code>slice</code>为<code>nil</code>。对于<code>slice</code>、<code>map</code>和<code>channel</code>来说，<code>make</code>初始化了内部的数据结构，填充适当的值。<br><code>make</code>返回初始化后的（非零）值。<br>下面这个图详细的解释了<code>new</code>和<code>make</code>之间的区别。<br><img src="/2018/08/03/02.2/images/2.2.makenew.png"><br>图2.5 make和new对应底层的内存分配</p>
+</blockquote>
+<h2 id="零值"><a href="#零值" class="headerlink" title="零值"></a>零值</h2><p>关于“零值”，所指并非是空值，而是一种“变量未填充前”的默认值，通常为0。<br>此处罗列 部分类型 的 “零值”<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>     <span class="number">0</span></span><br><span class="line"><span class="keyword">int8</span>    <span class="number">0</span></span><br><span class="line"><span class="keyword">int32</span>   <span class="number">0</span></span><br><span class="line"><span class="keyword">int64</span>   <span class="number">0</span></span><br><span class="line"><span class="keyword">uint</span>    <span class="number">0x0</span></span><br><span class="line"><span class="keyword">rune</span>    <span class="number">0</span> <span class="comment">//rune的实际类型是 int32</span></span><br><span class="line"><span class="keyword">byte</span>    <span class="number">0x0</span> <span class="comment">// byte的实际类型是 uint8</span></span><br><span class="line"><span class="keyword">float32</span> <span class="number">0</span> <span class="comment">//长度为 4 byte</span></span><br><span class="line"><span class="keyword">float64</span> <span class="number">0</span> <span class="comment">//长度为 8 byte</span></span><br><span class="line"><span class="keyword">bool</span>    <span class="literal">false</span></span><br><span class="line"><span class="keyword">string</span>  <span class="string">""</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一章: <a href="/2018/08/03/02.1/" title="你好,Go">你好,Go</a></li>
+<li>下一节: <a href="/2018/08/03/02.3/" title="流程和函数">流程和函数</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/02.3/" rel="next" title="流程和函数">
+                <i class="fa fa-chevron-left"></i> 流程和函数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/02.1/" rel="prev" title="你好，Go">
+                你好，Go <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#2-2-Go基础"><span class="nav-number">1.</span> <span class="nav-text">2.2 Go基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#定义变量"><span class="nav-number">1.1.</span> <span class="nav-text">定义变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常量"><span class="nav-number">1.2.</span> <span class="nav-text">常量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内置基础类型"><span class="nav-number">1.3.</span> <span class="nav-text">内置基础类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Boolean"><span class="nav-number">1.3.1.</span> <span class="nav-text">Boolean</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数值类型"><span class="nav-number">1.3.2.</span> <span class="nav-text">数值类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符串"><span class="nav-number">1.3.3.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#错误类型"><span class="nav-number">1.3.4.</span> <span class="nav-text">错误类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go数据底层的存储"><span class="nav-number">1.3.5.</span> <span class="nav-text">Go数据底层的存储</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一些技巧"><span class="nav-number">1.4.</span> <span class="nav-text">一些技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分组声明"><span class="nav-number">1.4.1.</span> <span class="nav-text">分组声明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iota枚举"><span class="nav-number">1.4.2.</span> <span class="nav-text">iota枚举</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go程序设计的一些规则"><span class="nav-number">1.4.3.</span> <span class="nav-text">Go程序设计的一些规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#array、slice、map"><span class="nav-number">1.5.</span> <span class="nav-text">array、slice、map</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#array"><span class="nav-number">1.5.1.</span> <span class="nav-text">array</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#slice"><span class="nav-number">1.5.2.</span> <span class="nav-text">slice</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#map"><span class="nav-number">1.5.3.</span> <span class="nav-text">map</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#make、new操作"><span class="nav-number">1.5.4.</span> <span class="nav-text">make、new操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#零值"><span class="nav-number">1.6.</span> <span class="nav-text">零值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.7.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="8.1 Socket编程在很多底层网络应用开发者的眼里一切编程都是Socket，话虽然有点夸张，但却也几乎如此了，现在的网络编程几乎都是用Socket来编程。你想过这些情景么？我们每天打开浏览器浏览网页时，浏览器进程怎么和Web服务器进行通信的呢？当你用QQ聊天时，QQ进程怎么和服务器或者是你的好友所在的QQ进程进行通信的呢？当你打开PPstream观看视频时，PPstream进程如何与视频服务器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Socket编程">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/08.1/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="8.1 Socket编程在很多底层网络应用开发者的眼里一切编程都是Socket，话虽然有点夸张，但却也几乎如此了，现在的网络编程几乎都是用Socket来编程。你想过这些情景么？我们每天打开浏览器浏览网页时，浏览器进程怎么和Web服务器进行通信的呢？当你用QQ聊天时，QQ进程怎么和服务器或者是你的好友所在的QQ进程进行通信的呢？当你打开PPstream观看视频时，PPstream进程如何与视频服务器">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/08.1/images/8.1.socket.png">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.653Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Socket编程">
+<meta name="twitter:description" content="8.1 Socket编程在很多底层网络应用开发者的眼里一切编程都是Socket，话虽然有点夸张，但却也几乎如此了，现在的网络编程几乎都是用Socket来编程。你想过这些情景么？我们每天打开浏览器浏览网页时，浏览器进程怎么和Web服务器进行通信的呢？当你用QQ聊天时，QQ进程怎么和服务器或者是你的好友所在的QQ进程进行通信的呢？当你打开PPstream观看视频时，PPstream进程如何与视频服务器">
+<meta name="twitter:image" content="http://darrenwonder.github.io/2018/08/03/08.1/images/8.1.socket.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/08.1/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Socket编程 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/08.1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Socket编程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="8-1-Socket编程"><a href="#8-1-Socket编程" class="headerlink" title="8.1 Socket编程"></a>8.1 Socket编程</h1><p>在很多底层网络应用开发者的眼里一切编程都是Socket，话虽然有点夸张，但却也几乎如此了，现在的网络编程几乎都是用Socket来编程。你想过这些情景么？我们每天打开浏览器浏览网页时，浏览器进程怎么和Web服务器进行通信的呢？当你用QQ聊天时，QQ进程怎么和服务器或者是你的好友所在的QQ进程进行通信的呢？当你打开PPstream观看视频时，PPstream进程如何与视频服务器进行通信的呢？ 如此种种，都是靠Socket来进行通信的，以一斑窥全豹，可见Socket编程在现代编程中占据了多么重要的地位，这一节我们将介绍Go语言中如何进行Socket编程。</p>
+<a id="more"></a>
+<h2 id="什么是Socket？"><a href="#什么是Socket？" class="headerlink" title="什么是Socket？"></a>什么是Socket？</h2><p>Socket起源于Unix，而Unix基本哲学之一就是“一切皆文件”，都可以用“打开open –&gt; 读写write/read –&gt; 关闭close”模式来操作。Socket就是该模式的一个实现，网络的Socket数据传输是一种特殊的I/O，Socket也是一种文件描述符。Socket也具有一个类似于打开文件的函数调用：Socket()，该函数返回一个整型的Socket描述符，随后的连接建立、数据传输等操作都是通过该Socket实现的。</p>
+<p>常用的Socket类型有两种：流式Socket（SOCK_STREAM）和数据报式Socket（SOCK_DGRAM）。流式是一种面向连接的Socket，针对于面向连接的TCP服务应用；数据报式Socket是一种无连接的Socket，对应于无连接的UDP服务应用。</p>
+<h2 id="Socket如何通信"><a href="#Socket如何通信" class="headerlink" title="Socket如何通信"></a>Socket如何通信</h2><p>网络中的进程之间如何通过Socket通信呢？首要解决的问题是如何唯一标识一个进程，否则通信无从谈起！在本地可以通过进程PID来唯一标识一个进程，但是在网络中这是行不通的。其实TCP/IP协议族已经帮我们解决了这个问题，网络层的“ip地址”可以唯一标识网络中的主机，而传输层的“协议+端口”可以唯一标识主机中的应用程序（进程）。这样利用三元组（ip地址，协议，端口）就可以标识网络的进程了，网络中需要互相通信的进程，就可以利用这个标志在他们之间进行交互。请看下面这个TCP/IP协议结构图</p>
+<img src="/2018/08/03/08.1/images/8.1.socket.png">
+<p>图8.1 七层网络协议图</p>
+<p>使用TCP/IP协议的应用程序通常采用应用编程接口：UNIX BSD的套接字（socket）和UNIX System V的TLI（已经被淘汰），来实现网络进程之间的通信。就目前而言，几乎所有的应用程序都是采用socket，而现在又是网络时代，网络中进程通信是无处不在，这就是为什么说“一切皆Socket”。</p>
+<h2 id="Socket基础知识"><a href="#Socket基础知识" class="headerlink" title="Socket基础知识"></a>Socket基础知识</h2><p>通过上面的介绍我们知道Socket有两种：TCP Socket和UDP Socket，TCP和UDP是协议，而要确定一个进程的需要三元组，需要IP地址和端口。</p>
+<h3 id="IPv4地址"><a href="#IPv4地址" class="headerlink" title="IPv4地址"></a>IPv4地址</h3><p>目前的全球因特网所采用的协议族是TCP/IP协议。IP是TCP/IP协议中网络层的协议，是TCP/IP协议族的核心协议。目前主要采用的IP协议的版本号是4(简称为IPv4)，发展至今已经使用了30多年。</p>
+<p>IPv4的地址位数为32位，也就是最多有2的32次方的网络设备可以联到Internet上。近十年来由于互联网的蓬勃发展，IP位址的需求量愈来愈大，使得IP位址的发放愈趋紧张，前一段时间，据报道IPV4的地址已经发放完毕，我们公司目前很多服务器的IP都是一个宝贵的资源。</p>
+<p>地址格式类似这样：127.0.0.1 172.122.121.111</p>
+<h3 id="IPv6地址"><a href="#IPv6地址" class="headerlink" title="IPv6地址"></a>IPv6地址</h3><p>IPv6是下一版本的互联网协议，也可以说是下一代互联网的协议，它是为了解决IPv4在实施过程中遇到的各种问题而被提出的，IPv6采用128位地址长度，几乎可以不受限制地提供地址。按保守方法估算IPv6实际可分配的地址，整个地球的每平方米面积上仍可分配1000多个地址。在IPv6的设计过程中除了一劳永逸地解决了地址短缺问题以外，还考虑了在IPv4中解决不好的其它问题，主要有端到端IP连接、服务质量（QoS）、安全性、多播、移动性、即插即用等。</p>
+<p>地址格式类似这样：2002:c0e8:82e7:0:0:0:c0e8:82e7</p>
+<h3 id="Go支持的IP类型"><a href="#Go支持的IP类型" class="headerlink" title="Go支持的IP类型"></a>Go支持的IP类型</h3><p>在Go的<code>net</code>包中定义了很多类型、函数和方法用来网络编程，其中IP的定义如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> IP []<span class="keyword">byte</span></span><br></pre></td></tr></table></figure></p>
+<p>在<code>net</code>包中有很多函数来操作IP，但是其中比较有用的也就几个，其中<code>ParseIP(s string) IP</code>函数会把一个IPv4或者IPv6的地址转化成IP类型，请看下面的例子:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"net"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(os.Args) != <span class="number">2</span> &#123;</span><br><span class="line">		fmt.Fprintf(os.Stderr, <span class="string">"Usage: %s ip-addr\n"</span>, os.Args[<span class="number">0</span>])</span><br><span class="line">		os.Exit(<span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	name := os.Args[<span class="number">1</span>]</span><br><span class="line">	addr := net.ParseIP(name)</span><br><span class="line">	<span class="keyword">if</span> addr == <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"Invalid address"</span>)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"The address is "</span>, addr.String())</span><br><span class="line">	&#125;</span><br><span class="line">	os.Exit(<span class="number">0</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行之后你就会发现只要你输入一个IP地址就会给出相应的IP格式</p>
+<h2 id="TCP-Socket"><a href="#TCP-Socket" class="headerlink" title="TCP Socket"></a>TCP Socket</h2><p>当我们知道如何通过网络端口访问一个服务时，那么我们能够做什么呢？作为客户端来说，我们可以通过向远端某台机器的的某个网络端口发送一个请求，然后得到在机器的此端口上监听的服务反馈的信息。作为服务端，我们需要把服务绑定到某个指定端口，并且在此端口上监听，当有客户端来访问时能够读取信息并且写入反馈信息。</p>
+<p>在Go语言的<code>net</code>包中有一个类型<code>TCPConn</code>，这个类型可以用来作为客户端和服务器端交互的通道，他有两个主要的函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *TCPConn)</span> <span class="title">Write</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="params">(<span class="keyword">int</span>, error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(c *TCPConn)</span> <span class="title">Read</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="params">(<span class="keyword">int</span>, error)</span></span></span><br></pre></td></tr></table></figure>
+<p><code>TCPConn</code>可以用在客户端和服务器端来读写数据。</p>
+<p>还有我们需要知道一个<code>TCPAddr</code>类型，他表示一个TCP的地址信息，他的定义如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> TCPAddr <span class="keyword">struct</span> &#123;</span><br><span class="line">	IP IP</span><br><span class="line">	Port <span class="keyword">int</span></span><br><span class="line">	Zone <span class="keyword">string</span> <span class="comment">// IPv6 scoped addressing zone</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`	</span></span><br><span class="line"><span class="string">在Go语言中通过`</span>ResolveTCPAddr<span class="string">`获取一个`</span>TCPAddr<span class="string">`</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>Go</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ResolveTCPAddr</span><span class="params">(net, addr <span class="keyword">string</span>)</span> <span class="params">(*TCPAddr, os.Error)</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>net参数是”tcp4”、”tcp6”、”tcp”中的任意一个，分别表示TCP(IPv4-only), TCP(IPv6-only)或者TCP(IPv4, IPv6的任意一个)。</li>
+<li>addr表示域名或者IP地址，例如”<a href="http://www.google.com:80&quot;" target="_blank" rel="noopener">www.google.com:80&quot;</a> 或者”127.0.0.1:22”。</li>
+</ul>
+<h3 id="TCP-client"><a href="#TCP-client" class="headerlink" title="TCP client"></a>TCP client</h3><p>Go语言中通过net包中的<code>DialTCP</code>函数来建立一个TCP连接，并返回一个<code>TCPConn</code>类型的对象，当连接建立时服务器端也创建一个同类型的对象，此时客户端和服务器段通过各自拥有的<code>TCPConn</code>对象来进行数据交换。一般而言，客户端通过<code>TCPConn</code>对象将请求信息发送到服务器端，读取服务器端响应的信息。服务器端读取并解析来自客户端的请求，并返回应答信息，这个连接只有当任一端关闭了连接之后才失效，不然这连接可以一直在使用。建立连接的函数定义如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DialTCP</span><span class="params">(network <span class="keyword">string</span>, laddr, raddr *TCPAddr)</span> <span class="params">(*TCPConn, error)</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>net参数是”tcp4”、”tcp6”、”tcp”中的任意一个，分别表示TCP(IPv4-only)、TCP(IPv6-only)或者TCP(IPv4,IPv6的任意一个)</li>
+<li>laddr表示本机地址，一般设置为nil</li>
+<li>raddr表示远程的服务地址</li>
+</ul>
+<p>接下来我们写一个简单的例子，模拟一个基于HTTP协议的客户端请求去连接一个Web服务端。我们要写一个简单的http请求头，格式类似如下：</p>
+<pre><code>&quot;HEAD / HTTP/1.0\r\n\r\n&quot;
+</code></pre><p>从服务端接收到的响应信息格式可能如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">HTTP/<span class="number">1.0</span> <span class="number">200</span> OK</span><br><span class="line">ETag: <span class="string">"-9985996"</span></span><br><span class="line">Last-Modified: Thu, <span class="number">25</span> Mar <span class="number">2010</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">10</span> GMT</span><br><span class="line">Content-Length: <span class="number">18074</span></span><br><span class="line">Connection: <span class="built_in">close</span></span><br><span class="line">Date: Sat, <span class="number">28</span> Aug <span class="number">2010</span> <span class="number">00</span>:<span class="number">43</span>:<span class="number">48</span> GMT</span><br><span class="line">Server: lighttpd/<span class="number">1.4</span><span class="number">.23</span></span><br></pre></td></tr></table></figure></p>
+<p>我们的客户端代码如下所示：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"io/ioutil"</span></span><br><span class="line">	<span class="string">"net"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(os.Args) != <span class="number">2</span> &#123;</span><br><span class="line">		fmt.Fprintf(os.Stderr, <span class="string">"Usage: %s host:port "</span>, os.Args[<span class="number">0</span>])</span><br><span class="line">		os.Exit(<span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	service := os.Args[<span class="number">1</span>]</span><br><span class="line">	tcpAddr, err := net.ResolveTCPAddr(<span class="string">"tcp4"</span>, service)</span><br><span class="line">	checkError(err)</span><br><span class="line">	conn, err := net.DialTCP(<span class="string">"tcp"</span>, <span class="literal">nil</span>, tcpAddr)</span><br><span class="line">	checkError(err)</span><br><span class="line">	_, err = conn.Write([]<span class="keyword">byte</span>(<span class="string">"HEAD / HTTP/1.0\r\n\r\n"</span>))</span><br><span class="line">	checkError(err)</span><br><span class="line">	result, err := ioutil.ReadAll(conn)</span><br><span class="line">	checkError(err)</span><br><span class="line">	fmt.Println(<span class="keyword">string</span>(result))</span><br><span class="line">	os.Exit(<span class="number">0</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">checkError</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Fprintf(os.Stderr, <span class="string">"Fatal error: %s"</span>, err.Error())</span><br><span class="line">		os.Exit(<span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过上面的代码我们可以看出：首先程序将用户的输入作为参数<code>service</code>传入<code>net.ResolveTCPAddr</code>获取一个tcpAddr,然后把tcpAddr传入DialTCP后创建了一个TCP连接<code>conn</code>，通过<code>conn</code>来发送请求信息，最后通过<code>ioutil.ReadAll</code>从<code>conn</code>中读取全部的文本，也就是服务端响应反馈的信息。</p>
+<h3 id="TCP-server"><a href="#TCP-server" class="headerlink" title="TCP server"></a>TCP server</h3><p>上面我们编写了一个TCP的客户端程序，也可以通过net包来创建一个服务器端程序，在服务器端我们需要绑定服务到指定的非激活端口，并监听此端口，当有客户端请求到达的时候可以接收到来自客户端连接的请求。net包中有相应功能的函数，函数定义如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ListenTCP</span><span class="params">(network <span class="keyword">string</span>, laddr *TCPAddr)</span> <span class="params">(*TCPListener, error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(l *TCPListener)</span> <span class="title">Accept</span><span class="params">()</span> <span class="params">(Conn, error)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>参数说明同DialTCP的参数一样。下面我们实现一个简单的时间同步服务，监听7777端口<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	service := <span class="string">":7777"</span></span><br><span class="line">	tcpAddr, err := net.ResolveTCPAddr(<span class="string">"tcp4"</span>, service)</span><br><span class="line">	checkError(err)</span><br><span class="line">	listener, err := net.ListenTCP(<span class="string">"tcp"</span>, tcpAddr)</span><br><span class="line">	checkError(err)</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		conn, err := listener.Accept()</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		daytime := time.Now().String()</span><br><span class="line">		conn.Write([]<span class="keyword">byte</span>(daytime)) <span class="comment">// don't care about return value</span></span><br><span class="line">		conn.Close()                <span class="comment">// we're finished with this client</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">checkError</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Fprintf(os.Stderr, <span class="string">"Fatal error: %s"</span>, err.Error())</span><br><span class="line">		os.Exit(<span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的服务跑起来之后，它将会一直在那里等待，直到有新的客户端请求到达。当有新的客户端请求到达并同意接受<code>Accept</code>该请求的时候他会反馈当前的时间信息。值得注意的是，在代码中<code>for</code>循环里，当有错误发生时，直接continue而不是退出，是因为在服务器端跑代码的时候，当有错误发生的情况下最好是由服务端记录错误，然后当前连接的客户端直接报错而退出，从而不会影响到当前服务端运行的整个服务。</p>
+<p>上面的代码有个缺点，执行的时候是单任务的，不能同时接收多个请求，那么该如何改造以使它支持多并发呢？Go里面有一个goroutine机制，请看下面改造后的代码<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	service := <span class="string">":1200"</span></span><br><span class="line">	tcpAddr, err := net.ResolveTCPAddr(<span class="string">"tcp4"</span>, service)</span><br><span class="line">	checkError(err)</span><br><span class="line">	listener, err := net.ListenTCP(<span class="string">"tcp"</span>, tcpAddr)</span><br><span class="line">	checkError(err)</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		conn, err := listener.Accept()</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">go</span> handleClient(conn)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handleClient</span><span class="params">(conn net.Conn)</span></span> &#123;</span><br><span class="line">	<span class="keyword">defer</span> conn.Close()</span><br><span class="line">	daytime := time.Now().String()</span><br><span class="line">	conn.Write([]<span class="keyword">byte</span>(daytime)) <span class="comment">// don't care about return value</span></span><br><span class="line">	<span class="comment">// we're finished with this client</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">checkError</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Fprintf(os.Stderr, <span class="string">"Fatal error: %s"</span>, err.Error())</span><br><span class="line">		os.Exit(<span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过把业务处理分离到函数<code>handleClient</code>，我们就可以进一步地实现多并发执行了。看上去是不是很帅，增加<code>go</code>关键词就实现了服务端的多并发，从这个小例子也可以看出goroutine的强大之处。</p>
+<p>有的朋友可能要问：这个服务端没有处理客户端实际请求的内容。如果我们需要通过从客户端发送不同的请求来获取不同的时间格式，而且需要一个长连接，该怎么做呢？请看：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">	<span class="string">"strconv"</span></span><br><span class="line">	<span class="string">"strings"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	service := <span class="string">":1200"</span></span><br><span class="line">	tcpAddr, err := net.ResolveTCPAddr(<span class="string">"tcp4"</span>, service)</span><br><span class="line">	checkError(err)</span><br><span class="line">	listener, err := net.ListenTCP(<span class="string">"tcp"</span>, tcpAddr)</span><br><span class="line">	checkError(err)</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		conn, err := listener.Accept()</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">go</span> handleClient(conn)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handleClient</span><span class="params">(conn net.Conn)</span></span> &#123;</span><br><span class="line">	conn.SetReadDeadline(time.Now().Add(<span class="number">2</span> * time.Minute)) <span class="comment">// set 2 minutes timeout</span></span><br><span class="line">	request := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">128</span>) <span class="comment">// set maxium request length to 128B to prevent flood attack</span></span><br><span class="line">	<span class="keyword">defer</span> conn.Close()  <span class="comment">// close connection before exit</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		read_len, err := conn.Read(request)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Println(err)</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">    		<span class="keyword">if</span> read_len == <span class="number">0</span> &#123;</span><br><span class="line">    			<span class="keyword">break</span> <span class="comment">// connection already closed by client</span></span><br><span class="line">    		&#125; <span class="keyword">else</span> <span class="keyword">if</span> strings.TrimSpace(<span class="keyword">string</span>(request[:read_len])) == <span class="string">"timestamp"</span> &#123;</span><br><span class="line">    			daytime := strconv.FormatInt(time.Now().Unix(), <span class="number">10</span>)</span><br><span class="line">    			conn.Write([]<span class="keyword">byte</span>(daytime))</span><br><span class="line">    		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    			daytime := time.Now().String()</span><br><span class="line">    			conn.Write([]<span class="keyword">byte</span>(daytime))</span><br><span class="line">    		&#125;</span><br><span class="line"></span><br><span class="line">    		request = <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">128</span>) <span class="comment">// clear last read content</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">checkError</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Fprintf(os.Stderr, <span class="string">"Fatal error: %s"</span>, err.Error())</span><br><span class="line">		os.Exit(<span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在上面这个例子中，我们使用<code>conn.Read()</code>不断读取客户端发来的请求。由于我们需要保持与客户端的长连接，所以不能在读取完一次请求后就关闭连接。由于<code>conn.SetReadDeadline()</code>设置了超时，当一定时间内客户端无请求发送，<code>conn</code>便会自动关闭，下面的for循环即会因为连接已关闭而跳出。需要注意的是，<code>request</code>在创建时需要指定一个最大长度以防止flood attack；每次读取到请求处理完毕后，需要清理request，因为<code>conn.Read()</code>会将新读取到的内容append到原内容之后。</p>
+<h3 id="控制TCP连接"><a href="#控制TCP连接" class="headerlink" title="控制TCP连接"></a>控制TCP连接</h3><p>TCP有很多连接控制函数，我们平常用到比较多的有如下几个函数：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DialTimeout</span><span class="params">(net, addr <span class="keyword">string</span>, timeout time.Duration)</span> <span class="params">(Conn, error)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>设置建立连接的超时时间，客户端和服务器端都适用，当超过设置时间时，连接自动关闭。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *TCPConn)</span> <span class="title">SetReadDeadline</span><span class="params">(t time.Time)</span> <span class="title">error</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(c *TCPConn)</span> <span class="title">SetWriteDeadline</span><span class="params">(t time.Time)</span> <span class="title">error</span></span></span><br></pre></td></tr></table></figure></p>
+<p>用来设置写入/读取一个连接的超时时间。当超过设置时间时，连接自动关闭。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *TCPConn)</span> <span class="title">SetKeepAlive</span><span class="params">(keepalive <span class="keyword">bool</span>)</span> <span class="title">os</span>.<span class="title">Error</span></span></span><br><span class="line"><span class="function">```	</span></span><br><span class="line"><span class="function">设置<span class="title">keepAlive</span>属性，是操作系统层在<span class="title">tcp</span>上没有数据和<span class="title">ACK</span>的时候，会间隔性的发送<span class="title">keepalive</span>包，操作系统可以通过该包来判断一个<span class="title">tcp</span>连接是否已经断开，在<span class="title">windows</span>上默认2个小时没有收到数据和<span class="title">keepalive</span>包的时候人为<span class="title">tcp</span>连接已经断开，这个功能和我们通常在应用层加的心跳包的功能类似。</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">更多的内容请查看`<span class="title">net</span>`包的文档。</span></span><br><span class="line"><span class="function">## <span class="title">UDP</span> <span class="title">Socket</span></span></span><br><span class="line"><span class="function"><span class="title">Go</span>语言包中处理<span class="title">UDP</span> <span class="title">Socket</span>和<span class="title">TCP</span> <span class="title">Socket</span>不同的地方就是在服务器端处理多个客户端请求数据包的方式不同,<span class="title">UDP</span>缺少了对客户端连接请求的<span class="title">Accept</span>函数。其他基本几乎一模一样，只有<span class="title">TCP</span>换成了<span class="title">UDP</span>而已。<span class="title">UDP</span>的几个主要函数如下所示：</span></span><br><span class="line"><span class="function">```<span class="title">Go</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">ResolveUDPAddr</span><span class="params">(net, addr <span class="keyword">string</span>)</span> <span class="params">(*UDPAddr, os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">DialUDP</span><span class="params">(net <span class="keyword">string</span>, laddr, raddr *UDPAddr)</span> <span class="params">(c *UDPConn, err os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">ListenUDP</span><span class="params">(net <span class="keyword">string</span>, laddr *UDPAddr)</span> <span class="params">(c *UDPConn, err os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(c *UDPConn)</span> <span class="title">ReadFromUDP</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="params">(n <span class="keyword">int</span>, addr *UDPAddr, err os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(c *UDPConn)</span> <span class="title">WriteToUDP</span><span class="params">(b []<span class="keyword">byte</span>, addr *UDPAddr)</span> <span class="params">(n <span class="keyword">int</span>, err os.Error)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>一个UDP的客户端代码如下所示,我们可以看到不同的就是TCP换成了UDP而已：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(os.Args) != <span class="number">2</span> &#123;</span><br><span class="line">		fmt.Fprintf(os.Stderr, <span class="string">"Usage: %s host:port"</span>, os.Args[<span class="number">0</span>])</span><br><span class="line">		os.Exit(<span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	service := os.Args[<span class="number">1</span>]</span><br><span class="line">	udpAddr, err := net.ResolveUDPAddr(<span class="string">"udp4"</span>, service)</span><br><span class="line">	checkError(err)</span><br><span class="line">	conn, err := net.DialUDP(<span class="string">"udp"</span>, <span class="literal">nil</span>, udpAddr)</span><br><span class="line">	checkError(err)</span><br><span class="line">	_, err = conn.Write([]<span class="keyword">byte</span>(<span class="string">"anything"</span>))</span><br><span class="line">	checkError(err)</span><br><span class="line">	<span class="keyword">var</span> buf [<span class="number">512</span>]<span class="keyword">byte</span></span><br><span class="line">	n, err := conn.Read(buf[<span class="number">0</span>:])</span><br><span class="line">	checkError(err)</span><br><span class="line">	fmt.Println(<span class="keyword">string</span>(buf[<span class="number">0</span>:n]))</span><br><span class="line">	os.Exit(<span class="number">0</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">checkError</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Fprintf(os.Stderr, <span class="string">"Fatal error "</span>, err.Error())</span><br><span class="line">		os.Exit(<span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们来看一下UDP服务器端如何来处理：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	service := <span class="string">":1200"</span></span><br><span class="line">	udpAddr, err := net.ResolveUDPAddr(<span class="string">"udp4"</span>, service)</span><br><span class="line">	checkError(err)</span><br><span class="line">	conn, err := net.ListenUDP(<span class="string">"udp"</span>, udpAddr)</span><br><span class="line">	checkError(err)</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		handleClient(conn)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handleClient</span><span class="params">(conn *net.UDPConn)</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> buf [<span class="number">512</span>]<span class="keyword">byte</span></span><br><span class="line">	_, addr, err := conn.ReadFromUDP(buf[<span class="number">0</span>:])</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	daytime := time.Now().String()</span><br><span class="line">	conn.WriteToUDP([]<span class="keyword">byte</span>(daytime), addr)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">checkError</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Fprintf(os.Stderr, <span class="string">"Fatal error "</span>, err.Error())</span><br><span class="line">		os.Exit(<span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过对TCP和UDP Socket编程的描述和实现，可见Go已经完备地支持了Socket编程，而且使用起来相当的方便，Go提供了很多函数，通过这些函数可以很容易就编写出高性能的Socket应用。</p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/08.0/" title="Web服务">Web服务</a></li>
+<li>下一节: <a href="/2018/08/03/08.2/" title="WebSocket">WebSocket</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/08.4/" rel="next" title="RPC">
+                <i class="fa fa-chevron-left"></i> RPC
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/08.3/" rel="prev" title="REST">
+                REST <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#8-1-Socket编程"><span class="nav-number">1.</span> <span class="nav-text">8.1 Socket编程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是Socket？"><span class="nav-number">1.1.</span> <span class="nav-text">什么是Socket？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Socket如何通信"><span class="nav-number">1.2.</span> <span class="nav-text">Socket如何通信</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Socket基础知识"><span class="nav-number">1.3.</span> <span class="nav-text">Socket基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IPv4地址"><span class="nav-number">1.3.1.</span> <span class="nav-text">IPv4地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IPv6地址"><span class="nav-number">1.3.2.</span> <span class="nav-text">IPv6地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go支持的IP类型"><span class="nav-number">1.3.3.</span> <span class="nav-text">Go支持的IP类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-Socket"><span class="nav-number">1.4.</span> <span class="nav-text">TCP Socket</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-client"><span class="nav-number">1.4.1.</span> <span class="nav-text">TCP client</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-server"><span class="nav-number">1.4.2.</span> <span class="nav-text">TCP server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#控制TCP连接"><span class="nav-number">1.4.3.</span> <span class="nav-text">控制TCP连接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.6.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

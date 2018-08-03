@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="7.4 模板处理什么是模板你一定听说过一种叫做MVC的设计模式，Model处理数据，View展现结果，Controller控制用户的请求，至于View层的处理，在很多动态语言里面都是通过在静态HTML中插入动态语言生成的数据，例如JSP中通过插入&amp;lt;%=....=%&amp;gt;，PHP中通过插入&amp;lt;?php.....?&amp;gt;来实现的。通过下面这个图可以说明模板的机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模板处理">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/07.4/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="7.4 模板处理什么是模板你一定听说过一种叫做MVC的设计模式，Model处理数据，View展现结果，Controller控制用户的请求，至于View层的处理，在很多动态语言里面都是通过在静态HTML中插入动态语言生成的数据，例如JSP中通过插入&amp;lt;%=....=%&amp;gt;，PHP中通过插入&amp;lt;?php.....?&amp;gt;来实现的。通过下面这个图可以说明模板的机制">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/07.4/images/7.4.template.png">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.648Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="模板处理">
+<meta name="twitter:description" content="7.4 模板处理什么是模板你一定听说过一种叫做MVC的设计模式，Model处理数据，View展现结果，Controller控制用户的请求，至于View层的处理，在很多动态语言里面都是通过在静态HTML中插入动态语言生成的数据，例如JSP中通过插入&amp;lt;%=....=%&amp;gt;，PHP中通过插入&amp;lt;?php.....?&amp;gt;来实现的。通过下面这个图可以说明模板的机制">
+<meta name="twitter:image" content="http://darrenwonder.github.io/2018/08/03/07.4/images/7.4.template.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/07.4/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>模板处理 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/07.4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">模板处理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="7-4-模板处理"><a href="#7-4-模板处理" class="headerlink" title="7.4 模板处理"></a>7.4 模板处理</h1><h2 id="什么是模板"><a href="#什么是模板" class="headerlink" title="什么是模板"></a>什么是模板</h2><p>你一定听说过一种叫做MVC的设计模式，Model处理数据，View展现结果，Controller控制用户的请求，至于View层的处理，在很多动态语言里面都是通过在静态HTML中插入动态语言生成的数据，例如JSP中通过插入<code>&lt;%=....=%&gt;</code>，PHP中通过插入<code>&lt;?php.....?&gt;</code>来实现的。<br>通过下面这个图可以说明模板的机制<br><img src="/2018/08/03/07.4/images/7.4.template.png"><br><a id="more"></a><br>图7.1 模板机制图<br>Web应用反馈给客户端的信息中的大部分内容是静态的，不变的，而另外少部分是根据用户的请求来动态生成的，例如要显示用户的访问记录列表。用户之间只有记录数据是不同的，而列表的样式则是固定的，此时采用模板可以复用很多静态代码。</p>
+<h2 id="Go模板使用"><a href="#Go模板使用" class="headerlink" title="Go模板使用"></a>Go模板使用</h2><p>在Go语言中，我们使用<code>template</code>包来进行模板处理，使用类似<code>Parse</code>、<code>ParseFile</code>、<code>Execute</code>等方法从文件或者字符串加载模板，然后执行类似上面图片展示的模板的merge操作。请看下面的例子：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handler</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">	t := template.New(<span class="string">"some template"</span>) <span class="comment">//创建一个模板</span></span><br><span class="line">	t, _ = t.ParseFiles(<span class="string">"tmpl/welcome.html"</span>)  <span class="comment">//解析模板文件</span></span><br><span class="line">	user := GetUser() <span class="comment">//获取当前用户信息</span></span><br><span class="line">	t.Execute(w, user)  <span class="comment">//执行模板的merger操作</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过上面的例子我们可以看到Go语言的模板操作非常的简单方便，和其他语言的模板处理类似，都是先获取数据，然后渲染数据。<br>为了演示和测试代码的方便，我们在接下来的例子中采用如下格式的代码</p>
+<ul>
+<li>使用Parse代替ParseFiles，因为Parse可以直接测试一个字符串，而不需要额外的文件</li>
+<li>不使用handler来写演示代码，而是每个测试一个main，方便测试</li>
+<li>使用<code>os.Stdout</code>代替<code>http.ResponseWriter</code>，因为<code>os.Stdout</code>实现了<code>io.Writer</code>接口<h2 id="模板中如何插入数据？"><a href="#模板中如何插入数据？" class="headerlink" title="模板中如何插入数据？"></a>模板中如何插入数据？</h2>上面我们演示了如何解析并渲染模板，接下来让我们来更加详细的了解如何把数据渲染出来。一个模板都是应用在一个Go的对象之上，Go对象的字段如何插入到模板中呢？<h3 id="字段操作"><a href="#字段操作" class="headerlink" title="字段操作"></a>字段操作</h3>Go语言的模板通过<code> {{}} </code>来包含需要在渲染时被替换的字段，<code> {{.}} </code>表示当前的对象，这和Java或者C++中的this类似，如果要访问当前对象的字段通过<code> {{.FieldName}} </code>，但是需要注意一点：这个字段必须是导出的(字段首字母必须是大写的)，否则在渲染的时候就会报错，请看下面的这个例子：<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"html/template"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">	UserName <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	t := template.New(<span class="string">"fieldname example"</span>)</span><br><span class="line">	t, _ = t.Parse(<span class="string">"hello &#123;&#123;.UserName&#125;&#125;!"</span>)</span><br><span class="line">	p := Person&#123;UserName: <span class="string">"Astaxie"</span>&#125;</span><br><span class="line">	t.Execute(os.Stdout, p)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>上面的代码我们可以正确的输出<code>hello Astaxie</code>，但是如果我们稍微修改一下代码，在模板中含有了未导出的字段，那么就会报错<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">	UserName <span class="keyword">string</span></span><br><span class="line">	email	<span class="keyword">string</span>  <span class="comment">//未导出的字段，首字母是小写的</span></span><br><span class="line">&#125;</span><br><span class="line">t, _ = t.Parse(<span class="string">"hello &#123;&#123;.UserName&#125;&#125;! &#123;&#123;.email&#125;&#125;"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>上面的代码就会报错，因为我们调用了一个未导出的字段，但是如果我们调用了一个不存在的字段是不会报错的，而是输出为空。<br>如果模板中输出<code> {{.}} </code>，这个一般应用于字符串对象，默认会调用fmt包输出字符串的内容。</p>
+<h3 id="输出嵌套字段内容"><a href="#输出嵌套字段内容" class="headerlink" title="输出嵌套字段内容"></a>输出嵌套字段内容</h3><p>上面我们例子展示了如何针对一个对象的字段输出，那么如果字段里面还有对象，如何来循环的输出这些内容呢？我们可以使用<code> {{with …}}…{{end}} </code>和<code> {{range …}}{{end}} </code>来进行数据的输出。</p>
+<ul>
+<li><code> {{range}} </code> 这个和Go语法里面的range类似，循环操作数据</li>
+<li><code> {{with}} </code> 操作是指当前对象的值，类似上下文的概念<br>详细的使用请看下面的例子：<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"html/template"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">type</span> Friend <span class="keyword">struct</span> &#123;</span><br><span class="line">	Fname <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">	UserName <span class="keyword">string</span></span><br><span class="line">	Emails   []<span class="keyword">string</span></span><br><span class="line">	Friends  []*Friend</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	f1 := Friend&#123;Fname: <span class="string">"minux.ma"</span>&#125;</span><br><span class="line">	f2 := Friend&#123;Fname: <span class="string">"xushiwei"</span>&#125;</span><br><span class="line">	t := template.New(<span class="string">"fieldname example"</span>)</span><br><span class="line">	t, _ = t.Parse(<span class="string">`hello &#123;&#123;.UserName&#125;&#125;!</span></span><br><span class="line"><span class="string">			&#123;&#123;range .Emails&#125;&#125;</span></span><br><span class="line"><span class="string">				an email &#123;&#123;.&#125;&#125;</span></span><br><span class="line"><span class="string">			&#123;&#123;end&#125;&#125;</span></span><br><span class="line"><span class="string">			&#123;&#123;with .Friends&#125;&#125;</span></span><br><span class="line"><span class="string">			&#123;&#123;range .&#125;&#125;</span></span><br><span class="line"><span class="string">				my friend name is &#123;&#123;.Fname&#125;&#125;</span></span><br><span class="line"><span class="string">			&#123;&#123;end&#125;&#125;</span></span><br><span class="line"><span class="string">			&#123;&#123;end&#125;&#125;</span></span><br><span class="line"><span class="string">			`</span>)</span><br><span class="line">	p := Person&#123;UserName: <span class="string">"Astaxie"</span>,</span><br><span class="line">		Emails:  []<span class="keyword">string</span>&#123;<span class="string">"astaxie@beego.me"</span>, <span class="string">"astaxie@gmail.com"</span>&#125;,</span><br><span class="line">		Friends: []*Friend&#123;&amp;f1, &amp;f2&#125;&#125;</span><br><span class="line">	t.Execute(os.Stdout, p)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="条件处理"><a href="#条件处理" class="headerlink" title="条件处理"></a>条件处理</h3><p>在Go模板里面如果需要进行条件判断，那么我们可以使用和Go语言的<code>if-else</code>语法类似的方式来处理，如果pipeline为空，那么if就认为是false，下面的例子展示了如何使用<code>if-else</code>语法：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"text/template"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	tEmpty := template.New(<span class="string">"template test"</span>)</span><br><span class="line">	tEmpty = template.Must(tEmpty.Parse(<span class="string">"空 pipeline if demo: &#123;&#123;if ``&#125;&#125; 不会输出. &#123;&#123;end&#125;&#125;\n"</span>))</span><br><span class="line">	tEmpty.Execute(os.Stdout, <span class="literal">nil</span>)</span><br><span class="line">	tWithValue := template.New(<span class="string">"template test"</span>)</span><br><span class="line">	tWithValue = template.Must(tWithValue.Parse(<span class="string">"不为空的 pipeline if demo: &#123;&#123;if `anything`&#125;&#125; 我有内容，我会输出. &#123;&#123;end&#125;&#125;\n"</span>))</span><br><span class="line">	tWithValue.Execute(os.Stdout, <span class="literal">nil</span>)</span><br><span class="line">	tIfElse := template.New(<span class="string">"template test"</span>)</span><br><span class="line">	tIfElse = template.Must(tIfElse.Parse(<span class="string">"if-else demo: &#123;&#123;if `anything`&#125;&#125; if部分 &#123;&#123;else&#125;&#125; else部分.&#123;&#123;end&#125;&#125;\n"</span>))</span><br><span class="line">	tIfElse.Execute(os.Stdout, <span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过上面的演示代码我们知道<code>if-else</code>语法相当的简单，在使用过程中很容易集成到我们的模板代码中。</p>
+<blockquote>
+<p>注意：if里面无法使用条件判断，例如.Mail==”<a href="mailto:astaxie@gmail.com" target="_blank" rel="noopener">astaxie@gmail.com</a>“，这样的判断是不正确的，if里面只能是bool值</p>
+</blockquote>
+<h3 id="pipelines"><a href="#pipelines" class="headerlink" title="pipelines"></a>pipelines</h3><p>Unix用户已经很熟悉什么是<code>pipe</code>了，<code>ls | grep &quot;beego&quot;</code>类似这样的语法你是不是经常使用，过滤当前目录下面的文件，显示含有”beego”的数据，表达的意思就是前面的输出可以当做后面的输入，最后显示我们想要的数据，而Go语言模板最强大的一点就是支持pipe数据，在Go语言里面任何<code> {{}} </code>里面的都是pipelines数据，例如我们上面输出的email里面如果还有一些可能引起XSS注入的，那么我们如何来进行转化呢？<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;. | html&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在email输出的地方我们可以采用如上方式可以把输出全部转化html的实体，上面的这种方式和我们平常写Unix的方式是不是一模一样，操作起来相当的简便，调用其他的函数也是类似的方式。</p>
+<h3 id="模板变量"><a href="#模板变量" class="headerlink" title="模板变量"></a>模板变量</h3><p>有时候，我们在模板使用过程中需要定义一些局部变量，我们可以在一些操作中申明局部变量，例如<code>with`</code>range<code></code>if<code>过程中申明局部变量，这个变量的作用域是</code> {{end}} `之前，Go语言通过申明的局部变量格式如下所示：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$variable := pipeline</span><br></pre></td></tr></table></figure></p>
+<p>详细的例子看下面的：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;with $x := <span class="string">"output"</span> | printf <span class="string">"%q"</span>&#125;&#125;&#123;&#123;$x&#125;&#125;&#123;&#123;end&#125;&#125;</span><br><span class="line">&#123;&#123;with $x := <span class="string">"output"</span>&#125;&#125;&#123;&#123;printf <span class="string">"%q"</span> $x&#125;&#125;&#123;&#123;end&#125;&#125;</span><br><span class="line">&#123;&#123;with $x := <span class="string">"output"</span>&#125;&#125;&#123;&#123;$x | printf <span class="string">"%q"</span>&#125;&#125;&#123;&#123;end&#125;&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`	</span></span><br><span class="line"><span class="string">### 模板函数</span></span><br><span class="line"><span class="string">模板在输出对象的字段值时，采用了`</span>fmt<span class="string">`包把对象转化成了字符串。但是有时候我们的需求可能不是这样的，例如有时候我们为了防止垃圾邮件发送者通过采集网页的方式来发送给我们的邮箱信息，我们希望把`</span>@<span class="string">`替换成`</span>at<span class="string">`例如：`</span>astaxie at beego.me<span class="string">`，如果要实现这样的功能，我们就需要自定义函数来做这个功能。</span></span><br><span class="line"><span class="string">每一个模板函数都有一个唯一值的名字，然后与一个Go函数关联，通过如下的方式来关联</span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>Go</span><br><span class="line"><span class="keyword">type</span> FuncMap <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>例如，如果我们想要的email函数的模板函数名是<code>emailDeal</code>，它关联的Go函数名称是<code>EmailDealWith</code>,那么我们可以通过下面的方式来注册这个函数<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t = t.Funcs(template.FuncMap&#123;<span class="string">"emailDeal"</span>: EmailDealWith&#125;)</span><br></pre></td></tr></table></figure></p>
+<p><code>EmailDealWith</code>这个函数的参数和返回值定义如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">EmailDealWith</span><span class="params">(args …<span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">string</span></span></span><br></pre></td></tr></table></figure></p>
+<p>我们来看下面的实现例子：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"html/template"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"strings"</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">type</span> Friend <span class="keyword">struct</span> &#123;</span><br><span class="line">	Fname <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">	UserName <span class="keyword">string</span></span><br><span class="line">	Emails   []<span class="keyword">string</span></span><br><span class="line">	Friends  []*Friend</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">EmailDealWith</span><span class="params">(args ...<span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	ok := <span class="literal">false</span></span><br><span class="line">	<span class="keyword">var</span> s <span class="keyword">string</span></span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(args) == <span class="number">1</span> &#123;</span><br><span class="line">		s, ok = args[<span class="number">0</span>].(<span class="keyword">string</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> !ok &#123;</span><br><span class="line">		s = fmt.Sprint(args...)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// find the @ symbol</span></span><br><span class="line">	substrs := strings.Split(s, <span class="string">"@"</span>)</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(substrs) != <span class="number">2</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> s</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// replace the @ by " at "</span></span><br><span class="line">	<span class="keyword">return</span> (substrs[<span class="number">0</span>] + <span class="string">" at "</span> + substrs[<span class="number">1</span>])</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	f1 := Friend&#123;Fname: <span class="string">"minux.ma"</span>&#125;</span><br><span class="line">	f2 := Friend&#123;Fname: <span class="string">"xushiwei"</span>&#125;</span><br><span class="line">	t := template.New(<span class="string">"fieldname example"</span>)</span><br><span class="line">	t = t.Funcs(template.FuncMap&#123;<span class="string">"emailDeal"</span>: EmailDealWith&#125;)</span><br><span class="line">	t, _ = t.Parse(<span class="string">`hello &#123;&#123;.UserName&#125;&#125;!</span></span><br><span class="line"><span class="string">				&#123;&#123;range .Emails&#125;&#125;</span></span><br><span class="line"><span class="string">					an emails &#123;&#123;.|emailDeal&#125;&#125;</span></span><br><span class="line"><span class="string">				&#123;&#123;end&#125;&#125;</span></span><br><span class="line"><span class="string">				&#123;&#123;with .Friends&#125;&#125;</span></span><br><span class="line"><span class="string">				&#123;&#123;range .&#125;&#125;</span></span><br><span class="line"><span class="string">					my friend name is &#123;&#123;.Fname&#125;&#125;</span></span><br><span class="line"><span class="string">				&#123;&#123;end&#125;&#125;</span></span><br><span class="line"><span class="string">				&#123;&#123;end&#125;&#125;</span></span><br><span class="line"><span class="string">				`</span>)</span><br><span class="line">	p := Person&#123;UserName: <span class="string">"Astaxie"</span>,</span><br><span class="line">		Emails:  []<span class="keyword">string</span>&#123;<span class="string">"astaxie@beego.me"</span>, <span class="string">"astaxie@gmail.com"</span>&#125;,</span><br><span class="line">		Friends: []*Friend&#123;&amp;f1, &amp;f2&#125;&#125;</span><br><span class="line">	t.Execute(os.Stdout, p)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面演示了如何自定义函数，其实，在模板包内部已经有内置的实现函数，下面代码截取自模板包里面<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> builtins = FuncMap&#123;</span><br><span class="line">	<span class="string">"and"</span>:      and,</span><br><span class="line">	<span class="string">"call"</span>:     call,</span><br><span class="line">	<span class="string">"html"</span>:     HTMLEscaper,</span><br><span class="line">	<span class="string">"index"</span>:    index,</span><br><span class="line">	<span class="string">"js"</span>:       JSEscaper,</span><br><span class="line">	<span class="string">"len"</span>:      length,</span><br><span class="line">	<span class="string">"not"</span>:      not,</span><br><span class="line">	<span class="string">"or"</span>:       or,</span><br><span class="line">	<span class="string">"print"</span>:    fmt.Sprint,</span><br><span class="line">	<span class="string">"printf"</span>:   fmt.Sprintf,</span><br><span class="line">	<span class="string">"println"</span>:  fmt.Sprintln,</span><br><span class="line">	<span class="string">"urlquery"</span>: URLQueryEscaper,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Must操作"><a href="#Must操作" class="headerlink" title="Must操作"></a>Must操作</h2><p>模板包里面有一个函数<code>Must</code>，它的作用是检测模板是否正确，例如大括号是否匹配，注释是否正确的关闭，变量是否正确的书写。接下来我们演示一个例子，用Must来判断模板是否正确：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"text/template"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	tOk := template.New(<span class="string">"first"</span>)</span><br><span class="line">	template.Must(tOk.Parse(<span class="string">" some static text /* and a comment */"</span>))</span><br><span class="line">	fmt.Println(<span class="string">"The first one parsed OK."</span>)</span><br><span class="line">	template.Must(template.New(<span class="string">"second"</span>).Parse(<span class="string">"some static text &#123;&#123; .Name &#125;&#125;"</span>))</span><br><span class="line">	fmt.Println(<span class="string">"The second one parsed OK."</span>)</span><br><span class="line">	fmt.Println(<span class="string">"The next one ought to fail."</span>)</span><br><span class="line">	tErr := template.New(<span class="string">"check parse error with Must"</span>)</span><br><span class="line">	template.Must(tErr.Parse(<span class="string">" some static text &#123;&#123; .Name &#125;"</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>将输出如下内容<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">The <span class="keyword">first</span> <span class="literal">one</span> parsed OK.</span><br><span class="line">The <span class="keyword">second</span> <span class="literal">one</span> parsed OK.</span><br><span class="line">The next <span class="literal">one</span> ought <span class="built_in">to</span> fail.</span><br><span class="line">panic: template: check parse error <span class="keyword">with</span> Must:<span class="number">1</span>: unexpected <span class="string">"&#125;"</span> <span class="keyword">in</span> <span class="keyword">command</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="嵌套模板"><a href="#嵌套模板" class="headerlink" title="嵌套模板"></a>嵌套模板</h2><p>我们平常开发Web应用的时候，经常会遇到一些模板有些部分是固定不变的，然后可以抽取出来作为一个独立的部分，例如一个博客的头部和尾部是不变的，而唯一改变的是中间的内容部分。所以我们可以定义成<code>header</code>、<code>content</code>、<code>footer</code>三个部分。Go语言中通过如下的语法来申明<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;define <span class="string">"子模板名称"</span>&#125;&#125;内容&#123;&#123;end&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过如下方式来调用：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;template <span class="string">"子模板名称"</span>&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接下来我们演示如何使用嵌套模板，我们定义三个文件，<code>header.tmpl</code>、<code>content.tmpl</code>、<code>footer.tmpl</code>文件，里面的内容如下<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">//header.tmpl</span><br><span class="line">&#123;&#123;define "header"&#125;&#125;</span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">title</span>&gt;</span>演示信息<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">&#123;&#123;end&#125;&#125;</span><br><span class="line">//content.tmpl</span><br><span class="line">&#123;&#123;define "content"&#125;&#125;</span><br><span class="line">&#123;&#123;template "header"&#125;&#125;</span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>演示嵌套<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">li</span>&gt;</span>嵌套使用define定义子模板<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">li</span>&gt;</span>调用使用template<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">&#123;&#123;template "footer"&#125;&#125;</span><br><span class="line">&#123;&#123;end&#125;&#125;</span><br><span class="line">//footer.tmpl</span><br><span class="line">&#123;&#123;define "footer"&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br><span class="line">&#123;&#123;end&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>演示代码如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"text/template"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	s1, _ := template.ParseFiles(<span class="string">"header.tmpl"</span>, <span class="string">"content.tmpl"</span>, <span class="string">"footer.tmpl"</span>)</span><br><span class="line">	s1.ExecuteTemplate(os.Stdout, <span class="string">"header"</span>, <span class="literal">nil</span>)</span><br><span class="line">	fmt.Println()</span><br><span class="line">	s1.ExecuteTemplate(os.Stdout, <span class="string">"content"</span>, <span class="literal">nil</span>)</span><br><span class="line">	fmt.Println()</span><br><span class="line">	s1.ExecuteTemplate(os.Stdout, <span class="string">"footer"</span>, <span class="literal">nil</span>)</span><br><span class="line">	fmt.Println()</span><br><span class="line">	s1.Execute(os.Stdout, <span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过上面的例子我们可以看到通过<code>template.ParseFiles</code>把所有的嵌套模板全部解析到模板里面，其实每一个定义的都是一个独立的模板，他们相互独立，是并行存在的关系，内部其实存储的是类似map的一种关系(key是模板的名称，value是模板的内容)，然后我们通过<code>ExecuteTemplate</code>来执行相应的子模板内容，我们可以看到header、footer都是相对独立的，都能输出内容，content 中因为嵌套了header和footer的内容，就会同时输出三个的内容。但是当我们执行<code>s1.Execute</code>，没有任何的输出，因为在默认的情况下没有默认的子模板，所以不会输出任何的东西。</p>
+<blockquote>
+<p>同一个集合类的模板是互相知晓的，如果同一模板被多个集合使用，则它需要在多个集合中分别解析</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过上面对模板的详细介绍，我们了解了如何把动态数据与模板融合：如何输出循环数据、如何自定义函数、如何嵌套模板等等。通过模板技术的应用，我们可以完成MVC模式中V的处理，接下来的章节我们将介绍如何来处理M和C。</p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/07.3/" title="正则处理">正则处理</a></li>
+<li>下一节: <a href="/2018/08/03/07.5/" title="文件操作">文件操作</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/01.0/" rel="next" title="Go环境配置">
+                <i class="fa fa-chevron-left"></i> Go环境配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#7-4-模板处理"><span class="nav-number">1.</span> <span class="nav-text">7.4 模板处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是模板"><span class="nav-number">1.1.</span> <span class="nav-text">什么是模板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go模板使用"><span class="nav-number">1.2.</span> <span class="nav-text">Go模板使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模板中如何插入数据？"><span class="nav-number">1.3.</span> <span class="nav-text">模板中如何插入数据？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字段操作"><span class="nav-number">1.3.1.</span> <span class="nav-text">字段操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输出嵌套字段内容"><span class="nav-number">1.3.2.</span> <span class="nav-text">输出嵌套字段内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#条件处理"><span class="nav-number">1.3.3.</span> <span class="nav-text">条件处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pipelines"><span class="nav-number">1.3.4.</span> <span class="nav-text">pipelines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模板变量"><span class="nav-number">1.3.5.</span> <span class="nav-text">模板变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Must操作"><span class="nav-number">1.4.</span> <span class="nav-text">Must操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#嵌套模板"><span class="nav-number">1.5.</span> <span class="nav-text">嵌套模板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.7.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

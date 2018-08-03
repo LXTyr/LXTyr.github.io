@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1.Go环境配置 1.1. 安装Go 1.2. GOPATH 与工作空间">
+<meta property="og:type" content="article">
+<meta property="og:title" content="目录">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/preface/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="1.Go环境配置 1.1. 安装Go 1.2. GOPATH 与工作空间">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-03T05:04:08.764Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="目录">
+<meta name="twitter:description" content="1.Go环境配置 1.1. 安装Go 1.2. GOPATH 与工作空间">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/preface/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>目录 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/preface/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">目录
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06 / 修改时间：13:04:08" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <ul>
+<li>1.<a href="/2018/08/03/01.0/" title="Go环境配置">Go环境配置</a><ul>
+<li>1.1. <a href="/2018/08/03/01.1/" title="安装Go">安装Go</a></li>
+<li>1.2. <a href="/2018/08/03/01.2/" title="GOPATH 与工作空间">GOPATH 与工作空间</a><a id="more"></a></li>
+<li>1.3. <a href="/2018/08/03/01.3/" title="Go 命令">Go 命令</a></li>
+<li>1.4. <a href="/2018/08/03/01.4/" title="Go开发工具">Go开发工具</a></li>
+<li>1.5. <a href="/2018/08/03/01.5/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>2.<a href="/2018/08/03/02.0/" title="Go语言基础">Go语言基础</a><ul>
+<li>2.1. <a href="/2018/08/03/02.1/" title="你好，Go">你好，Go</a></li>
+<li>2.2. <a href="/2018/08/03/02.2/" title="Go基础">Go基础</a></li>
+<li>2.3. <a href="/2018/08/03/02.3/" title="流程和函数">流程和函数</a></li>
+<li>2.4. <a href="/2018/08/03/02.4/" title="struct">struct</a></li>
+<li>2.5. <a href="/2018/08/03/02.5/" title="面向对象">面向对象</a></li>
+<li>2.6. <a href="/2018/08/03/02.6/" title="interface">interface</a></li>
+<li>2.7. <a href="/2018/08/03/02.7/" title="并发">并发</a></li>
+<li>2.8. <a href="/2018/08/03/02.8/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>3.<a href="/2018/08/03/03.0/" title="Web基础">Web基础</a><ul>
+<li>3.1 <a href="/2018/08/03/03.1/" title="web工作方式">web工作方式</a></li>
+<li>3.2 <a href="/2018/08/03/03.2/" title="Go搭建一个简单的web服务">Go搭建一个简单的web服务</a></li>
+<li>3.3 <a href="/2018/08/03/03.3/" title="Go如何使得web工作">Go如何使得web工作</a></li>
+<li>3.4 <a href="/2018/08/03/03.4/" title="Go的http包详解">Go的http包详解</a></li>
+<li>3.5 <a href="/2018/08/03/03.5/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>4.<a href="/2018/08/03/04.0/" title="表单">表单</a><ul>
+<li>4.1 <a href="/2018/08/03/04.1/" title="处理表单的输入">处理表单的输入</a></li>
+<li>4.2 <a href="/2018/08/03/04.2/" title="验证表单的输入">验证表单的输入</a></li>
+<li>4.3 <a href="/2018/08/03/04.3/" title="预防跨站脚本">预防跨站脚本</a></li>
+<li>4.4 <a href="/2018/08/03/04.4/" title="防止多次递交表单">防止多次递交表单</a></li>
+<li>4.5 <a href="/2018/08/03/04.5/" title="处理文件上传">处理文件上传</a></li>
+<li>4.6 <a href="/2018/08/03/04.6/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>5.<a href="/2018/08/03/05.0/" title="访问数据库">访问数据库</a><ul>
+<li>5.1 <a href="/2018/08/03/05.1/" title="database/sql接口">database/sql接口</a></li>
+<li>5.2 <a href="/2018/08/03/05.2/" title="使用MySQL数据库">使用MySQL数据库</a></li>
+<li>5.3 <a href="/2018/08/03/05.3/" title="使用SQLite数据库">使用SQLite数据库</a></li>
+<li>5.4 <a href="/2018/08/03/05.4/" title="使用PostgreSQL数据库">使用PostgreSQL数据库</a></li>
+<li>5.5 <a href="/2018/08/03/05.5/" title="使用Beego orm库进行ORM开发">使用Beego orm库进行ORM开发</a></li>
+<li>5.6 <a href="/2018/08/03/05.6/" title="NOSQL数据库操作">NOSQL数据库操作</a></li>
+<li>5.7 <a href="/2018/08/03/05.7/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>6.<a href="/2018/08/03/06.0/" title="session和数据存储">session和数据存储</a><ul>
+<li>6.1 <a href="/2018/08/03/06.1/" title="session和cookie">session和cookie</a></li>
+<li>6.2 <a href="/2018/08/03/06.2/" title="Go如何使用session">Go如何使用session</a></li>
+<li>6.3 <a href="/2018/08/03/06.3/" title="session存储">session存储</a></li>
+<li>6.4 <a href="/2018/08/03/06.4/" title="预防session劫持">预防session劫持</a> </li>
+<li>6.5 <a href="/2018/08/03/06.5/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>7.<a href="/2018/08/03/07.0/" title="文本文件处理">文本文件处理</a><ul>
+<li>7.1 <a href="/2018/08/03/07.1/" title="XML处理">XML处理</a></li>
+<li>7.2 <a href="/2018/08/03/07.2/" title="JSON处理">JSON处理</a> </li>
+<li>7.3 <a href="/2018/08/03/07.3/" title="正则处理">正则处理</a></li>
+<li>7.4 <a href="/2018/08/03/07.4/" title="模板处理">模板处理</a></li>
+<li>7.5 <a href="/2018/08/03/07.5/" title="文件操作">文件操作</a></li>
+<li>7.6 <a href="/2018/08/03/07.6/" title="字符串处理">字符串处理</a></li>
+<li>7.7 <a href="/2018/08/03/07.7/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>8.<a href="/2018/08/03/08.0/" title="Web服务">Web服务</a><ul>
+<li>8.1 <a href="/2018/08/03/08.1/" title="Socket编程">Socket编程</a></li>
+<li>8.2 <a href="/2018/08/03/08.2/" title="WebSocket">WebSocket</a></li>
+<li>8.3 <a href="/2018/08/03/08.3/" title="REST">REST</a></li>
+<li>8.4 <a href="/2018/08/03/08.4/" title="RPC">RPC</a></li>
+<li>8.5 <a href="/2018/08/03/08.5/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>9.<a href="/2018/08/03/09.0/" title="安全与加密">安全与加密</a><ul>
+<li>9.1 <a href="/2018/08/03/09.1/" title="预防CSRF攻击">预防CSRF攻击</a></li>
+<li>9.2 <a href="/2018/08/03/09.2/" title="确保输入过滤">确保输入过滤</a></li>
+<li>9.3 <a href="/2018/08/03/09.3/" title="避免XSS攻击">避免XSS攻击</a></li>
+<li>9.4 <a href="/2018/08/03/09.4/" title="避免SQL注入">避免SQL注入</a></li>
+<li>9.5 <a href="/2018/08/03/09.5/" title="存储密码">存储密码</a></li>
+<li>9.6 <a href="/2018/08/03/09.6/" title="加密和解密数据">加密和解密数据</a></li>
+<li>9.7 <a href="/2018/08/03/09.7/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>10.<a href="/2018/08/03/10.0/" title="国际化和本地化">国际化和本地化</a> <ul>
+<li>10.1 <a href="/2018/08/03/10.1/" title="设置默认地区">设置默认地区</a></li>
+<li>10.2 <a href="/2018/08/03/10.2/" title="本地化资源">本地化资源</a></li>
+<li>10.3 <a href="/2018/08/03/10.3/" title="国际化站点">国际化站点</a></li>
+<li>10.4 <a href="/2018/08/03/10.4/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>11.<a href="/2018/08/03/11.0/" title="错误处理，调试和测试">错误处理，调试和测试</a><ul>
+<li>11.1 <a href="/2018/08/03/11.1/" title="错误处理">错误处理</a></li>
+<li>11.2 <a href="/2018/08/03/11.2/" title="使用GDB调试">使用GDB调试</a></li>
+<li>11.3 <a href="/2018/08/03/11.3/" title="Go怎么写测试用例">Go怎么写测试用例</a></li>
+<li>11.4 <a href="/2018/08/03/11.4/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>12.<a href="/2018/08/03/12.0/" title="部署与维护">部署与维护</a><ul>
+<li>12.1 <a href="/2018/08/03/12.1/" title="应用日志">应用日志</a></li>
+<li>12.2 <a href="/2018/08/03/12.2/" title="网站错误处理">网站错误处理</a></li>
+<li>12.3 <a href="/2018/08/03/12.3/" title="应用部署">应用部署</a></li>
+<li>12.4 <a href="/2018/08/03/12.4/" title="备份和恢复">备份和恢复</a></li>
+<li>12.5 <a href="/2018/08/03/12.5/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>13.<a href="/2018/08/03/13.0/" title="如何设计一个Web框架">如何设计一个Web框架</a>　<ul>
+<li>13.1 <a href="/2018/08/03/13.1/" title="项目规划">项目规划</a>　</li>
+<li>13.2 <a href="/2018/08/03/13.2/" title="自定义路由器设计">自定义路由器设计</a></li>
+<li>13.3 <a href="/2018/08/03/13.3/" title="controller设计">controller设计</a></li>
+<li>13.4 <a href="/2018/08/03/13.4/" title="日志和配置设计">日志和配置设计</a></li>
+<li>13.5 <a href="/2018/08/03/13.5/" title="实现博客的增删改">实现博客的增删改</a></li>
+<li>13.6 <a href="/2018/08/03/13.6/" title="小结">小结</a>　</li>
+</ul>
+</li>
+<li>14.<a href="/2018/08/03/14.0/" title="扩展Web框架">扩展Web框架</a><ul>
+<li>14.1 <a href="/2018/08/03/14.1/" title="静态文件支持">静态文件支持</a></li>
+<li>14.2 <a href="/2018/08/03/14.2/" title="Session支持">Session支持</a></li>
+<li>14.3 <a href="/2018/08/03/14.3/" title="表单支持">表单支持</a></li>
+<li>14.4 <a href="/2018/08/03/14.4/" title="用户认证">用户认证</a></li>
+<li>14.5 <a href="/2018/08/03/14.5/" title="多语言支持">多语言支持</a></li>
+<li>14.6 <a href="/2018/08/03/14.6/" title="pprof支持">pprof支持</a></li>
+<li>14.7 <a href="/2018/08/03/14.7/" title="小结">小结</a></li>
+</ul>
+</li>
+<li>附录A <a href="/2018/08/03/ref/" title="参考资料">参考资料</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/ref/" rel="next" title="参考资料">
+                <i class="fa fa-chevron-left"></i> 参考资料
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/14.6/" rel="prev" title="pprof支持">
+                pprof支持 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

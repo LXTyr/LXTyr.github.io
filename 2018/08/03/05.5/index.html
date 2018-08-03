@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="5.5 使用Beego orm库进行ORM开发beego orm是我开发的一个Go进行ORM操作的库，它采用了Go style方式对数据库进行操作，实现了struct到数据表记录的映射。beego orm是一个十分轻量级的Go ORM框架，开发这个库的本意降低复杂的ORM学习曲线，尽可能在ORM的运行效率和功能之间寻求一个平衡，beego orm是目前开源的Go ORM框架中实现比较完整的一个库，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Beego orm库进行ORM开发">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/05.5/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="5.5 使用Beego orm库进行ORM开发beego orm是我开发的一个Go进行ORM操作的库，它采用了Go style方式对数据库进行操作，实现了struct到数据表记录的映射。beego orm是一个十分轻量级的Go ORM框架，开发这个库的本意降低复杂的ORM学习曲线，尽可能在ORM的运行效率和功能之间寻求一个平衡，beego orm是目前开源的Go ORM框架中实现比较完整的一个库，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.625Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Beego orm库进行ORM开发">
+<meta name="twitter:description" content="5.5 使用Beego orm库进行ORM开发beego orm是我开发的一个Go进行ORM操作的库，它采用了Go style方式对数据库进行操作，实现了struct到数据表记录的映射。beego orm是一个十分轻量级的Go ORM框架，开发这个库的本意降低复杂的ORM学习曲线，尽可能在ORM的运行效率和功能之间寻求一个平衡，beego orm是目前开源的Go ORM框架中实现比较完整的一个库，">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/05.5/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>使用Beego orm库进行ORM开发 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/05.5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用Beego orm库进行ORM开发
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="5-5-使用Beego-orm库进行ORM开发"><a href="#5-5-使用Beego-orm库进行ORM开发" class="headerlink" title="5.5 使用Beego orm库进行ORM开发"></a>5.5 使用Beego orm库进行ORM开发</h1><p>beego orm是我开发的一个Go进行ORM操作的库，它采用了Go style方式对数据库进行操作，实现了struct到数据表记录的映射。beego orm是一个十分轻量级的Go ORM框架，开发这个库的本意降低复杂的ORM学习曲线，尽可能在ORM的运行效率和功能之间寻求一个平衡，beego orm是目前开源的Go ORM框架中实现比较完整的一个库，而且运行效率相当不错，功能也基本能满足需求。<br>beego orm是支持database/sql标准接口的ORM库，所以理论上来说，只要数据库驱动支持database/sql接口就可以无缝的接入beego orm。目前我测试过的驱动包括下面几个：</p>
+<p>Mysql: <a href="https://github.com/go-sql-driver/mysql" target="_blank" rel="noopener">github/go-mysql-driver/mysql</a><br><a id="more"></a><br>PostgreSQL: <a href="https://github.com/lib/pq" target="_blank" rel="noopener">github.com/lib/pq</a><br>SQLite: <a href="https://github.com/mattn/go-sqlite3" target="_blank" rel="noopener">github.com/mattn/go-sqlite3</a><br>Mysql: <a href="https://github.com/ziutek/mymysql" target="_blank" rel="noopener">github.com/ziutek/mymysql/godrv</a></p>
+<p>暂未支持数据库:<br>MsSql: <a href="https://github.com/denisenkom/go-mssqldb" target="_blank" rel="noopener">github.com/denisenkom/go-mssqldb</a><br>MS ADODB: <a href="https://github.com/mattn/go-adodb" target="_blank" rel="noopener">github.com/mattn/go-adodb</a><br>Oracle: <a href="https://github.com/mattn/go-oci8" target="_blank" rel="noopener">github.com/mattn/go-oci8</a><br>ODBC: <a href="https://bitbucket.org/miquella/mgodbc" target="_blank" rel="noopener">bitbucket.org/miquella/mgodbc</a></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>beego orm支持go get方式安装，是完全按照Go Style的方式来实现的。<br>    go get github.com/astaxie/beego</p>
+<h2 id="如何初始化"><a href="#如何初始化" class="headerlink" title="如何初始化"></a>如何初始化</h2><p>首先你需要import相应的数据库驱动包、database/sql标准接口包以及beego orm包，如下所示：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"database/sql"</span></span><br><span class="line">	<span class="string">"github.com/astaxie/beego/orm"</span></span><br><span class="line">	_ <span class="string">"github.com/go-sql-driver/mysql"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">//注册驱动</span></span><br><span class="line">	orm.RegisterDriver(<span class="string">"mysql"</span>, orm.DR_MySQL)</span><br><span class="line">	<span class="comment">//设置默认数据库</span></span><br><span class="line">	orm.RegisterDataBase(<span class="string">"default"</span>, <span class="string">"mysql"</span>, <span class="string">"root:root@/my_db?charset=utf8"</span>, <span class="number">30</span>)</span><br><span class="line">	<span class="comment">//注册定义的model</span></span><br><span class="line">    	orm.RegisterModel(<span class="built_in">new</span>(User))</span><br><span class="line">   	<span class="comment">// 创建table</span></span><br><span class="line">        orm.RunSyncdb(<span class="string">"default"</span>, <span class="literal">false</span>, <span class="literal">true</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> PostgreSQL 配置:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//导入驱动</span></span><br><span class="line"><span class="comment">// _ "github.com/lib/pq"</span></span><br><span class="line"><span class="comment">// 注册驱动</span></span><br><span class="line">orm.RegisterDriver(<span class="string">"postgres"</span>, orm.DR_Postgres) </span><br><span class="line"><span class="comment">// 设置默认数据库</span></span><br><span class="line"><span class="comment">//PostgresQL用户：postgres ，密码：zxxx ， 数据库名称：test ， 数据库别名：default</span></span><br><span class="line">orm.RegisterDataBase(<span class="string">"default"</span>, <span class="string">"postgres"</span>, <span class="string">"user=postgres password=zxxx dbname=test host=127.0.0.1 port=5432 sslmode=disable"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>MySQL 配置:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//导入驱动</span></span><br><span class="line"><span class="comment">//_ "github.com/go-sql-driver/mysql"</span></span><br><span class="line"><span class="comment">//注册驱动</span></span><br><span class="line">orm.RegisterDriver(<span class="string">"mysql"</span>, orm.DR_MySQL)</span><br><span class="line"><span class="comment">// 设置默认数据库</span></span><br><span class="line"><span class="comment">//mysql用户：root ，密码：zxxx ， 数据库名称：test ， 数据库别名：default</span></span><br><span class="line"> orm.RegisterDataBase(<span class="string">"default"</span>, <span class="string">"mysql"</span>, <span class="string">"root:zxxx@/test?charset=utf8"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>Sqlite 配置:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//导入驱动</span></span><br><span class="line"><span class="comment">//_ "github.com/mattn/go-sqlite3"</span></span><br><span class="line"><span class="comment">//注册驱动</span></span><br><span class="line">orm.RegisterDriver(<span class="string">"sqlite"</span>, orm.DR_Sqlite)</span><br><span class="line"><span class="comment">// 设置默认数据库</span></span><br><span class="line"><span class="comment">//数据库存放位置：./datas/test.db ， 数据库别名：default</span></span><br><span class="line">orm.RegisterDataBase(<span class="string">"default"</span>, <span class="string">"sqlite3"</span>, <span class="string">"./datas/test.db"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>导入必须的package之后,我们需要打开到数据库的链接，然后创建一个beego orm对象（以MySQL为例)，如下所示<br>beego orm:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    	o := orm.NewOrm()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>简单示例:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"github.com/astaxie/beego/orm"</span></span><br><span class="line">    _ <span class="string">"github.com/go-sql-driver/mysql"</span> <span class="comment">// 导入数据库驱动</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// Model Struct</span></span><br><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">    Id   <span class="keyword">int</span></span><br><span class="line">    Name <span class="keyword">string</span> <span class="string">`orm:"size(100)"`</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 设置默认数据库</span></span><br><span class="line">    orm.RegisterDataBase(<span class="string">"default"</span>, <span class="string">"mysql"</span>, <span class="string">"root:root@/my_db?charset=utf8"</span>, <span class="number">30</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 注册定义的 model</span></span><br><span class="line">    orm.RegisterModel(<span class="built_in">new</span>(User))</span><br><span class="line"><span class="comment">//RegisterModel 也可以同时注册多个 model</span></span><br><span class="line"><span class="comment">//orm.RegisterModel(new(User), new(Profile), new(Post))</span></span><br><span class="line">    <span class="comment">// 创建 table</span></span><br><span class="line">    orm.RunSyncdb(<span class="string">"default"</span>, <span class="literal">false</span>, <span class="literal">true</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    o := orm.NewOrm()</span><br><span class="line">    user := User&#123;Name: <span class="string">"slene"</span>&#125;</span><br><span class="line">    <span class="comment">// 插入表</span></span><br><span class="line">    id, err := o.Insert(&amp;user)</span><br><span class="line">    fmt.Printf(<span class="string">"ID: %d, ERR: %v\n"</span>, id, err)</span><br><span class="line">    <span class="comment">// 更新表</span></span><br><span class="line">    user.Name = <span class="string">"astaxie"</span></span><br><span class="line">    num, err := o.Update(&amp;user)</span><br><span class="line">    fmt.Printf(<span class="string">"NUM: %d, ERR: %v\n"</span>, num, err)</span><br><span class="line">    <span class="comment">// 读取 one</span></span><br><span class="line">    u := User&#123;Id: user.Id&#125;</span><br><span class="line">    err = o.Read(&amp;u)</span><br><span class="line">    fmt.Printf(<span class="string">"ERR: %v\n"</span>, err)</span><br><span class="line">    <span class="comment">// 删除表</span></span><br><span class="line">    num, err = o.Delete(&amp;u)</span><br><span class="line">    fmt.Printf(<span class="string">"NUM: %d, ERR: %v\n"</span>, num, err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>SetMaxIdleConns<br>根据数据库的别名，设置数据库的最大空闲连接<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">orm.SetMaxIdleConns(<span class="string">"default"</span>, <span class="number">30</span>)</span><br></pre></td></tr></table></figure></p>
+<p>SetMaxOpenConns<br>根据数据库的别名，设置数据库的最大数据库连接 (go &gt;= 1.2)<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">orm.SetMaxOpenConns(<span class="string">"default"</span>, <span class="number">30</span>)</span><br></pre></td></tr></table></figure></p>
+<p>目前beego orm支持打印调试，你可以通过如下的代码实现调试<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">orm.Debug = <span class="literal">true</span></span><br></pre></td></tr></table></figure></p>
+<p>接下来我们的例子采用前面的数据库表User，现在我们建立相应的struct<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Userinfo <span class="keyword">struct</span> &#123;</span><br><span class="line">	Uid     <span class="keyword">int</span> <span class="string">`PK`</span> <span class="comment">//如果表的主键不是id，那么需要加上pk注释，显式的说这个字段是主键</span></span><br><span class="line">	Username    <span class="keyword">string</span></span><br><span class="line">	Departname  <span class="keyword">string</span></span><br><span class="line">	Created     time.Time</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">	Uid          <span class="keyword">int</span> <span class="string">`PK`</span> <span class="comment">//如果表的主键不是id，那么需要加上pk注释，显式的说这个字段是主键</span></span><br><span class="line">	Name        <span class="keyword">string</span></span><br><span class="line">	Profile     *Profile   <span class="string">`orm:"rel(one)"`</span> <span class="comment">// OneToOne relation</span></span><br><span class="line">	Post        []*Post <span class="string">`orm:"reverse(many)"`</span> <span class="comment">// 设置一对多的反向关系</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Profile <span class="keyword">struct</span> &#123;</span><br><span class="line">	Id          <span class="keyword">int</span></span><br><span class="line">	Age         <span class="keyword">int16</span></span><br><span class="line">	User        *User   <span class="string">`orm:"reverse(one)"`</span> <span class="comment">// 设置一对一反向关系(可选)</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Post <span class="keyword">struct</span> &#123;</span><br><span class="line">	Id    <span class="keyword">int</span></span><br><span class="line">	Title <span class="keyword">string</span></span><br><span class="line">	User  *User  <span class="string">`orm:"rel(fk)"`</span></span><br><span class="line">	Tags  []*Tag <span class="string">`orm:"rel(m2m)"`</span>    <span class="comment">//设置一对多关系</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Tag <span class="keyword">struct</span> &#123;</span><br><span class="line">	Id    <span class="keyword">int</span></span><br><span class="line">	Name  <span class="keyword">string</span></span><br><span class="line">	Posts []*Post <span class="string">`orm:"reverse(many)"`</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 需要在init中注册定义的model</span></span><br><span class="line">	orm.RegisterModel(<span class="built_in">new</span>(Userinfo),<span class="built_in">new</span>(User), <span class="built_in">new</span>(Profile), <span class="built_in">new</span>(Tag))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>注意一点，beego orm针对驼峰命名会自动帮你转化成下划线字段，例如你定义了Struct名字为<code>UserInfo</code>，那么转化成底层实现的时候是<code>user_info</code>，字段命名也遵循该规则。</p>
+</blockquote>
+<h2 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h2><p>下面的代码演示了如何插入一条记录，可以看到我们操作的是struct对象，而不是原生的sql语句，最后通过调用Insert接口将数据保存到数据库。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">o := orm.NewOrm()</span><br><span class="line"><span class="keyword">var</span> user User</span><br><span class="line">user.Name = <span class="string">"zxxx"</span></span><br><span class="line">user.Departname = <span class="string">"zxxx"</span></span><br><span class="line">id, err := o.Insert(&amp;user)</span><br><span class="line"><span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">	fmt.Println(id)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们看到插入之后<code>user.Uid</code>就是插入成功之后的自增ID。</p>
+<p>同时插入多个对象:InsertMulti<br>类似sql语句<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">insert into table (name, age) values(<span class="string">"slene"</span>, <span class="number">28</span>),(<span class="string">"astaxie"</span>, <span class="number">30</span>),(<span class="string">"unknown"</span>, <span class="number">20</span>)</span><br></pre></td></tr></table></figure></p>
+<p>第一个参数 bulk 为并列插入的数量，第二个为对象的slice<br>返回值为成功插入的数量<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">users := []User&#123;</span><br><span class="line">    &#123;Name: <span class="string">"slene"</span>&#125;,</span><br><span class="line">    &#123;Name: <span class="string">"astaxie"</span>&#125;,</span><br><span class="line">    &#123;Name: <span class="string">"unknown"</span>&#125;,</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line">successNums, err := o.InsertMulti(<span class="number">100</span>, users)</span><br></pre></td></tr></table></figure></p>
+<p>bulk 为 1 时，将会顺序插入 slice 中的数据</p>
+<h2 id="更新数据"><a href="#更新数据" class="headerlink" title="更新数据"></a>更新数据</h2><p>继续上面的例子来演示更新操作，现在user的主键已经有值了，此时调用Insert接口，beego orm内部会自动调用update以进行数据的更新而非插入操作。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">o := orm.NewOrm()</span><br><span class="line">user := User&#123;Uid: <span class="number">1</span>&#125;</span><br><span class="line"><span class="keyword">if</span> o.Read(&amp;user) == <span class="literal">nil</span> &#123;</span><br><span class="line">	user.Name = <span class="string">"MyName"</span></span><br><span class="line">	<span class="keyword">if</span> num, err := o.Update(&amp;user); err == <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(num)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Update 默认更新所有的字段，可以更新指定的字段：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 只更新 Name</span></span><br><span class="line">o.Update(&amp;user, <span class="string">"Name"</span>)</span><br><span class="line"><span class="comment">// 指定多个字段</span></span><br><span class="line"><span class="comment">// o.Update(&amp;user, "Field1", "Field2", ...)</span></span><br></pre></td></tr></table></figure></p>
+<p>//Where:用来设置条件，支持多个参数，第一个参数如果为整数，相当于调用了Where(“主键=?”,值)。</p>
+<h2 id="查询数据"><a href="#查询数据" class="headerlink" title="查询数据"></a>查询数据</h2><p>beego orm的查询接口比较灵活，具体使用请看下面的例子<br>例子1，根据主键获取数据：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">o := orm.NewOrm()</span><br><span class="line"><span class="keyword">var</span> user User</span><br><span class="line">user := User&#123;Id: <span class="number">1</span>&#125;</span><br><span class="line">err = o.Read(&amp;user)</span><br><span class="line"><span class="keyword">if</span> err == orm.ErrNoRows &#123;</span><br><span class="line">	fmt.Println(<span class="string">"查询不到"</span>)</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> err == orm.ErrMissPK &#123;</span><br><span class="line">	fmt.Println(<span class="string">"找不到主键"</span>)</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	fmt.Println(user.Id, user.Name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>例子2：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">o := orm.NewOrm()</span><br><span class="line"><span class="keyword">var</span> user User</span><br><span class="line">qs := o.QueryTable(user) <span class="comment">// 返回 QuerySeter</span></span><br><span class="line">qs.Filter(<span class="string">"id"</span>, <span class="number">1</span>) <span class="comment">// WHERE id = 1</span></span><br><span class="line">qs.Filter(<span class="string">"profile__age"</span>, <span class="number">18</span>) <span class="comment">// WHERE profile.age = 18</span></span><br></pre></td></tr></table></figure></p>
+<p>例子3，WHERE IN查询条件：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">qs.Filter(<span class="string">"profile__age__in"</span>, <span class="number">18</span>, <span class="number">20</span>) </span><br><span class="line"><span class="comment">// WHERE profile.age IN (18, 20)</span></span><br><span class="line"><span class="string">``</span><span class="string">`	</span></span><br><span class="line"><span class="string">例子4，更加复杂的条件：</span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>Go</span><br><span class="line">qs.Filter(<span class="string">"profile__age__in"</span>, <span class="number">18</span>, <span class="number">20</span>).Exclude(<span class="string">"profile__lt"</span>, <span class="number">1000</span>)</span><br><span class="line"><span class="comment">// WHERE profile.age IN (18, 20) AND NOT profile_id &lt; 1000</span></span><br></pre></td></tr></table></figure></p>
+<p>可以通过如下接口获取多条数据，请看示例<br>例子1，根据条件age&gt;17，获取20位置开始的10条数据的数据<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> allusers []User</span><br><span class="line">qs.Filter(<span class="string">"profile__age__gt"</span>, <span class="number">17</span>)</span><br><span class="line"><span class="comment">// WHERE profile.age &gt; 17</span></span><br></pre></td></tr></table></figure></p>
+<p>例子2，limit默认从10开始，获取10条数据<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">qs.Limit(<span class="number">10</span>, <span class="number">20</span>)</span><br><span class="line"><span class="comment">// LIMIT 10 OFFSET 20 注意跟SQL反过来的</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="删除数据"><a href="#删除数据" class="headerlink" title="删除数据"></a>删除数据</h2><p>beedb提供了丰富的删除数据接口，请看下面的例子<br>例子1，删除单条数据<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">o := orm.NewOrm()</span><br><span class="line"><span class="keyword">if</span> num, err := o.Delete(&amp;User&#123;Id: <span class="number">1</span>&#125;); err == <span class="literal">nil</span> &#123;</span><br><span class="line">	fmt.Println(num)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Delete 操作会对反向关系进行操作，此例中 Post 拥有一个到 User 的外键。删除 User 的时候。如果 on_delete 设置为默认的级联操作，将删除对应的 Post</p>
+<h2 id="关联查询"><a href="#关联查询" class="headerlink" title="关联查询"></a>关联查询</h2><p>有些应用却需要用到连接查询，所以现在beego orm提供了一个简陋的实现方案：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Post <span class="keyword">struct</span> &#123;</span><br><span class="line">	Id    <span class="keyword">int</span>    <span class="string">`orm:"auto"`</span></span><br><span class="line">	Title <span class="keyword">string</span> <span class="string">`orm:"size(100)"`</span></span><br><span class="line">	User  *User  <span class="string">`orm:"rel(fk)"`</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> posts []*Post</span><br><span class="line">qs := o.QueryTable(<span class="string">"post"</span>)</span><br><span class="line">num, err := qs.Filter(<span class="string">"User__Name"</span>, <span class="string">"slene"</span>).All(&amp;posts)</span><br></pre></td></tr></table></figure></p>
+<p>上面代码中我们看到了一个struct关联查询</p>
+<h2 id="Group-By和Having"><a href="#Group-By和Having" class="headerlink" title="Group By和Having"></a>Group By和Having</h2><p>针对有些应用需要用到group by的功能，beego orm也提供了一个简陋的实现<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">qs.OrderBy(<span class="string">"id"</span>, <span class="string">"-profile__age"</span>)</span><br><span class="line"><span class="comment">// ORDER BY id ASC, profile.age DESC</span></span><br><span class="line">qs.OrderBy(<span class="string">"-profile__age"</span>, <span class="string">"profile"</span>)</span><br><span class="line"><span class="comment">// ORDER BY profile.age DESC, profile_id ASC</span></span><br></pre></td></tr></table></figure></p>
+<p>上面的代码中出现了两个新接口函数<br>GroupBy:用来指定进行groupby的字段<br>Having:用来指定having执行的时候的条件</p>
+<h2 id="使用原生sql"><a href="#使用原生sql" class="headerlink" title="使用原生sql"></a>使用原生sql</h2><p>简单示例:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">o := orm.NewOrm()</span><br><span class="line"><span class="keyword">var</span> r orm.RawSeter</span><br><span class="line">r = o.Raw(<span class="string">"UPDATE user SET name = ? WHERE name = ?"</span>, <span class="string">"testing"</span>, <span class="string">"slene"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>复杂原生sql使用:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *User)</span> <span class="title">Query</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">user</span> []<span class="title">User</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> o orm.Ormer</span><br><span class="line">	<span class="keyword">var</span> rs orm.RawSeter</span><br><span class="line">	o = orm.NewOrm()</span><br><span class="line">	rs = o.Raw(<span class="string">"SELECT * FROM user "</span>+</span><br><span class="line">		<span class="string">"WHERE name=? AND uid&gt;10 "</span>+</span><br><span class="line">		<span class="string">"ORDER BY uid DESC "</span>+</span><br><span class="line">		<span class="string">"LIMIT 100"</span>, name)</span><br><span class="line">	<span class="comment">//var user []User</span></span><br><span class="line">	num, err := rs.QueryRows(&amp;user)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		fmt.Println(num)</span><br><span class="line">		<span class="comment">//return user</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>更多说明,请到<a href="https://beego.me" target="_blank" rel="noopener">beego.me</a></p>
+<h2 id="进一步的发展"><a href="#进一步的发展" class="headerlink" title="进一步的发展"></a>进一步的发展</h2><p>目前beego orm已经获得了很多来自国内外用户的反馈，我目前也正在考虑支持更多数据库，接下来会在更多方面进行改进</p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/05.4/" title="使用PostgreSQL数据库">使用PostgreSQL数据库</a></li>
+<li>下一节: <a href="/2018/08/03/05.6/" title="NOSQL数据库操作">NOSQL数据库操作</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/05.7/" rel="next" title="小结">
+                <i class="fa fa-chevron-left"></i> 小结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/05.4/" rel="prev" title="使用PostgreSQL数据库">
+                使用PostgreSQL数据库 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#5-5-使用Beego-orm库进行ORM开发"><span class="nav-number">1.</span> <span class="nav-text">5.5 使用Beego orm库进行ORM开发</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">1.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何初始化"><span class="nav-number">1.2.</span> <span class="nav-text">如何初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插入数据"><span class="nav-number">1.3.</span> <span class="nav-text">插入数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更新数据"><span class="nav-number">1.4.</span> <span class="nav-text">更新数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询数据"><span class="nav-number">1.5.</span> <span class="nav-text">查询数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除数据"><span class="nav-number">1.6.</span> <span class="nav-text">删除数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关联查询"><span class="nav-number">1.7.</span> <span class="nav-text">关联查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Group-By和Having"><span class="nav-number">1.8.</span> <span class="nav-text">Group By和Having</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用原生sql"><span class="nav-number">1.9.</span> <span class="nav-text">使用原生sql</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进一步的发展"><span class="nav-number">1.10.</span> <span class="nav-text">进一步的发展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.11.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

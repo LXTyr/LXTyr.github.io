@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="5.6 NOSQL数据库操作NoSQL(Not Only SQL)，指的是非关系型的数据库。随着Web2.0的兴起，传统的关系数据库在应付Web2.0网站，特别是超大规模和高并发的SNS类型的Web2.0纯动态网站已经显得力不从心，暴露了很多难以克服的问题，而非关系型的数据库则由于其本身的特点得到了非常迅速的发展。而Go语言作为21世纪的C语言，对NOSQL的支持也是很好，目前流行的NOSQL主要">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NOSQL数据库操作">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/05.6/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="5.6 NOSQL数据库操作NoSQL(Not Only SQL)，指的是非关系型的数据库。随着Web2.0的兴起，传统的关系数据库在应付Web2.0网站，特别是超大规模和高并发的SNS类型的Web2.0纯动态网站已经显得力不从心，暴露了很多难以克服的问题，而非关系型的数据库则由于其本身的特点得到了非常迅速的发展。而Go语言作为21世纪的C语言，对NOSQL的支持也是很好，目前流行的NOSQL主要">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/05.6/images/5.6.mongodb.png">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.628Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NOSQL数据库操作">
+<meta name="twitter:description" content="5.6 NOSQL数据库操作NoSQL(Not Only SQL)，指的是非关系型的数据库。随着Web2.0的兴起，传统的关系数据库在应付Web2.0网站，特别是超大规模和高并发的SNS类型的Web2.0纯动态网站已经显得力不从心，暴露了很多难以克服的问题，而非关系型的数据库则由于其本身的特点得到了非常迅速的发展。而Go语言作为21世纪的C语言，对NOSQL的支持也是很好，目前流行的NOSQL主要">
+<meta name="twitter:image" content="http://darrenwonder.github.io/2018/08/03/05.6/images/5.6.mongodb.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/05.6/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>NOSQL数据库操作 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/05.6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">NOSQL数据库操作
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="5-6-NOSQL数据库操作"><a href="#5-6-NOSQL数据库操作" class="headerlink" title="5.6 NOSQL数据库操作"></a>5.6 NOSQL数据库操作</h1><p>NoSQL(Not Only SQL)，指的是非关系型的数据库。随着Web2.0的兴起，传统的关系数据库在应付Web2.0网站，特别是超大规模和高并发的SNS类型的Web2.0纯动态网站已经显得力不从心，暴露了很多难以克服的问题，而非关系型的数据库则由于其本身的特点得到了非常迅速的发展。<br>而Go语言作为21世纪的C语言，对NOSQL的支持也是很好，目前流行的NOSQL主要有redis、mongoDB、Cassandra和Membase等。这些数据库都有高性能、高并发读写等特点，目前已经广泛应用于各种应用中。我接下来主要讲解一下redis和mongoDB的操作。</p>
+<h2 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h2><p>redis是一个key-value存储系统。和Memcached类似，它支持存储的value类型相对更多，包括string(字符串)、list(链表)、set(集合)和zset(有序集合)。<br><a id="more"></a><br>目前应用redis最广泛的应该是新浪微博平台，其次还有Facebook收购的图片社交网站instagram。以及其他一些有名的<a href="http://redis.io/topics/whos-using-redis" target="_blank" rel="noopener">互联网企业</a><br>Go目前支持redis的驱动有如下</p>
+<ul>
+<li><a href="https://github.com/garyburd/redigo" target="_blank" rel="noopener">https://github.com/garyburd/redigo</a> (推荐)</li>
+<li><a href="https://github.com/go-redis/redis" target="_blank" rel="noopener">https://github.com/go-redis/redis</a></li>
+<li><a href="https://github.com/hoisie/redis" target="_blank" rel="noopener">https://github.com/hoisie/redis</a></li>
+<li><a href="https://github.com/alphazero/Go-Redis" target="_blank" rel="noopener">https://github.com/alphazero/Go-Redis</a></li>
+<li><a href="https://github.com/simonz05/godis" target="_blank" rel="noopener">https://github.com/simonz05/godis</a><br>我以redigo驱动为例来演示如何进行数据的操作:<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"os/signal"</span></span><br><span class="line">	<span class="string">"syscall"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">	<span class="string">"github.com/garyburd/redigo/redis"</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	Pool *redis.Pool</span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	redisHost := <span class="string">":6379"</span></span><br><span class="line">	Pool = newPool(redisHost)</span><br><span class="line">	<span class="built_in">close</span>()</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newPool</span><span class="params">(server <span class="keyword">string</span>)</span> *<span class="title">redis</span>.<span class="title">Pool</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;redis.Pool&#123;</span><br><span class="line">		MaxIdle:     <span class="number">3</span>,</span><br><span class="line">		IdleTimeout: <span class="number">240</span> * time.Second,</span><br><span class="line">		Dial: <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="params">(redis.Conn, error)</span></span> &#123;</span><br><span class="line">			c, err := redis.Dial(<span class="string">"tcp"</span>, server)</span><br><span class="line">			<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">return</span> c, err</span><br><span class="line">		&#125;,</span><br><span class="line">		TestOnBorrow: <span class="function"><span class="keyword">func</span><span class="params">(c redis.Conn, t time.Time)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">			_, err := c.Do(<span class="string">"PING"</span>)</span><br><span class="line">			<span class="keyword">return</span> err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">close</span><span class="params">()</span></span> &#123;</span><br><span class="line">	c := <span class="built_in">make</span>(<span class="keyword">chan</span> os.Signal, <span class="number">1</span>)</span><br><span class="line">	signal.Notify(c, os.Interrupt)</span><br><span class="line">	signal.Notify(c, syscall.SIGTERM)</span><br><span class="line">	signal.Notify(c, syscall.SIGKILL)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		&lt;-c</span><br><span class="line">		Pool.Close()</span><br><span class="line">		os.Exit(<span class="number">0</span>)</span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Get</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">	conn := Pool.Get()</span><br><span class="line">	<span class="keyword">defer</span> conn.Close()</span><br><span class="line">	<span class="keyword">var</span> data []<span class="keyword">byte</span></span><br><span class="line">	data, err := redis.Bytes(conn.Do(<span class="string">"GET"</span>, key))</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> data, fmt.Errorf(<span class="string">"error get key %s: %v"</span>, key, err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> data, err</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	test, err := Get(<span class="string">"test"</span>)</span><br><span class="line">	fmt.Println(test, err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>另外以前我fork了最后一个驱动，更新了一些bug，目前应用在我自己的短域名服务项目中(每天200W左右的PV值)<br><a href="https://github.com/astaxie/goredis" target="_blank" rel="noopener">https://github.com/astaxie/goredis</a><br>接下来的以我自己fork的这个redis驱动为例来演示如何进行数据的操作<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"github.com/astaxie/goredis"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> client goredis.Client</span><br><span class="line">	<span class="comment">// 设置端口为redis默认端口</span></span><br><span class="line">	client.Addr = <span class="string">"127.0.0.1:6379"</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">//字符串操作</span></span><br><span class="line">	client.Set(<span class="string">"a"</span>, []<span class="keyword">byte</span>(<span class="string">"hello"</span>))</span><br><span class="line">	val, _ := client.Get(<span class="string">"a"</span>)</span><br><span class="line">	fmt.Println(<span class="keyword">string</span>(val))</span><br><span class="line">	client.Del(<span class="string">"a"</span>)</span><br><span class="line">	<span class="comment">//list操作</span></span><br><span class="line">	vals := []<span class="keyword">string</span>&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>, <span class="string">"d"</span>, <span class="string">"e"</span>&#125;</span><br><span class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> vals &#123;</span><br><span class="line">		client.Rpush(<span class="string">"l"</span>, []<span class="keyword">byte</span>(v))</span><br><span class="line">	&#125;</span><br><span class="line">	dbvals,_ := client.Lrange(<span class="string">"l"</span>, <span class="number">0</span>, <span class="number">4</span>)</span><br><span class="line">	<span class="keyword">for</span> i, v := <span class="keyword">range</span> dbvals &#123;</span><br><span class="line">		<span class="built_in">println</span>(i,<span class="string">":"</span>,<span class="keyword">string</span>(v))</span><br><span class="line">	&#125;</span><br><span class="line">	client.Del(<span class="string">"l"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们可以看到操作redis非常的方便，而且我实际项目中应用下来性能也很高。client的命令和redis的命令基本保持一致。所以和原生态操作redis非常类似。</p>
+<h2 id="mongoDB"><a href="#mongoDB" class="headerlink" title="mongoDB"></a>mongoDB</h2><p>MongoDB是一个高性能，开源，无模式的文档型数据库，是一个介于关系数据库和非关系数据库之间的产品，是非关系数据库当中功能最丰富，最像关系数据库的。他支持的数据结构非常松散，采用的是类似json的bjson格式来存储数据，因此可以存储比较复杂的数据类型。Mongo最大的特点是他支持的查询语言非常强大，其语法有点类似于面向对象的查询语言，几乎可以实现类似关系数据库单表查询的绝大部分功能，而且还支持对数据建立索引。<br>下图展示了mysql和mongoDB之间的对应关系，我们可以看出来非常的方便，但是mongoDB的性能非常好。<br><img src="/2018/08/03/05.6/images/5.6.mongodb.png"><br>图5.1 MongoDB和Mysql的操作对比图<br>目前Go支持mongoDB最好的驱动就是<a href="http://labix.org/mgo" target="_blank" rel="noopener">mgo</a>，这个驱动目前最有可能成为官方的pkg。<br>安装mgo:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> get gopkg.in/mgo.v2</span><br></pre></td></tr></table></figure></p>
+<p>下面我将演示如何通过Go来操作mongoDB：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"gopkg.in/mgo.v2"</span></span><br><span class="line">	<span class="string">"gopkg.in/mgo.v2/bson"</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name  <span class="keyword">string</span></span><br><span class="line">	Phone <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	session, err := mgo.Dial(<span class="string">"server1.example.com,server2.example.com"</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> session.Close()</span><br><span class="line">	<span class="comment">// Optional. Switch the session to a monotonic behavior.</span></span><br><span class="line">	session.SetMode(mgo.Monotonic, <span class="literal">true</span>)</span><br><span class="line">	c := session.DB(<span class="string">"test"</span>).C(<span class="string">"people"</span>)</span><br><span class="line">	err = c.Insert(&amp;Person&#123;<span class="string">"Ale"</span>, <span class="string">"+55 53 8116 9639"</span>&#125;,</span><br><span class="line">		&amp;Person&#123;<span class="string">"Cla"</span>, <span class="string">"+55 53 8402 8510"</span>&#125;)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line">	result := Person&#123;&#125;</span><br><span class="line">	err = c.Find(bson.M&#123;<span class="string">"name"</span>: <span class="string">"Ale"</span>&#125;).One(&amp;result)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(<span class="string">"Phone:"</span>, result.Phone)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们可以看出来mgo的操作方式和beedb的操作方式几乎类似，都是基于struct的操作方式，这个就是Go Style。</p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/05.5/" title="使用Beego orm库进行ORM开发">使用Beego orm库进行ORM开发</a></li>
+<li>下一节: <a href="/2018/08/03/05.7/" title="小结">小结</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/06.0/" rel="next" title="session和数据存储">
+                <i class="fa fa-chevron-left"></i> session和数据存储
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/05.7/" rel="prev" title="小结">
+                小结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#5-6-NOSQL数据库操作"><span class="nav-number">1.</span> <span class="nav-text">5.6 NOSQL数据库操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#redis"><span class="nav-number">1.1.</span> <span class="nav-text">redis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mongoDB"><span class="nav-number">1.2.</span> <span class="nav-text">mongoDB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.3.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

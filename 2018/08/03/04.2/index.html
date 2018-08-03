@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="4.2 验证表单的输入开发Web的一个原则就是，不能信任用户输入的任何信息，所以验证和过滤用户的输入信息就变得非常重要，我们经常会在微博、新闻中听到某某网站被入侵了，存在什么漏洞，这些大多是因为网站对于用户输入的信息没有做严格的验证引起的，所以为了编写出安全可靠的Web程序，验证表单输入的意义重大。我们平常编写Web应用主要有两方面的数据验证，一个是在页面端的js验证(目前在这方面有很多的插件库，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="验证表单的输入">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/04.2/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="4.2 验证表单的输入开发Web的一个原则就是，不能信任用户输入的任何信息，所以验证和过滤用户的输入信息就变得非常重要，我们经常会在微博、新闻中听到某某网站被入侵了，存在什么漏洞，这些大多是因为网站对于用户输入的信息没有做严格的验证引起的，所以为了编写出安全可靠的Web程序，验证表单输入的意义重大。我们平常编写Web应用主要有两方面的数据验证，一个是在页面端的js验证(目前在这方面有很多的插件库，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.615Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="验证表单的输入">
+<meta name="twitter:description" content="4.2 验证表单的输入开发Web的一个原则就是，不能信任用户输入的任何信息，所以验证和过滤用户的输入信息就变得非常重要，我们经常会在微博、新闻中听到某某网站被入侵了，存在什么漏洞，这些大多是因为网站对于用户输入的信息没有做严格的验证引起的，所以为了编写出安全可靠的Web程序，验证表单输入的意义重大。我们平常编写Web应用主要有两方面的数据验证，一个是在页面端的js验证(目前在这方面有很多的插件库，">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/04.2/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>验证表单的输入 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/04.2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">验证表单的输入
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="4-2-验证表单的输入"><a href="#4-2-验证表单的输入" class="headerlink" title="4.2 验证表单的输入"></a>4.2 验证表单的输入</h1><p>开发Web的一个原则就是，不能信任用户输入的任何信息，所以验证和过滤用户的输入信息就变得非常重要，我们经常会在微博、新闻中听到某某网站被入侵了，存在什么漏洞，这些大多是因为网站对于用户输入的信息没有做严格的验证引起的，所以为了编写出安全可靠的Web程序，验证表单输入的意义重大。<br>我们平常编写Web应用主要有两方面的数据验证，一个是在页面端的js验证(目前在这方面有很多的插件库，比如ValidationJS插件)，一个是在服务器端的验证，我们这小节讲解的是如何在服务器端验证。<br><a id="more"></a></p>
+<h2 id="必填字段"><a href="#必填字段" class="headerlink" title="必填字段"></a>必填字段</h2><p>你想要确保从一个表单元素中得到一个值，例如前面小节里面的用户名，我们如何处理呢？Go有一个内置函数<code>len</code>可以获取字符串的长度，这样我们就可以通过len来获取数据的长度，例如：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="built_in">len</span>(r.Form[<span class="string">"username"</span>][<span class="number">0</span>])==<span class="number">0</span>&#123;</span><br><span class="line">	<span class="comment">//为空的处理</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>r.Form</code>对不同类型的表单元素的留空有不同的处理， 对于空文本框、空文本区域以及文件上传，元素的值为空值,而如果是未选中的复选框和单选按钮，则根本不会在r.Form中产生相应条目，如果我们用上面例子中的方式去获取数据时程序就会报错。所以我们需要通过<code>r.Form.Get()</code>来获取值，因为如果字段不存在，通过该方式获取的是空值。但是通过<code>r.Form.Get()</code>只能获取单个的值，如果是map的值，必须通过上面的方式来获取。</p>
+<h2 id="数字"><a href="#数字" class="headerlink" title="数字"></a>数字</h2><p>你想要确保一个表单输入框中获取的只能是数字，例如，你想通过表单获取某个人的具体年龄是50岁还是10岁，而不是像“一把年纪了”或“年轻着呢”这种描述<br>如果我们是判断正整数，那么我们先转化成int类型，然后进行处理<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">getint,err:=strconv.Atoi(r.Form.Get(<span class="string">"age"</span>))</span><br><span class="line"><span class="keyword">if</span> err!=<span class="literal">nil</span>&#123;</span><br><span class="line">	<span class="comment">//数字转化出错了，那么可能就不是数字</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//接下来就可以判断这个数字的大小范围了</span></span><br><span class="line"><span class="keyword">if</span> getint &gt;<span class="number">100</span> &#123;</span><br><span class="line">	<span class="comment">//太大了</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>还有一种方式就是正则匹配的方式<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> m, _ := regexp.MatchString(<span class="string">"^[0-9]+$"</span>, r.Form.Get(<span class="string">"age"</span>)); !m &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>对于性能要求很高的用户来说，这是一个老生常谈的问题了，他们认为应该尽量避免使用正则表达式，因为使用正则表达式的速度会比较慢。但是在目前机器性能那么强劲的情况下，对于这种简单的正则表达式效率和类型转换函数是没有什么差别的。如果你对正则表达式很熟悉，而且你在其它语言中也在使用它，那么在Go里面使用正则表达式将是一个便利的方式。</p>
+<blockquote>
+<p>Go实现的正则是<a href="http://code.google.com/p/re2/wiki/Syntax" target="_blank" rel="noopener">RE2</a>，所有的字符都是UTF-8编码的。</p>
+</blockquote>
+<h2 id="中文"><a href="#中文" class="headerlink" title="中文"></a>中文</h2><p>有时候我们想通过表单元素获取一个用户的中文名字，但是又为了保证获取的是正确的中文，我们需要进行验证，而不是用户随便的一些输入。对于中文我们目前有两种方式来验证，可以使用 <code>unicode</code> 包提供的 <code>func Is(rangeTab *RangeTable, r rune) bool</code> 来验证，也可以使用正则方式来验证，这里使用最简单的正则方式，如下代码所示<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> m, _ := regexp.MatchString(<span class="string">"^\\p&#123;Han&#125;+$"</span>, r.Form.Get(<span class="string">"realname"</span>)); !m &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="英文"><a href="#英文" class="headerlink" title="英文"></a>英文</h2><p>我们期望通过表单元素获取一个英文值，例如我们想知道一个用户的英文名，应该是astaxie，而不是asta谢。<br>我们可以很简单的通过正则验证数据：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> m, _ := regexp.MatchString(<span class="string">"^[a-zA-Z]+$"</span>, r.Form.Get(<span class="string">"engname"</span>)); !m &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="电子邮件地址"><a href="#电子邮件地址" class="headerlink" title="电子邮件地址"></a>电子邮件地址</h2><p>你想知道用户输入的一个Email地址是否正确，通过如下这个方式可以验证：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> m, _ := regexp.MatchString(<span class="string">`^([\w\.\_]&#123;2,10&#125;)@(\w&#123;1,&#125;).([a-z]&#123;2,4&#125;)$`</span>, r.Form.Get(<span class="string">"email"</span>)); !m &#123;</span><br><span class="line">	fmt.Println(<span class="string">"no"</span>)</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">	fmt.Println(<span class="string">"yes"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="手机号码"><a href="#手机号码" class="headerlink" title="手机号码"></a>手机号码</h2><p>你想要判断用户输入的手机号码是否正确，通过正则也可以验证：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> m, _ := regexp.MatchString(<span class="string">`^(1[3|4|5|8][0-9]\d&#123;4,8&#125;)$`</span>, r.Form.Get(<span class="string">"mobile"</span>)); !m &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="下拉菜单"><a href="#下拉菜单" class="headerlink" title="下拉菜单"></a>下拉菜单</h2><p>如果我们想要判断表单里面<code>&lt;select&gt;</code>元素生成的下拉菜单中是否有被选中的项目。有些时候黑客可能会伪造这个下拉菜单不存在的值发送给你，那么如何判断这个值是否是我们预设的值呢？<br>我们的select可能是这样的一些元素<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">name</span>=<span class="string">"fruit"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"apple"</span>&gt;</span>apple<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"pear"</span>&gt;</span>pear<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"banana"</span>&gt;</span>banana<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>那么我们可以这样来验证<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">slice:=[]<span class="keyword">string</span>&#123;<span class="string">"apple"</span>,<span class="string">"pear"</span>,<span class="string">"banana"</span>&#125;</span><br><span class="line">v := r.Form.Get(<span class="string">"fruit"</span>)</span><br><span class="line"><span class="keyword">for</span> _, item := <span class="keyword">range</span> slice &#123;</span><br><span class="line">	<span class="keyword">if</span> item == v &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="单选按钮"><a href="#单选按钮" class="headerlink" title="单选按钮"></a>单选按钮</h2><p>如果我们想要判断radio按钮是否有一个被选中了，我们页面的输出可能就是一个男、女性别的选择，但是也可能一个15岁大的无聊小孩，一手拿着http协议的书，另一只手通过telnet客户端向你的程序在发送请求呢，你设定的性别男值是1，女是2，他给你发送一个3，你的程序会出现异常吗？因此我们也需要像下拉菜单的判断方式类似，判断我们获取的值是我们预设的值，而不是额外的值。<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"radio"</span> <span class="attr">name</span>=<span class="string">"gender"</span> <span class="attr">value</span>=<span class="string">"1"</span>&gt;</span>男</span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"radio"</span> <span class="attr">name</span>=<span class="string">"gender"</span> <span class="attr">value</span>=<span class="string">"2"</span>&gt;</span>女</span><br></pre></td></tr></table></figure></p>
+<p>那我们也可以类似下拉菜单的做法一样<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">slice:=[]<span class="keyword">string</span>&#123;<span class="string">"1"</span>,<span class="string">"2"</span>&#125;</span><br><span class="line"><span class="keyword">for</span> _, v := <span class="keyword">range</span> slice &#123;</span><br><span class="line">	<span class="keyword">if</span> v == r.Form.Get(<span class="string">"gender"</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="复选框"><a href="#复选框" class="headerlink" title="复选框"></a>复选框</h2><p>有一项选择兴趣的复选框，你想确定用户选中的和你提供给用户选择的是同一个类型的数据。<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">name</span>=<span class="string">"interest"</span> <span class="attr">value</span>=<span class="string">"football"</span>&gt;</span>足球</span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">name</span>=<span class="string">"interest"</span> <span class="attr">value</span>=<span class="string">"basketball"</span>&gt;</span>篮球</span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">name</span>=<span class="string">"interest"</span> <span class="attr">value</span>=<span class="string">"tennis"</span>&gt;</span>网球</span><br></pre></td></tr></table></figure></p>
+<p>对于复选框我们的验证和单选有点不一样，因为接收到的数据是一个slice<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">slice:=[]<span class="keyword">string</span>&#123;<span class="string">"football"</span>,<span class="string">"basketball"</span>,<span class="string">"tennis"</span>&#125;</span><br><span class="line">a:=Slice_diff(r.Form[<span class="string">"interest"</span>],slice)</span><br><span class="line"><span class="keyword">if</span> a == <span class="literal">nil</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure></p>
+<p>上面这个函数<code>Slice_diff</code>包含在我开源的一个库里面(操作slice和map的库)，<a href="https://github.com/astaxie/beeku" target="_blank" rel="noopener">https://github.com/astaxie/beeku</a></p>
+<h2 id="日期和时间"><a href="#日期和时间" class="headerlink" title="日期和时间"></a>日期和时间</h2><p>你想确定用户填写的日期或时间是否有效。例如<br>，用户在日程表中安排8月份的第45天开会，或者提供未来的某个时间作为生日。<br>Go里面提供了一个time的处理包，我们可以把用户的输入年月日转化成相应的时间，然后进行逻辑判断<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">t := time.Date(<span class="number">2009</span>, time.November, <span class="number">10</span>, <span class="number">23</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, time.UTC)</span><br><span class="line">fmt.Printf(<span class="string">"Go launched at %s\n"</span>, t.Local())</span><br></pre></td></tr></table></figure></p>
+<p>获取time之后我们就可以进行很多时间函数的操作。具体的判断就根据自己的需求调整。</p>
+<h2 id="身份证号码"><a href="#身份证号码" class="headerlink" title="身份证号码"></a>身份证号码</h2><p>如果我们想验证表单输入的是否是身份证，通过正则也可以方便的验证，但是身份证有15位和18位，我们两个都需要验证<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//验证15位身份证，15位的是全部数字</span></span><br><span class="line"><span class="keyword">if</span> m, _ := regexp.MatchString(<span class="string">`^(\d&#123;15&#125;)$`</span>, r.Form.Get(<span class="string">"usercard"</span>)); !m &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//验证18位身份证，18位前17位为数字，最后一位是校验位，可能为数字或字符X。</span></span><br><span class="line"><span class="keyword">if</span> m, _ := regexp.MatchString(<span class="string">`^(\d&#123;17&#125;)([0-9]|X)$`</span>, r.Form.Get(<span class="string">"usercard"</span>)); !m &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面列出了我们一些常用的服务器端的表单元素验证，希望通过这个引导入门，能够让你对Go的数据验证有所了解，特别是Go里面的正则处理。</p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/04.1/" title="处理表单的输入">处理表单的输入</a></li>
+<li>下一节: <a href="/2018/08/03/04.3/" title="预防跨站脚本">预防跨站脚本</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/04.4/" rel="next" title="防止多次递交表单">
+                <i class="fa fa-chevron-left"></i> 防止多次递交表单
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/04.3/" rel="prev" title="预防跨站脚本">
+                预防跨站脚本 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#4-2-验证表单的输入"><span class="nav-number">1.</span> <span class="nav-text">4.2 验证表单的输入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#必填字段"><span class="nav-number">1.1.</span> <span class="nav-text">必填字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数字"><span class="nav-number">1.2.</span> <span class="nav-text">数字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#中文"><span class="nav-number">1.3.</span> <span class="nav-text">中文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#英文"><span class="nav-number">1.4.</span> <span class="nav-text">英文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#电子邮件地址"><span class="nav-number">1.5.</span> <span class="nav-text">电子邮件地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#手机号码"><span class="nav-number">1.6.</span> <span class="nav-text">手机号码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下拉菜单"><span class="nav-number">1.7.</span> <span class="nav-text">下拉菜单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单选按钮"><span class="nav-number">1.8.</span> <span class="nav-text">单选按钮</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复选框"><span class="nav-number">1.9.</span> <span class="nav-text">复选框</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日期和时间"><span class="nav-number">1.10.</span> <span class="nav-text">日期和时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#身份证号码"><span class="nav-number">1.11.</span> <span class="nav-text">身份证号码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.12.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

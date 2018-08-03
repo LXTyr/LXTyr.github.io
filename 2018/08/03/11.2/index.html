@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="11.2 使用GDB调试开发程序过程中调试代码是开发者经常要做的一件事情，Go语言不像PHP、Python等动态语言，只要修改不需要编译就可以直接输出，而且可以动态的在运行环境下打印数据。当然Go语言也可以通过Println之类的打印数据来调试，但是每次都需要重新编译，这是一件相当麻烦的事情。我们知道在Python中有pdb/ipdb之类的工具调试，Javascript也有类似工具，这些工具都能够">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用GDB调试">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/11.2/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="11.2 使用GDB调试开发程序过程中调试代码是开发者经常要做的一件事情，Go语言不像PHP、Python等动态语言，只要修改不需要编译就可以直接输出，而且可以动态的在运行环境下打印数据。当然Go语言也可以通过Println之类的打印数据来调试，但是每次都需要重新编译，这是一件相当麻烦的事情。我们知道在Python中有pdb/ipdb之类的工具调试，Javascript也有类似工具，这些工具都能够">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.680Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用GDB调试">
+<meta name="twitter:description" content="11.2 使用GDB调试开发程序过程中调试代码是开发者经常要做的一件事情，Go语言不像PHP、Python等动态语言，只要修改不需要编译就可以直接输出，而且可以动态的在运行环境下打印数据。当然Go语言也可以通过Println之类的打印数据来调试，但是每次都需要重新编译，这是一件相当麻烦的事情。我们知道在Python中有pdb/ipdb之类的工具调试，Javascript也有类似工具，这些工具都能够">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/11.2/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>使用GDB调试 | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/11.2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用GDB调试
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="11-2-使用GDB调试"><a href="#11-2-使用GDB调试" class="headerlink" title="11.2 使用GDB调试"></a>11.2 使用GDB调试</h1><p>开发程序过程中调试代码是开发者经常要做的一件事情，Go语言不像PHP、Python等动态语言，只要修改不需要编译就可以直接输出，而且可以动态的在运行环境下打印数据。当然Go语言也可以通过Println之类的打印数据来调试，但是每次都需要重新编译，这是一件相当麻烦的事情。我们知道在Python中有pdb/ipdb之类的工具调试，Javascript也有类似工具，这些工具都能够动态的显示变量信息，单步调试等。不过庆幸的是Go也有类似的工具支持：GDB。Go内部已经内置支持了GDB，所以，我们可以通过GDB来进行调试，那么本小节就来介绍一下如何通过GDB来调试Go程序。</p>
+<a id="more"></a>
+<p>另外建议纯go代码使用<a href="https://github.com/derekparker/delve" target="_blank" rel="noopener">delve</a>可以很好的进行Go代码调试</p>
+<h2 id="GDB调试简介"><a href="#GDB调试简介" class="headerlink" title="GDB调试简介"></a>GDB调试简介</h2><p>GDB是FSF(自由软件基金会)发布的一个强大的类UNIX系统下的程序调试工具。使用GDB可以做如下事情：</p>
+<ol>
+<li>启动程序，可以按照开发者的自定义要求运行程序。</li>
+<li>可让被调试的程序在开发者设定的调置的断点处停住。（断点可以是条件表达式）</li>
+<li>当程序被停住时，可以检查此时程序中所发生的事。</li>
+<li>动态的改变当前程序的执行环境。</li>
+</ol>
+<p>目前支持调试Go程序的GDB版本必须大于7.1。</p>
+<p>编译Go程序的时候需要注意以下几点</p>
+<ol>
+<li>传递参数-ldflags “-s”，忽略debug的打印信息</li>
+<li>传递-gcflags “-N -l” 参数，这样可以忽略Go内部做的一些优化，聚合变量和函数等优化，这样对于GDB调试来说非常困难，所以在编译的时候加入这两个参数避免这些优化。 </li>
+</ol>
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><p>GDB的一些常用命令如下所示</p>
+<ul>
+<li><p>list</p>
+<p>  简写命令<code>l</code>，用来显示源代码，默认显示十行代码，后面可以带上参数显示的具体行，例如：<code>list 15</code>，显示十行代码，其中第15行在显示的十行里面的中间，如下所示。</p>
+<pre><code>10            time.Sleep(2 * time.Second)
+11            c &lt;- i
+12        }
+13        close(c)
+14    }
+15    
+16    func main() {
+17        msg := &quot;Starting main&quot;
+18        fmt.Println(msg)
+19        bus := make(chan int)
+</code></pre></li>
+</ul>
+<ul>
+<li><p>break</p>
+<p>  简写命令 <code>b</code>,用来设置断点，后面跟上参数设置断点的行数，例如<code>b 10</code>在第十行设置断点。</p>
+</li>
+<li><p>delete<br>  简写命令 <code>d</code>,用来删除断点，后面跟上断点设置的序号，这个序号可以通过<code>info breakpoints</code>获取相应的设置的断点序号，如下是显示的设置断点序号。</p>
+<pre><code>Num     Type           Disp Enb Address            What
+2       breakpoint     keep y   0x0000000000400dc3 in main.main at /home/xiemengjun/gdb.go:23
+breakpoint already hit 1 time
+</code></pre></li>
+<li><p>backtrace</p>
+<p>  简写命令 <code>bt</code>,用来打印执行的代码过程，如下所示：</p>
+<pre><code>#0  main.main () at /home/xiemengjun/gdb.go:23
+#1  0x000000000040d61e in runtime.main () at /home/xiemengjun/go/src/pkg/runtime/proc.c:244
+#2  0x000000000040d6c1 in schedunlock () at /home/xiemengjun/go/src/pkg/runtime/proc.c:267
+#3  0x0000000000000000 in ?? ()
+</code></pre></li>
+<li><p>info</p>
+<p>  info命令用来显示信息，后面有几种参数，我们常用的有如下几种：</p>
+<ul>
+<li><p><code>info locals</code></p>
+<p>  显示当前执行的程序中的变量值</p>
+</li>
+<li><p><code>info breakpoints</code></p>
+<p>  显示当前设置的断点列表</p>
+</li>
+<li><p><code>info goroutines</code></p>
+<p>  显示当前执行的goroutine列表，如下代码所示,带*的表示当前执行的</p>
+<pre><code>* 1  running runtime.gosched
+* 2  syscall runtime.entersyscall
+  3  waiting runtime.gosched
+  4 runnable runtime.gosched
+</code></pre></li>
+</ul>
+</li>
+<li><p>print</p>
+<p>  简写命令<code>p</code>，用来打印变量或者其他信息，后面跟上需要打印的变量名，当然还有一些很有用的函数$len()和$cap()，用来返回当前string、slices或者maps的长度和容量。</p>
+</li>
+<li><p>whatis </p>
+<p>  用来显示当前变量的类型，后面跟上变量名，例如<code>whatis msg</code>,显示如下：</p>
+<pre><code>type = struct string
+</code></pre></li>
+<li><p>next</p>
+<p>  简写命令 <code>n</code>,用来单步调试，跳到下一步，当有断点之后，可以输入<code>n</code>跳转到下一步继续执行</p>
+</li>
+<li><p>continue</p>
+<p>  简称命令 <code>c</code>，用来跳出当前断点处，后面可以跟参数N，跳过多少次断点</p>
+</li>
+<li><p>set variable</p>
+<p>  该命令用来改变运行过程中的变量值，格式如：<code>set variable &lt;var&gt;=&lt;value&gt;</code></p>
+</li>
+</ul>
+<h2 id="调试过程"><a href="#调试过程" class="headerlink" title="调试过程"></a>调试过程</h2><p>我们通过下面这个代码来演示如何通过GDB来调试Go程序，下面是将要演示的代码：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">counting</span><span class="params">(c <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">		time.Sleep(<span class="number">2</span> * time.Second)</span><br><span class="line">		c &lt;- i</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">close</span>(c)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	msg := <span class="string">"Starting main"</span></span><br><span class="line">	fmt.Println(msg)</span><br><span class="line">	bus := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	msg = <span class="string">"starting a gofunc"</span></span><br><span class="line">	<span class="keyword">go</span> counting(bus)</span><br><span class="line">	<span class="keyword">for</span> count := <span class="keyword">range</span> bus &#123;</span><br><span class="line">		fmt.Println(<span class="string">"count:"</span>, count)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>编译文件，生成可执行文件gdbfile:</p>
+<pre><code>go build -gcflags &quot;-N -l&quot; gdbfile.go
+</code></pre><p>通过gdb命令启动调试：</p>
+<pre><code>gdb gdbfile
+</code></pre><p>启动之后首先看看这个程序是不是可以运行起来，只要输入<code>run</code>命令回车后程序就开始运行，程序正常的话可以看到程序输出如下，和我们在命令行直接执行程序输出是一样的：</p>
+<pre><code>(gdb) run
+Starting program: /home/xiemengjun/gdbfile 
+Starting main
+count: 0
+count: 1
+count: 2
+count: 3
+count: 4
+count: 5
+count: 6
+count: 7
+count: 8
+count: 9
+[LWP 2771 exited]
+[Inferior 1 (process 2771) exited normally]    
+</code></pre><p>好了，现在我们已经知道怎么让程序跑起来了，接下来开始给代码设置断点：</p>
+<pre><code>(gdb) b 23
+Breakpoint 1 at 0x400d8d: file /home/xiemengjun/gdbfile.go, line 23.
+(gdb) run
+Starting program: /home/xiemengjun/gdbfile 
+Starting main
+[New LWP 3284]
+[Switching to LWP 3284]
+
+Breakpoint 1, main.main () at /home/xiemengjun/gdbfile.go:23
+23            fmt.Println(&quot;count:&quot;, count)
+</code></pre><p>上面例子<code>b 23</code>表示在第23行设置了断点，之后输入<code>run</code>开始运行程序。现在程序在前面设置断点的地方停住了，我们需要查看断点相应上下文的源码，输入<code>list</code>就可以看到源码显示从当前停止行的前五行开始：</p>
+<pre><code>(gdb) list
+18        fmt.Println(msg)
+19        bus := make(chan int)
+20        msg = &quot;starting a gofunc&quot;
+21        go counting(bus)
+22        for count := range bus {
+23            fmt.Println(&quot;count:&quot;, count)
+24        }
+25    }
+</code></pre><p>现在GDB在运行当前的程序的环境中已经保留了一些有用的调试信息，我们只需打印出相应的变量，查看相应变量的类型及值：</p>
+<pre><code>(gdb) info locals
+count = 0
+bus = 0xf840001a50
+(gdb) p count
+$1 = 0
+(gdb) p bus
+$2 = (chan int) 0xf840001a50
+(gdb) whatis bus
+type = chan int
+</code></pre><p>接下来该让程序继续往下执行，请继续看下面的命令</p>
+<pre><code>(gdb) c
+Continuing.
+count: 0
+[New LWP 3303]
+[Switching to LWP 3303]
+
+Breakpoint 1, main.main () at /home/xiemengjun/gdbfile.go:23
+23 fmt.Println(&quot;count:&quot;, count)
+(gdb) c
+Continuing.
+count: 1
+[Switching to LWP 3302]
+
+Breakpoint 1, main.main () at /home/xiemengjun/gdbfile.go:23
+23 fmt.Println(&quot;count:&quot;, count)
+</code></pre><p>每次输入<code>c</code>之后都会执行一次代码，又跳到下一次for循环，继续打印出来相应的信息。</p>
+<p>设想目前需要改变上下文相关变量的信息，跳过一些过程，并继续执行下一步，得出修改后想要的结果：</p>
+<pre><code>(gdb) info locals
+count = 2
+bus = 0xf840001a50
+(gdb) set variable count=9
+(gdb) info locals
+count = 9
+bus = 0xf840001a50
+(gdb) c
+Continuing.
+count: 9
+[Switching to LWP 3302]
+
+Breakpoint 1, main.main () at /home/xiemengjun/gdbfile.go:23
+23 fmt.Println(&quot;count:&quot;, count)        
+</code></pre><p>最后稍微思考一下，前面整个程序运行的过程中到底创建了多少个goroutine，每个goroutine都在做什么：</p>
+<pre><code>(gdb) info goroutines
+* 1 running runtime.gosched
+* 2 syscall runtime.entersyscall 
+3 waiting runtime.gosched 
+4 runnable runtime.gosched
+(gdb) goroutine 1 bt
+#0 0x000000000040e33b in runtime.gosched () at /home/xiemengjun/go/src/pkg/runtime/proc.c:927
+#1 0x0000000000403091 in runtime.chanrecv (c=void, ep=void, selected=void, received=void)
+at /home/xiemengjun/go/src/pkg/runtime/chan.c:327
+#2 0x000000000040316f in runtime.chanrecv2 (t=void, c=void)
+at /home/xiemengjun/go/src/pkg/runtime/chan.c:420
+#3 0x0000000000400d6f in main.main () at /home/xiemengjun/gdbfile.go:22
+#4 0x000000000040d0c7 in runtime.main () at /home/xiemengjun/go/src/pkg/runtime/proc.c:244
+#5 0x000000000040d16a in schedunlock () at /home/xiemengjun/go/src/pkg/runtime/proc.c:267
+#6 0x0000000000000000 in ?? ()
+</code></pre><p>通过查看goroutines的命令我们可以清楚地了解goruntine内部是怎么执行的，每个函数的调用顺序已经明明白白地显示出来了。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>本小节我们介绍了GDB调试Go程序的一些基本命令，包括<code>run</code>、<code>print</code>、<code>info</code>、<code>set variable</code>、<code>coutinue</code>、<code>list</code>、<code>break</code>    等经常用到的调试命令，通过上面的例子演示，我相信读者已经对于通过GDB调试Go程序有了基本的理解，如果你想获取更多的调试技巧请参考官方网站的GDB调试手册，还有GDB官方网站的手册。    </p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/11.1/" title="错误处理">错误处理</a></li>
+<li>下一节: <a href="/2018/08/03/11.3/" title="Go怎么写测试用例">Go怎么写测试用例</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/11.3/" rel="next" title="Go怎么写测试用例">
+                <i class="fa fa-chevron-left"></i> Go怎么写测试用例
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/11.1/" rel="prev" title="错误处理">
+                错误处理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#11-2-使用GDB调试"><span class="nav-number">1.</span> <span class="nav-text">11.2 使用GDB调试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GDB调试简介"><span class="nav-number">1.1.</span> <span class="nav-text">GDB调试简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用命令"><span class="nav-number">1.2.</span> <span class="nav-text">常用命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#调试过程"><span class="nav-number">1.3.</span> <span class="nav-text">调试过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">1.4.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.5.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

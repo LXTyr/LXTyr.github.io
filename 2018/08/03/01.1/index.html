@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1.1安装 GoGo的三种安装方式Go有多种安装方式，你可以选择自己喜欢的。这里我们介绍三种最常见的安装方式：  Go源码安装：这是一种标准的软件安装方式。对于经常使用Unix类系统的用户，尤其对于开发者来说，从源码安装可以自己定制。 Go标准包安装：Go提供了方便的安装包，支持Windows、Linux、Mac等系统。这种方式适合快速安装，可根据自己的系统位数下载好相应的安装包，一路next就可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安装Go">
+<meta property="og:url" content="http://darrenwonder.github.io/2018/08/03/01.1/index.html">
+<meta property="og:site_name" content="DarrenWang">
+<meta property="og:description" content="1.1安装 GoGo的三种安装方式Go有多种安装方式，你可以选择自己喜欢的。这里我们介绍三种最常见的安装方式：  Go源码安装：这是一种标准的软件安装方式。对于经常使用Unix类系统的用户，尤其对于开发者来说，从源码安装可以自己定制。 Go标准包安装：Go提供了方便的安装包，支持Windows、Linux、Mac等系统。这种方式适合快速安装，可根据自己的系统位数下载好相应的安装包，一路next就可">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/01.1/images/1.1.mac.png">
+<meta property="og:image" content="http://darrenwonder.github.io/2018/08/03/01.1/images/1.1.linux.png">
+<meta property="og:updated_time" content="2018-08-03T04:15:06.529Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="安装Go">
+<meta name="twitter:description" content="1.1安装 GoGo的三种安装方式Go有多种安装方式，你可以选择自己喜欢的。这里我们介绍三种最常见的安装方式：  Go源码安装：这是一种标准的软件安装方式。对于经常使用Unix类系统的用户，尤其对于开发者来说，从源码安装可以自己定制。 Go标准包安装：Go提供了方便的安装包，支持Windows、Linux、Mac等系统。这种方式适合快速安装，可根据自己的系统位数下载好相应的安装包，一路next就可">
+<meta name="twitter:image" content="http://darrenwonder.github.io/2018/08/03/01.1/images/1.1.mac.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://darrenwonder.github.io/2018/08/03/01.1/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>安装Go | DarrenWang</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">DarrenWang</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">心向往之</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://darrenwonder.github.io/2018/08/03/01.1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王梦涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DarrenWang">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">安装Go
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-03 12:15:06" itemprop="dateCreated datePublished" datetime="2018-08-03T12:15:06+08:00">2018-08-03</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/go开发/" itemprop="url" rel="index"><span itemprop="name">go开发</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-1安装-Go"><a href="#1-1安装-Go" class="headerlink" title="1.1安装 Go"></a>1.1安装 Go</h1><h2 id="Go的三种安装方式"><a href="#Go的三种安装方式" class="headerlink" title="Go的三种安装方式"></a>Go的三种安装方式</h2><p>Go有多种安装方式，你可以选择自己喜欢的。这里我们介绍三种最常见的安装方式：</p>
+<ul>
+<li>Go源码安装：这是一种标准的软件安装方式。对于经常使用Unix类系统的用户，尤其对于开发者来说，从源码安装可以自己定制。</li>
+<li>Go标准包安装：Go提供了方便的安装包，支持Windows、Linux、Mac等系统。这种方式适合快速安装，可根据自己的系统位数下载好相应的安装包，一路next就可以轻松安装了。<strong>推荐这种方式</strong></li>
+<li>第三方工具安装：目前有很多方便的第三方软件包工具，例如Ubuntu的apt-get和wget、Mac的homebrew等。这种安装方式适合那些熟悉相应系统的用户。<a id="more"></a>
+最后，如果你想在同一个系统中安装多个版本的Go，你可以参考第三方工具<a href="https://github.com/moovweb/gvm" target="_blank" rel="noopener">GVM</a>，这是目前在这方面做得最好的工具，除非你知道怎么处理。<h2 id="Go源码安装"><a href="#Go源码安装" class="headerlink" title="Go源码安装"></a>Go源码安装</h2>Go 1.5彻底移除C代码，Runtime、Compiler、Linker均由Go编写,实现自举。只需要安装了上一个版本,即可从源码安装。<br>在Go 1.5前,Go的源代码中，有些部分是用Plan 9 C和AT&amp;T汇编写的，因此假如你要想从源码安装，就必须安装C的编译工具。<br>在Mac系统中，只要你安装了Xcode，就已经包含了相应的编译工具。<br>在类Unix系统中，需要安装gcc等工具。例如Ubuntu系统可通过在终端中执行<code>sudo apt-get install gcc libc6-dev</code>来安装编译工具。<br>在Windows系统中，你需要安装MinGW，然后通过MinGW安装gcc，并设置相应的环境变量。<br>你可以直接去官网<a href="http://golang.org/dl/" target="_blank" rel="noopener">下载源码</a>，找相应的<code>goVERSION.src.tar.gz</code>的文件下载，下载之后解压缩到<code>$HOME</code>目录，执行如下代码：<br>  cd go/src<br>  ./all.bash<br>运行all.bash后出现”ALL TESTS PASSED”字样时才算安装成功。<br>上面是Unix风格的命令，Windows下的安装方式类似，只不过是运行<code>all.bat</code>，调用的编译器是MinGW的gcc。<br>如果是Mac或者Unix用户需要设置几个环境变量，如果想重启之后也能生效的话把下面的命令写到<code>.bashrc</code>或者<code>.zshrc</code>里面，<br>  export GOPATH=$HOME/gopath<br>  export PATH=$PATH:$HOME/go/bin:$GOPATH/bin<br>如果你是写入文件的，记得执行<code>bash .bashrc</code>或者<code>bash .zshrc</code>使得设置立马生效。<br>如果是window系统，就需要设置环境变量，在path里面增加相应的go所在的目录，设置gopath变量。<br>当你设置完毕之后在命令行里面输入<code>go</code>，看到如下图片即说明你已经安装成功<img src="/2018/08/03/01.1/images/1.1.mac.png">
+图1.1 源码安装之后执行Go命令的图<br>如果出现Go的Usage信息，那么说明Go已经安装成功了；如果出现该命令不存在，那么可以检查一下自己的PATH环境变中是否包含了Go的安装目录。<br>从go 1.8开始，GOPATH环境变量现在有一个默认值，如果它没有被设置。 它在Unix上默认为$HOME/go,在Windows上默认为%USERPROFILE%/go。<blockquote>
+<p>关于上面的GOPATH将在下面小节详细讲解</p>
+</blockquote>
+<h2 id="Go标准包安装"><a href="#Go标准包安装" class="headerlink" title="Go标准包安装"></a>Go标准包安装</h2>Go提供了每个平台打好包的一键安装，这些包默认会安装到如下目录：/usr/local/go (Windows系统：c:\Go)，当然你可以改变他们的安装位置，但是改变之后你必须在你的环境变量中设置如下信息：<br>  export GOROOT=$HOME/go<br>  export GOPATH=$HOME/gopath<br>  export PATH=$PATH:$GOROOT/bin:$GOPATH/bin<br>上面这些命令对于Mac和Unix用户来说最好是写入<code>.bashrc</code>或者<code>.zshrc</code>文件，对于windows用户来说当然是写入环境变量。    <h3 id="如何判断自己的操作系统是32位还是64位？"><a href="#如何判断自己的操作系统是32位还是64位？" class="headerlink" title="如何判断自己的操作系统是32位还是64位？"></a>如何判断自己的操作系统是32位还是64位？</h3>我们接下来的Go安装需要判断操作系统的位数，所以这小节我们先确定自己的系统类型。<br>Windows系统用户请按Win+R运行cmd，输入<code>systeminfo</code>后回车，稍等片刻，会出现一些系统信息。在“系统类型”一行中，若显示“x64-based PC”，即为64位系统；若显示“X86-based PC”，则为32位系统。<br>Mac系统用户建议直接使用64位的，因为Go所支持的Mac OS X版本已经不支持纯32位处理器了。<br>Linux系统用户可通过在Terminal中执行命令<code>arch</code>(即<code>uname -m</code>)来查看系统信息：<br>64位系统显示<br>  x86_64<br>32位系统显示<br>  i386<h3 id="Mac-安装"><a href="#Mac-安装" class="headerlink" title="Mac 安装"></a>Mac 安装</h3>访问<a href="http://golang.org/dl/" title="Go安装包下载" target="_blank" rel="noopener">下载地址</a>，32位系统下载go1.4.2.darwin-386-osx10.8.pkg(更新的版本已无32位下载)，64位系统下载go1.8.3.darwin-amd64.pkg，双击下载文件，一路默认安装点击下一步，这个时候go已经安装到你的系统中，默认已经在PATH中增加了相应的<code>~/go/bin</code>,这个时候打开终端，输入<code>go</code><br>看到类似上面源码安装成功的图片说明已经安装成功<br>如果出现go的Usage信息，那么说明go已经安装成功了；如果出现该命令不存在，那么可以检查一下自己的PATH环境变中是否包含了go的安装目录。<h3 id="Linux-安装"><a href="#Linux-安装" class="headerlink" title="Linux 安装"></a>Linux 安装</h3>访问<a href="http://golang.org/dl/" title="Go安装包下载" target="_blank" rel="noopener">下载地址</a>，32位系统下载go1.8.3.linux-386.tar.gz，64位系统下载go1.8.3.linux-amd64.tar.gz，<br>假定你想要安装Go的目录为 <code>$GO_INSTALL_DIR</code>，后面替换为相应的目录路径。<br>解压缩<code>tar.gz</code>包到安装目录下：<code>tar zxvf go1.8.3.linux-amd64.tar.gz -C $GO_INSTALL_DIR</code>。<br>设置PATH，<code>export PATH=$PATH:$GO_INSTALL_DIR/go/bin</code><br>然后执行<code>go</code><img src="/2018/08/03/01.1/images/1.1.linux.png">
+图1.2 Linux系统下安装成功之后执行go显示的信息<br>如果出现go的Usage信息，那么说明go已经安装成功了；如果出现该命令不存在，那么可以检查一下自己的PATH环境变中是否包含了go的安装目录。<h3 id="Windows-安装"><a href="#Windows-安装" class="headerlink" title="Windows 安装"></a>Windows 安装</h3>访问<a href="http://golang.org/dl/" title="Go安装包下载" target="_blank" rel="noopener">Golang 下载页</a>，32 位请选择名称中包含 windows-386 的 msi 安装包，64 位请选择名称中包含 windows-amd64 的。下载好后运行，不要修改默认安装目录 C:\Go\，若安装到其他位置会导致不能执行自己所编写的 Go 代码。安装完成后默认会在环境变量 Path 后添加 Go 安装目录下的 bin 目录 <code>C:\Go\bin\</code>，并添加环境变量 GOROOT，值为 Go 安装根目录 <code>C:\Go\</code> 。<br><strong>验证是否安装成功</strong><br>在运行中输入 <code>cmd</code> 打开命令行工具，在提示符下输入 <code>go</code>，检查是否能看到 Usage 信息。输入 <code>cd %GOROOT%</code>，看是否能进入 Go 安装目录。若都成功，说明安装成功。<br>不能的话请检查上述环境变量 Path 和 GOROOT 的值。若不存在请卸载后重新安装，存在请重启计算机后重试以上步骤。<h2 id="第三方工具安装"><a href="#第三方工具安装" class="headerlink" title="第三方工具安装"></a>第三方工具安装</h2><h3 id="GVM"><a href="#GVM" class="headerlink" title="GVM"></a>GVM</h3>gvm是第三方开发的Go多版本管理工具，类似ruby里面的rvm工具。使用起来相当的方便，安装gvm使用如下命令：<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash &lt; &lt;(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>安装完成后我们就可以安装go了：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gvm install go1.8.3</span><br><span class="line">gvm use go1.8.3</span><br></pre></td></tr></table></figure></p>
+<p>也可以使用下面的命令，省去每次调用gvm use的麻烦：<br>        gvm use go1.8.3 –default</p>
+<p>执行完上面的命令之后GOPATH、GOROOT等环境变量会自动设置好，这样就可以直接使用了。</p>
+<h3 id="apt-get"><a href="#apt-get" class="headerlink" title="apt-get"></a>apt-get</h3><p>Ubuntu是目前使用最多的Linux桌面系统，使用<code>apt-get</code>命令来管理软件包，我们可以通过下面的命令来安装Go，为了以后方便，应该把 <code>git</code> <code>mercurial</code> 也安装上：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install python-software-properties</span><br><span class="line">sudo add-apt-repository ppa:gophers/go</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install golang-stable git-core mercurial</span><br></pre></td></tr></table></figure></p>
+<h3 id="wget"><a href="#wget" class="headerlink" title="wget"></a>wget</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://storage.googleapis.com/golang/go1.8.3.linux-amd64.tar.gz</span><br><span class="line">sudo tar -xzf go1.8.3.linux-amd64.tar.gz -C /usr/<span class="built_in">local</span></span><br></pre></td></tr></table></figure>
+<p>配置环境变量:<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> GOROOT=/usr/<span class="built_in">local</span>/go</span><br><span class="line"><span class="built_in">export</span> GOBIN=<span class="variable">$GOROOT</span>/bin</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$GOBIN</span></span><br><span class="line"><span class="built_in">export</span> GOPATH=<span class="variable">$HOME</span>/gopath (可选设置)</span><br></pre></td></tr></table></figure></p>
+<p>或者使用:<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/profile</span><br></pre></td></tr></table></figure></p>
+<p>并添加下面的内容：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> GOROOT=/usr/<span class="built_in">local</span>/go</span><br><span class="line"><span class="built_in">export</span> GOBIN=<span class="variable">$GOROOT</span>/bin</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$GOBIN</span></span><br><span class="line"><span class="built_in">export</span> GOPATH=<span class="variable">$HOME</span>/gopath (可选设置)</span><br></pre></td></tr></table></figure></p>
+<p>重新加载 profile 文件<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure></p>
+<h3 id="homebrew"><a href="#homebrew" class="headerlink" title="homebrew"></a>homebrew</h3><p>homebrew是Mac系统下面目前使用最多的管理软件的工具，目前已支持Go，可以通过命令直接安装Go，为了以后方便，应该把 <code>git</code> <code>mercurial</code> 也安装上：<br>1.安装homebrew<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/ruby -e <span class="string">"<span class="variable">$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)</span>"</span></span><br></pre></td></tr></table></figure></p>
+<p>2.安装go<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">brew update &amp;&amp; brew upgrade</span><br><span class="line">brew install go</span><br><span class="line">brew install git</span><br><span class="line">brew install mercurial //可选安装</span><br></pre></td></tr></table></figure></p>
+<h2 id="links"><a href="#links" class="headerlink" title="links"></a>links</h2><ul>
+<li><a href="/2018/08/03/preface/" title="目录">目录</a></li>
+<li>上一节: <a href="/2018/08/03/01.0/" title="Go环境配置">Go环境配置</a></li>
+<li>下一节: <a href="/2018/08/03/01.2/" title="GOPATH 与工作空间">GOPATH 与工作空间</a></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/03/08.2/" rel="next" title="WebSocket">
+                <i class="fa fa-chevron-left"></i> WebSocket
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/03/08.0/" rel="prev" title="Web服务">
+                Web服务 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王梦涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">100</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/DarrenWonder" target="_blank" title="GitHub"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/2872952804" target="_blank" title="Weibo"><i class="fa fa-fw fa-globe"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-1安装-Go"><span class="nav-number">1.</span> <span class="nav-text">1.1安装 Go</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Go的三种安装方式"><span class="nav-number">1.1.</span> <span class="nav-text">Go的三种安装方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go源码安装"><span class="nav-number">1.2.</span> <span class="nav-text">Go源码安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go标准包安装"><span class="nav-number">1.3.</span> <span class="nav-text">Go标准包安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何判断自己的操作系统是32位还是64位？"><span class="nav-number">1.3.1.</span> <span class="nav-text">如何判断自己的操作系统是32位还是64位？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mac-安装"><span class="nav-number">1.3.2.</span> <span class="nav-text">Mac 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux-安装"><span class="nav-number">1.3.3.</span> <span class="nav-text">Linux 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-安装"><span class="nav-number">1.3.4.</span> <span class="nav-text">Windows 安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三方工具安装"><span class="nav-number">1.4.</span> <span class="nav-text">第三方工具安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GVM"><span class="nav-number">1.4.1.</span> <span class="nav-text">GVM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#apt-get"><span class="nav-number">1.4.2.</span> <span class="nav-text">apt-get</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wget"><span class="nav-number">1.4.3.</span> <span class="nav-text">wget</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#homebrew"><span class="nav-number">1.4.4.</span> <span class="nav-text">homebrew</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#links"><span class="nav-number">1.5.</span> <span class="nav-text">links</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王梦涛</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.6.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.3.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
